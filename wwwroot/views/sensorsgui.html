@@ -1,0 +1,70 @@
+﻿
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 id="tableLabel">
+                Sensors
+
+                <span class="pull-right">
+                    <button class="btn btn-sm btn-primary" ng-click="sensorEdit()" title="New sensor">new</button>
+                    <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+                </span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <p ng-if="!sensors"><em>Loading...</em></p>
+
+            <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="sensors">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sensor type</th>
+                        <th>Descpription</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="sensor in sensors"
+                        ng-dblclick="sensorEdit(sensor)"
+                        ng-click="sensorData(sensor)"
+                        class="clickable">
+                        <td>{{ sensor.id }}</td>
+                        <td>
+                            <span ng-switch="sensor.type">
+                                <span ng-switch-when="0">WEATHER</span>
+                                <span ng-switch-when="1">WEATHERFORECAST</span>
+                                <span ng-switch-when="2">WATERLEVEL</span>
+                                <span ng-switch-when="3">DISTANCE</span>
+                                <span ng-switch-default>{{sensor.type}}</span>
+                            </span>
+                        </td>
+                        <td>{{ sensor.description }}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="sensorDelete(sensor)">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="sensorEdit(sensor)">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="col-md-12" ng-if="selectedSensor">
+            <hr />
+            <h3>Selected sensor</h3>
+            <p>
+                <b>{{selectedSensor.id}}</b> {{selectedSensor.description}}
+            </p>
+        </div>
+
+    </div>
+</div>
+
+

@@ -1,0 +1,39 @@
+﻿<div class="modal-header">
+    <h2 class="modal-title">
+        Coordinates
+    </h2>
+</div>
+
+<div class="modal-body">
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-addon input-sm">lat</div>
+                    <input class="form-control input-sm" type="text" ng-model="coordinates.lat" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="input-group input-group-sm">
+                    <div class="input-group-addon input-sm">lon</div>
+                    <input class="form-control input-sm" type="text" ng-model="coordinates.lon" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-primary" ng-click="ok()">Save</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
