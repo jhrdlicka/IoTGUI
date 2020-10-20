@@ -1,4 +1,4 @@
-﻿# hrdlicky
+﻿# IoT
 .Net Core Web API, Angular JS
 
 API swagger endpoint
