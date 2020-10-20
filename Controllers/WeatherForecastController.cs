@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace WebApplication1.Controllers
+namespace IoT_GUI.Controllers
 {
     [ApiController]
     [Route("[controller]")]

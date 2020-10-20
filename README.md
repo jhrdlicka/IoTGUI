@@ -14,15 +14,16 @@ app.js
 - angular routes
 - angular controllers
 
-example for call "own" API (app.js "fetchDataController"):
-    $http({
-        headers: { "Content-Type": "application/json" }, url: "WeatherForecast", method: 'GET'
-    })
-        .then(function success(response) {
-            console.log("response.data", response.data);
-        }, function error(error) {
-            console.error('error', error);
-        });
+> example for call "own" API (app.js "fetchDataController"):
+>    $http({
+>        headers: { "Content-Type": "application/json" }, url: "WeatherForecast", method: 'GET'
+>    })
+>        .then(function success(response) {
+>            console.log("response.data", response.data);
+>        }, function error(error) {
+>            console.error('error', error);
+>        });
 
 views
 - html "snippets"
+

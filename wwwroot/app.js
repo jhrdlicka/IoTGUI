@@ -156,7 +156,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
         modalInstance.result.then(function (container) {
             /* ok */
 
-            container.type = Number(container.type);
+            container.type = parseInt(container.type);
+
             if (container.id) {
                 //UPDATE
                 $http({
@@ -173,16 +174,19 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                     });
             }
             else {
-                l_container = Object.assign({}, container);
-                delete l_container['id'];
-                
+                //var l_container = angular.copy(container); ... //Object.assign({}, container);
+                //delete l_container['id'];
+              
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
                     url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors",
                     method: 'POST',
                     datatype: "json",
-                    data: JSON.stringify(l_container)
+                    data: JSON.stringify({
+                        type: container.type,
+                        description: container.description
+                    })
                 })
                     .then(function success(response) {
                         $scope.loadData();
