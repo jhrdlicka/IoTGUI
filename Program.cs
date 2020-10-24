@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace IoT_GUI
+namespace IoTGUI
 {
     public class Program
     {
