@@ -124,7 +124,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors",
+            url: "http://hrdlicky.eu/currentweather/api/Sensors",
             method: 'GET'
         })
             .then(function success(response) {
@@ -162,7 +162,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + container.id,
+                    url: "http://hrdlicky.eu/currentweather/api/Sensors/" + container.id,
                     method: 'PUT',
                     datatype: "json",
                     data: JSON.stringify(container)
@@ -180,7 +180,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors",
+                    url: "http://hrdlicky.eu/currentweather/api/Sensors",
                     method: 'POST',
                     datatype: "json",
                     data: JSON.stringify({
@@ -204,7 +204,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
+            url: "http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
             method: 'DELETE'
         })
             .then(function success(response) {
@@ -223,7 +223,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
+//            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
+            url: "http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
             method: 'GET'
         })
             .then(function success(response) {
