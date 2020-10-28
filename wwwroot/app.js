@@ -39,6 +39,9 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
 
     $scope.loadData = function () {
         $scope.forecasts = null;
+        $scope.axex = [];
+        $scope.axey1 = [];
+        $scope.axey2 = [];
 
         var url = "https://api.openweathermap.org/data/2.5/onecall?lat=" + $scope.coordinates.lat + "&lon=" + $scope.coordinates.lon + "&exclude=minutely,hourly&units=metric&appid=18d9b48c0feb1324a4df6a154732e3a1";
 
@@ -51,12 +54,139 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
                 $scope.forecasts = response.data.daily;
 
                 // post-processing (formatovani UNIX timestampu na datum)
-                angular.forEach($scope.forecasts, function (item) {
+                angular.forEach($scope.forecasts, function (item, index) {
                     item.date = toChar(item.dt, "dd.MM.yyyy");
+                    item.iconpath = "http://openweathermap.org/img/wn/" + item.weather[0].icon + "@2x.png";
+                    $scope.axey1[index] = item.temp.min;
+                    $scope.axey2[index] = item.temp.max;
+                    $scope.axex[index] = toChar(item.dt, "dd.MM.yyyy");
                 });
 
                 $scope.current = "Current temp. " + response.data.current.temp + " (C)";
                 $scope.currentTime = toChar(response.data.current.dt, "dd.MM.yyyy HH:mm");
+
+                wf_chart = document.getElementById('wf_chart');
+
+                var layout = {
+                    title: 'Temperature Forecast',
+                    xaxis: {
+//                        title: 'Date',
+//                        showgrid: false,
+//                        zeroline: false
+                    },
+                    yaxis: {
+                        title: String.fromCharCode(176) + "C",
+                        showticksuffix: "last"
+//                        showline: false
+                    }
+                };
+
+                var trace0 = {
+                    type: "scatter",
+                    mode: "lines",
+                    x: $scope.axex,
+                    y: $scope.axey1,
+                    line: { color: '#17BECF' },
+                    name: "min"
+                };
+
+                var trace1 = {
+                    type: "scatter",
+                    mode: "lines",
+                    x: $scope.axex,
+                    y: $scope.axey2,
+                    line: { color: "orange" },
+                    name: "max"
+                };
+
+                var data = [trace0, trace1];
+
+                Plotly.newPlot(wf_chart, data, layout);
+                /*
+                Plotly.addTraces(wf_chart, [{
+                    x: $scope.axex,
+                    y: $scope.axey2                   
+                }]);
+                */
+
+                /*
+                Plotly.d3.csv(
+                    "https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv",
+                    function (err, rows) {
+                        function unpack(rows, key) {
+                            return rows.map(function (row) {
+                                return row[key];
+                            });
+                        }
+
+                        var data2 = [
+                            {
+                                type: "scattermapbox",
+                                text: unpack(rows, "Globvalue"),
+                                lon: unpack(rows, "Lon"),
+                                lat: unpack(rows, "Lat"),
+                                marker: { color: "fuchsia", size: 4 }
+                            }
+                        ];
+
+                        var layout2 = {
+                            dragmode: "zoom",
+                            mapbox: { style: "open-street-map", center: { lat: 38, lon: -90 }, zoom: 3 },
+                            margin: { r: 0, t: 0, b: 0, l: 0 }
+                        };
+
+                        Plotly.newPlot("wf_map", data2, layout2);
+                    }
+                );
+                
+                */
+
+                var data2 = [{
+                    type: 'scattergeo',
+                    mode: 'markers',
+//                    locations: ['FRA', 'DEU', 'RUS', 'ESP'],
+                    lat: [$scope.coordinates.lat],
+                    lon: [$scope.coordinates.lon],
+                    marker: {
+                        size: [10],
+                        color: [20],
+                        cmin: 0,
+                        cmax: 50,
+                        colorscale: 'Blues',
+//                        colorbar: {
+//                            title: 'Some rate',
+//                            ticksuffix: '%',
+//                            showticksuffix: 'last'
+//                        },
+                        line: {
+                            color: 'black'
+                        }
+                    }
+                }];
+
+                var layout2 = {
+                    title: 'Prediction Location',                    
+//                    mapbox: { style: "open-street-map", center: { lat: $scope.coordinates.lat, lon: $scope.coordinates.lon }, zoom: 3 },
+                    width: 450,
+                    height: 400,
+                    geo: {
+                        scope: 'world',
+                        resolution: 1000,
+                        showcountries: true, 
+                        showland: true,
+                        showocean: false, 
+                        showsubunits: true, subunitcolor: "Blue",
+                        projection: { type:'mercator', scale:15 },
+                        center: { lat: $scope.coordinates.lat, lon: $scope.coordinates.lon },
+                        zoom: 300
+                    },
+                    margin: { r: 100, t: 60, b: 0, l: 60 }
+                    
+                };
+
+                Plotly.newPlot("wf_map", data2, layout2);
+                    
+
 
             }, function error(error) {
                 console.error('error', error);

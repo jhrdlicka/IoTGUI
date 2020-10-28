@@ -11,7 +11,7 @@
                 </span>
             </h1>
             <p>
-                This component demonstrates fetching data from the server.
+                Weather forecast for your location
             </p>
         </div>
     </div>
@@ -19,34 +19,47 @@
     <div class="col-md-12">
         <hr />
         <p ng-if="!forecasts"><em>Loading...</em></p>
-        <table class='table table-responsive table-striped table-hover' aria-labelledby="tableLabel" ng-if="forecasts">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. min (C)</th>
-                    <th>Temp. max (C)</th>
-                    <th>Pressure</th>
-                    <th>Humidity</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="forecast in forecasts">
-                    <td>{{ forecast.date }}</td>
-                    <td>{{ forecast.temp.min }}</td>
-                    <td>{{ forecast.temp.max }}</td>
-                    <td>{{ forecast.pressure }}</td>
-                    <td>{{ forecast.humidity }}</td>
-                    <td>{{ forecast.weather[0].description }}</td>
-                </tr>
-            </tbody>
-        </table>
 
         <p>
             <small>{{ current }}</small>
             <small class="pull-right">{{currentTime}}</small>
         </p>
 
+        <table class='table table-responsive table-striped table-hover' aria-labelledby="tableLabel" ng-if="forecasts">
+            <thead>
+                <tr>
+                    <th align="center">Date</thalign="center">
+                    <th align="center">Temp. min [°C]</th>
+                    <th align="center">Temp. max [°C]</th>
+                    <th align="center">Pressure [kPa]</th>
+                    <th align="center">Humidity [%]</th>
+                    <th align="center">Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="forecast in forecasts">
+                    <td align="left">{{ forecast.date }}</td>
+                    <td align="center">{{ forecast.temp.min }}</td>
+                    <td align="center">{{ forecast.temp.max }}</td>
+                    <td align="center">{{ forecast.pressure }}</td>
+                    <td align="center">{{ forecast.humidity }}</td>
+                    <td align="left"><img src={{forecast.iconpath}} height="30px" width="30px">{{ forecast.weather[0].description }}</tdalign="center">
+                </tr>
+            </tbody>
+        </table>
+
     </div>
+
 </div>
 
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 col-md-8" id="wf_chart" style="height:400px;">
+
+        </div>
+        <div class="col-xs-8 col-md-4" id="wf_map">
+
+        </div>
+    </div>
+</div>
