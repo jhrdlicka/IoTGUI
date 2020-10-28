@@ -174,8 +174,9 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                     });
             }
             else {
-                //var l_container = angular.copy(container); ... //Object.assign({}, container);
-                //delete l_container['id'];
+                // create a container without "id" field
+                var l_container = angular.copy(container); //Object.assign({}, container);
+                delete l_container['id'];
               
                 //INSERT
                 $http({
@@ -183,10 +184,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                     url: "http://hrdlicky.eu/currentweather/api/Sensors",
                     method: 'POST',
                     datatype: "json",
-                    data: JSON.stringify({
-                        type: container.type,
-                        description: container.description
-                    })
+                    data: JSON.stringify(l_container)
                 })
                     .then(function success(response) {
                         $scope.loadData();
@@ -256,7 +254,8 @@ app.controller('sensorEditController', function ($scope, $uibModalInstance, cont
         $uibModalInstance.close($scope.sensor);
     };
 
-    $scope.cancel = function () {
+    $scope.cancel = function () {        
+        $scope.myForm.$rollbackViewValue();
         $uibModalInstance.dismiss('cancel');
     };
 });
