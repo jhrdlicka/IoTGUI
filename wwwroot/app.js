@@ -15,10 +15,74 @@ app.config(['$routeProvider', function ($routeProvider) {
 
 
 /**
- * Common 
+ * Common (404 error)
  */
 app.controller('commonController', function ($scope, $http, $filter) {
+});
 
+
+/**
+ * Google login 
+ */
+app.controller('GoogleCtrl2', function ($window, $scope, $http) {
+
+    $window.signedIn = false;
+
+    onSuccess = function (googleUser) {
+        console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+        var id_token = googleUser.getAuthResponse().id_token;
+
+        if (id_token) {
+            $window.signedIn = true;
+
+            // Hide the sign-in button now that the user is authorized, for example:
+            //            $('#signinButton').attr('style', 'display: none');
+
+
+            // Send the code to the server
+            /*
+
+            $http({
+                headers: { "Content-Type": "application/octet-stream; charset=utf-8", "X-Requested-With": "XMLHttpRequest" },
+                url: "http://hrdlicky.eu/currentweather/api/StoreAuthCode",
+                method: 'POST',
+                //                datatype: "json",
+                data: id_token
+            })
+                .then(function success(response) {
+                    $scope.loadData();
+                }, function error(error) {
+                    console.error('error', error);
+                });
+*/
+
+        }
+
+    };
+
+    onFailure = function (error) {
+        console.log(error);
+    };
+
+
+    $window.gapiOnLoadCallback = function () {
+        gapi.signin2.render('googleLoginButton', {
+            'scope': 'profile email',            
+            'longtitle': true,
+            'theme': 'dark',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+        });
+
+    };
+
+    $scope.signOut = function () {
+        var auth2 = gapi.auth2.getAuthInstance();
+        auth2.signOut().then(function () {
+            $window.signedIn = false;
+            // Some UI update
+        });
+    };
 });
 
 
@@ -248,7 +312,7 @@ app.controller('coordinatesController', function ($scope, $uibModalInstance, con
  */
 app.controller('sensorController', function ($scope, $http, $uibModal) {
 
-    $scope.loadData = function () {
+     $scope.loadData = function () {
         $scope.sensors = null;
         $scope.selectedSensor = null;
 
