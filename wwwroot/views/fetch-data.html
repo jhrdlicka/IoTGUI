@@ -6,6 +6,11 @@
                 Weather forecast
 
                 <span class="pull-right">
+
+                    <button class="btn btn-sm btn-danger" ng-click="googleLogin()" ng-if="!isAuthorize">Google Login</button>
+                    <button class="btn btn-sm btn-default" ng-click="googleLogout()" ng-if="isAuthorize">Logout</button>
+                    <button class="btn btn-sm btn-default" ng-click="testAuthorize()" ng-if="isAuthorize">Test Authorize</button>
+
                     <button class="btn btn-sm btn-default" ng-click="editCoordinates()" title="Edit coordinates">coordinates</button>
                     <button class="btn btn-sm btn-primary" ng-click="loadData()">refresh</button>
                 </span>
@@ -43,7 +48,7 @@
                     <td align="center">{{ forecast.temp.max }}</td>
                     <td align="center">{{ forecast.pressure }}</td>
                     <td align="center">{{ forecast.humidity }}</td>
-                    <td align="left"><img src={{forecast.iconpath}} height="30px" width="30px">{{ forecast.weather[0].description }}</tdalign="center">
+                    <td align="left"><img src={{forecast.iconpath}} height="30px" width="30px">{{ forecast.weather[0].description }}</td>
                 </tr>
             </tbody>
         </table>

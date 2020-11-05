@@ -1,4 +1,5 @@
-var app = angular.module('myApp', ['ngRoute', 'ui.bootstrap']);
+var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
+
 
 /**
  * Configure the Routes
@@ -65,16 +66,16 @@ app.controller('GoogleCtrl2', function ($window, $scope, $http) {
     };
 
 
-    $window.gapiOnLoadCallback = function () {
-        gapi.signin2.render('googleLoginButton', {
-            'scope': 'profile email',            
-            'longtitle': true,
-            'theme': 'dark',
-            'onsuccess': onSuccess,
-            'onfailure': onFailure
-        });
+    //$window.gapiOnLoadCallback = function () {
+    //    gapi.signin2.render('googleLoginButton', {
+    //        'scope': 'profile email',            
+    //        'longtitle': true,
+    //        'theme': 'dark',
+    //        'onsuccess': onSuccess,
+    //        'onfailure': onFailure
+    //    });
 
-    };
+    //};
 
     $scope.signOut = function () {
         var auth2 = gapi.auth2.getAuthInstance();
@@ -89,7 +90,7 @@ app.controller('GoogleCtrl2', function ($window, $scope, $http) {
 /**
  * Weather 
  */
-app.controller('fetchDataController', function ($scope, $http, $filter, $uibModal) {
+app.controller('fetchDataController', function ($scope, $http, $filter, $uibModal, $cookies, $window, $location) {
 
     var toChar = function (unix_timestamp, format) {
         var date = new Date(unix_timestamp * 1000);
@@ -282,15 +283,66 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
         }, function () { /* cancel */ });
     }
 
-    // Priklad nacteni dat z "vlastniho" sajtu //Controllers/WeatherForecastController.cs
-    $http({
-        headers: { "Content-Type": "application/json" }, url: "WeatherForecast", method: 'GET'
-    })
-        .then(function success(response) {
-            console.log("response.data", response.data);
-        }, function error(error) {
-            console.error('error', error);
-        });
+    //// Priklad nacteni dat z "vlastniho" sajtu //Controllers/WeatherForecastController.cs
+    //$http({
+    //    headers: { "Content-Type": "application/json" }, url: "WeatherForecast", method: 'GET'
+    //})
+    //    .then(function success(response) {
+    //        console.log("response.data", response.data);
+    //    }, function error(error) {
+    //        console.error('error', error);
+    //    });
+
+
+    $.urlParam = function (name) {
+        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+        if (results == null) {
+            return null;
+        }
+        else {
+            return decodeURI(results[1]) || 0;
+        }
+    }
+
+    $scope.isAuthorize = $cookies.get(".AspNetCore.Cookies");
+    var token = $.urlParam("token");
+    if (token && !$scope.isAuthorize) {
+        $cookies.put(".AspNetCore.Cookies", token);
+        $scope.isAuthorize = true;
+    }
+
+    $scope.googleLogin = function () {
+        const url = 'https://localhost:44309/account/google-login?redirectUrl=' + encodeURIComponent(window.location.href);
+        window.location.replace(url);
+    }
+    $scope.googleLogout = function () {
+        $location.search('token', null);
+
+        //var auth2 = gapi.auth2.getAuthInstance();
+        //auth2.signOut().then(function ()
+        //{
+        //    $window.signedIn = false;
+            $cookies.remove(".AspNetCore.Cookies");
+            $scope.isAuthorize = false;
+        //});
+    }
+
+    $scope.testAuthorize = function () {
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: "https://localhost:44309/api/TestAuthorize",
+            withCredentials: true,
+            
+            method: 'GET'
+        })
+            .then(function success(response) {
+                console.log(response);
+                alert(response.data);
+            }, function error(error) {
+                console.error('error', error);
+            });
+    }
+
 });
 
 app.controller('coordinatesController', function ($scope, $uibModalInstance, container) {
