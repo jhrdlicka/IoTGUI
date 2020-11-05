@@ -167,49 +167,11 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
                 var data = [trace0, trace1];
 
                 Plotly.newPlot(wf_chart, data, layout);
-                /*
-                Plotly.addTraces(wf_chart, [{
-                    x: $scope.axex,
-                    y: $scope.axey2                   
-                }]);
-                */
 
-                /*
-                Plotly.d3.csv(
-                    "https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv",
-                    function (err, rows) {
-                        function unpack(rows, key) {
-                            return rows.map(function (row) {
-                                return row[key];
-                            });
-                        }
-
-                        var data2 = [
-                            {
-                                type: "scattermapbox",
-                                text: unpack(rows, "Globvalue"),
-                                lon: unpack(rows, "Lon"),
-                                lat: unpack(rows, "Lat"),
-                                marker: { color: "fuchsia", size: 4 }
-                            }
-                        ];
-
-                        var layout2 = {
-                            dragmode: "zoom",
-                            mapbox: { style: "open-street-map", center: { lat: 38, lon: -90 }, zoom: 3 },
-                            margin: { r: 0, t: 0, b: 0, l: 0 }
-                        };
-
-                        Plotly.newPlot("wf_map", data2, layout2);
-                    }
-                );
-                
-                */
 
                 var data2 = [{
                     type: 'scattergeo',
                     mode: 'markers',
-//                    locations: ['FRA', 'DEU', 'RUS', 'ESP'],
                     lat: [$scope.coordinates.lat],
                     lon: [$scope.coordinates.lon],
                     marker: {
@@ -218,11 +180,6 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
                         cmin: 0,
                         cmax: 50,
                         colorscale: 'Blues',
-//                        colorbar: {
-//                            title: 'Some rate',
-//                            ticksuffix: '%',
-//                            showticksuffix: 'last'
-//                        },
                         line: {
                             color: 'black'
                         }
@@ -283,17 +240,6 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
         }, function () { /* cancel */ });
     }
 
-    //// Priklad nacteni dat z "vlastniho" sajtu //Controllers/WeatherForecastController.cs
-    //$http({
-    //    headers: { "Content-Type": "application/json" }, url: "WeatherForecast", method: 'GET'
-    //})
-    //    .then(function success(response) {
-    //        console.log("response.data", response.data);
-    //    }, function error(error) {
-    //        console.error('error', error);
-    //    });
-
-
     $.urlParam = function (name) {
         var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
         if (results == null) {
@@ -312,7 +258,10 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
     }
 
     $scope.googleLogin = function () {
-        const url = 'https://localhost:44309/account/google-login?redirectUrl=' + encodeURIComponent(window.location.href);
+//        const url = 'https://localhost:44309/account/google-login?redirectUrl=' + encodeURIComponent(window.location.href);
+//        const url = 'http://localhost:53771/account/google-login?redirectUrl=' + encodeURIComponent(window.location.href);
+        const url = 'http://hrdlicky.eu/currentweather/account/google-login?redirectUrl=' + encodeURIComponent(window.location.href);
+
         window.location.replace(url);
     }
     $scope.googleLogout = function () {
@@ -330,7 +279,9 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
     $scope.testAuthorize = function () {
         $http({
             headers: { "Content-Type": "application/json" },
-            url: "https://localhost:44309/api/TestAuthorize",
+//            url: "https://localhost:44309/api/TestAuthorize",
+//            url: "https://localhost:53771/api/TestAuthorize",
+            url: "http://hrdlicky.eu/currentweather/api/TestAuthorize",
             withCredentials: true,
             
             method: 'GET'
@@ -371,6 +322,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
         $http({
             headers: { "Content-Type": "application/json" },
             url: "http://hrdlicky.eu/currentweather/api/Sensors",
+            withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
@@ -409,6 +361,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 $http({
                     headers: { "Content-Type": "application/json" },
                     url: "http://hrdlicky.eu/currentweather/api/Sensors/" + container.id,
+                    withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
                     data: JSON.stringify(container)
@@ -428,6 +381,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 $http({
                     headers: { "Content-Type": "application/json" },
                     url: "http://hrdlicky.eu/currentweather/api/Sensors",
+                    withCredentials: true,
                     method: 'POST',
                     datatype: "json",
                     data: JSON.stringify(l_container)
@@ -449,6 +403,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
         $http({
             headers: { "Content-Type": "application/json" },
             url: "http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
+            withCredentials: true,
             method: 'DELETE'
         })
             .then(function success(response) {
@@ -469,6 +424,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
             headers: { "Content-Type": "application/json" },
 //            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
             url: "http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
+            withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
