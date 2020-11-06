@@ -342,6 +342,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                  $scope.sensors = response.data;
                  //console.log("sensors", $scope.sensors);
              }, function error(error) {
+                     if (error.status = 401)
+                         alert("Access Denied!!!");
                  console.error('error', error);
              });
 
@@ -399,6 +401,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                     .then(function success(response) {
                         $scope.loadData();
                     }, function error(error) {
+                            if (error.status = 401)
+                                alert("Access Denied!!!");
                         console.error('error', error);
                     });
             }
@@ -419,6 +423,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                     .then(function success(response) {
                         $scope.loadData();
                     }, function error(error) {
+                            if (error.status = 401)
+                                alert("Access Denied!!!");
                         console.error('error', error);
                     });
             }
@@ -439,6 +445,8 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
             .then(function success(response) {
                 $scope.loadData();
             }, function error(error) {
+                    if (error.status = 401)
+                        alert("Access Denied!!!");
                 console.error('error', error);
             });
     };
