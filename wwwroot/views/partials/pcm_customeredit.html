@@ -1,0 +1,41 @@
+﻿<div class="modal-header">
+    <h2 class="modal-title">
+        Client
+    </h2>
+</div>
+
+<form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+    <div class="modal-body">
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Firstname</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Surname</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </div>
+</form>

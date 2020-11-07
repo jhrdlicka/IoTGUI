@@ -1,21 +1,21 @@
 /**
- * Sensor list
+ * pcm_customer list
  */
-app.controller('sensorController', function ($scope, $http, $uibModal) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
      $scope.loadData = function () {
-        $scope.sensors = null;
-        $scope.selectedSensor = null;
+        $scope.pcm_customers = null;
+        $scope.selectedpcm_customer = null;
 
         $http({
              headers: { "Content-Type": "application/json" },
-             url: $scope.ApiAddress + "api/Sensors",
+             url: $scope.ApiAddress + "api/pcm_customer",
              withCredentials: true,
              method: 'GET'
         })
              .then(function success(response) {
-                 $scope.sensors = response.data;
-                 //console.log("sensors", $scope.sensors);
+                 $scope.pcm_customers = response.data;
+                 //console.log("pcm_customers", $scope.pcm_customers);
              }, function error(error) {
                      if (error.status == 401)
                          alert("Access Denied!!!");
@@ -42,18 +42,18 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
 
 
-    $scope.sensorEdit = function (sensor) {
-        if (!sensor)
-            sensor = { id: null, type: null, description: null };
+    $scope.pcm_customeredit = function (pcm_customer) {
+        if (!pcm_customer)
+            pcm_customer = { id: null, type: null, description: null };
 
         var modalInstance = $uibModal.open({
-            templateUrl: 'views/partials/sensorEdit.html',
-            controller: 'sensorEditController',
+            templateUrl: 'views/partials/pcm_customeredit.html',
+            controller: 'pcm_customereditcontroller',
             size: '',
             backdrop: 'static',
             resolve: {
                 container: function () {
-                    return sensor;
+                    return pcm_customer;
                 }
             }
         });
@@ -67,7 +67,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/Sensors/" + container.id,
+                    url: $scope.ApiAddress + "api/pcm_customer/" + container.id,
                     withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
@@ -89,7 +89,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/Sensors",
+                    url: $scope.ApiAddress + "api/pcm_customer",
                     withCredentials: true,
                     method: 'POST',
                     datatype: "json",
@@ -107,13 +107,13 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
         }, function () { /* cancel */ });
     };
 
-    $scope.sensorDelete = function (sensor) {
-        if (!confirm("Delete sensor '" + sensor.description + "'. Are you sure?"))
+    $scope.pcm_customerdelete = function (pcm_customer) {
+        if (!confirm("Delete client '" + pcm_customer.Firstname + pcm_customer.surname + "'. Are you sure?"))
             return;
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $scope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
             withCredentials: true,
             method: 'DELETE'
         })
@@ -126,24 +126,23 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
             });
     };
 
-    $scope.selectedSensor = null;
+    $scope.selectedpcm_customer = null;
 
-    $scope.sensorData = function (sensor) {
-        $scope.selectedSensor = null;
-        if (!sensor)
+    $scope.pcm_customerdata = function (pcm_customer) {
+        $scope.selectedpcm_customer = null;
+        if (!pcm_customer)
             return;
 
         $http({
             headers: { "Content-Type": "application/json" },
-//            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
-            url: $scope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $scope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                $scope.selectedSensor = response.data;
+                $scope.selectedpcm_customer = response.data;
 
-                //console.log("selectedSensor", $scope.selectedSensor);
+                //console.log("selectedpcm_customer", $scope.selectedpcm_customer);
 
             }, function error(error) {
                 console.error('error', error);
@@ -152,21 +151,13 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
 });
 
-app.controller('sensorEditController', function ($scope, $uibModalInstance, container) {
+app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container) {
 
-    $scope.types = [
-        { Value: null, Text: "--Please choose a sensortype--" },
-        { Value: 0, Text: "WEATHER" },
-        { Value: 1, Text: "WEATHERFORECAST" },
-        { Value: 2, Text: "WATERLEVEL" },
-        { Value: 3, Text: "DISTANCE" }
-    ];
-
-    $scope.sensor = container;
-    //console.log($scope.sensor);
+    $scope.pcm_customer = container;
+    //console.log($scope.pcm_customer);
 
     $scope.ok = function () {
-        $uibModalInstance.close($scope.sensor);
+        $uibModalInstance.close($scope.pcm_customer);
     };
 
     $scope.cancel = function () {        

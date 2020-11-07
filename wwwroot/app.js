@@ -10,6 +10,7 @@ app.config(['$routeProvider', function ($routeProvider) {
         .when("/", { templateUrl: "views/sensorsgui.html", controller: "sensorController" })
         // Pages
         .when("/fetch", { templateUrl: "views/fetch-data.html", controller: "fetchDataController" })
+        .when("/pcm_customers", { templateUrl: "views/pcm_customersgui.html", controller: "pcm_customercontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 }]);
