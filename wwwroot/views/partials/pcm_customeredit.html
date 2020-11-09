@@ -6,13 +6,68 @@
 
 <form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
     <div class="modal-body">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row" ng-if="pcm_customer.id">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" ng-model="pcm_customer.active" />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" ng-if="pcm_customer.id">
+                    <div class="col-md-8">
+                        <div class="checkbox">
+                            <label><input type="checkbox" value="">Option 1</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-addon input-sm">Firstname</div>
+                                <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-addon input-sm">Surname</div>
+                                <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="container">
+                    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="rounded" width="92">
+                    <!--input type="file" class="form-control-file border" name="file">-->
+                </div>
+
+            </div>
+        </div>
 
         <div class="row">
-            <div class="col-md-12 col-sm-12">
+            <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-addon input-sm">Firstname</div>
-                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
+                        <div class="input-group-addon input-sm">e-mail (calendar)</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.emailcalendar" />
+
                     </div>
                 </div>
             </div>
@@ -22,15 +77,82 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-addon input-sm">Surname</div>
-                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
+                        <div class="input-group-addon input-sm">e-mail (invoicing)</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.emailinvoice" />
 
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Phone</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.phone" />
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Agreed price per session</div>
+                        <input class="form-control input-sm" type="number" ng-model="pcm_customer.pricesession" />
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.currencynm" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.currencynm" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Discounted price (10 sessions)</div>
+                        <input class="form-control input-sm" type="number" ng-model="pcm_customer.price10sessions" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Agreed conditions</div>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.agreedconditions" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon textarea-sm">Note</div>
+                        <textarea class="form-control texarea-sm" type="text" ng-model="pcm_customer.note">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
 
     <div class="modal-footer">
         <div class="text-right">
