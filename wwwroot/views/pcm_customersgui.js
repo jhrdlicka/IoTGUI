@@ -44,12 +44,12 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
     $scope.pcm_customeredit = function (pcm_customer) {
         if (!pcm_customer)
-            pcm_customer = { id: null, type: null, description: null };
+            pcm_customer = { id: null, type: null, description: null }; 
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_customeredit.html',
             controller: 'pcm_customereditcontroller',
-            size: '',
+            size: 'lg',
             backdrop: 'static',
             resolve: {
                 container: function () {
