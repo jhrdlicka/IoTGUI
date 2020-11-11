@@ -8,37 +8,42 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-md-8">
+
                 <div class="row" ng-if="pcm_customer.id">
-                    <div class="col-md-8">
-                        <div class="checkbox">
-                            <label class="form-check-label"><input class="form-check-input" type="checkbox" ng-model="pcm_customer.active" />Active</label>
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">Active</span>
+                            <div class="input-group-addon">
+                                <div class="input-group-text">
+                                    <input type="checkbox" ng-model="pcm_customer.active">
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <p></p>
+                </div>
+
+                <div class="row">
+                    <div class="form-inline col-md-12">
                         <div class="form-group">
                             <div class="input-group input-group-sm">
-                                <div class="input-group-addon input-sm">Firstname</div>
+                                <span class="input-group-addon input-sm">Name</span>
                                 <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group">
-                            <div class="input-group input-group-sm">
-                                <div class="input-group-addon input-sm">Surname</div>
+                            <div class="form-group">
                                 <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
-
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
+
+
             <div class="col-md-4">
                 <div class="container-fluid">
                     <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="rounded" width="92">
@@ -47,6 +52,11 @@
 
             </div>
         </div>
+
+        <div class="row">
+            <p></p>
+        </div>
+
 
         <div class="row">
             <div class="col-md-12">
@@ -76,26 +86,36 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-addon input-sm">Phone</div>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-phone-alt" aria-hidden="true">
+                            </span>
+                        </span>
+                        <span class="input-group-addon input-sm">Phone</span>
                         <input class="form-control input-sm" type="text" ng-model="pcm_customer.phone" />
-
                     </div>
                 </div>
             </div>
         </div>
+
+
         <div class="row">
             <div class="form-inline col-md-12">
-                    <div class="form-group">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon input-sm">Agreed price per session</span>
-                            <input class="form-control input-sm" type="number" ng-model="pcm_customer.pricesession" />
-                        </div>
-                        <div class="form-group">
-                            <input class="form-control input-sm" type="text" ng-model="pcm_customer.currencynm" />
-                        </div>
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Agreed price per session</span>
+                        <input class="form-control input-sm" type="number" ng-model="pcm_customer.pricesession" />
                     </div>
+                    <div class="form-group">
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.currencynm" />
+                    </div>
+                </div>
             </div>
         </div>
+
+        <div class="row">
+            <p></p>
+        </div>
+
 
         <div class="row">
             <div class="col-md-12">
@@ -132,7 +152,6 @@
         </div>
 
     </div>
-
 
     <div class="modal-footer">
         <div class="text-right">
