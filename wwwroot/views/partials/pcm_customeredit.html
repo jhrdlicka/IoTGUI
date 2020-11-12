@@ -1,124 +1,107 @@
-﻿<div class="modal-header">
-    <h2 class="modal-title">
-        Client
-    </h2>
-</div>
+﻿
 
 <form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+
+    <div class="modal-header">
+        <h2 class="modal-title">
+            Client
+        </h2>
+    </div>
+
     <div class="modal-body">
-        <div class="row">
-            <div class="col-md-8">
 
-                <div class="row" ng-if="pcm_customer.id">
-                    <div class="col-md-4">
-                        <div class="input-group input-group-sm">
-                            <span class="input-group-addon">Active</span>
-                            <div class="input-group-addon">
-                                <div class="input-group-text">
-                                    <input type="checkbox" ng-model="pcm_customer.active">
-                                </div>
-                            </div>
+        <div class="row">
+
+            <div class="col-md-3" style="min-height:75px">
+                <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="img img-rounded img-responsive">
+                <!--input type="file" class="form-control-file border" name="file">-->
+            </div>
+
+            <div class="col-md-9">
+
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">First name</span>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
+                        <span class="input-group-addon input-sm">Surname</span>
+                        <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
+
+                        <!--Active-->
+                        <div class="input-group-addon" ng-click="pcm_customer.active=!pcm_customer.active" style="cursor: pointer;">
+                            <!--ng-if="pcm_customer.id"-->
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="pcm_customer.active"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!pcm_customer.active"></span>
+                            Active
                         </div>
 
                     </div>
                 </div>
 
-                <div class="row">
-                    <p></p>
-                </div>
-
-                <div class="row">
-                    <div class="form-inline col-md-12">
-                        <div class="form-group">
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-addon input-sm">Name</span>
-                                <input class="form-control input-sm" type="text" ng-model="pcm_customer.firstname" />
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control input-sm" type="text" ng-model="pcm_customer.surname" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-
-            <div class="col-md-4">
-                <div class="container-fluid">
-                    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" class="rounded" width="92">
-                    <!--input type="file" class="form-control-file border" name="file">-->
-                </div>
-
-            </div>
-        </div>
-
-        <div class="row">
-            <p></p>
         </div>
 
 
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">e-mail (calendar)</div>
                         <input class="form-control input-sm" type="text" ng-model="pcm_customer.emailcalendar" />
-
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"> </span>
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">e-mail (invoicing)</div>
                         <input class="form-control input-sm" type="text" ng-model="pcm_customer.emailinvoice" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"> </span>
+                        </span>
 
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-phone-alt" aria-hidden="true">
-                            </span>
-                        </span>
                         <span class="input-group-addon input-sm">Phone</span>
                         <input class="form-control input-sm" type="text" ng-model="pcm_customer.phone" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"> </span>
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        <div class="row">
-            <div class="form-inline col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Agreed price per session</span>
                         <input class="form-control input-sm" type="number" ng-model="pcm_customer.pricesession" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-usd" aria-hidden="true"> </span>
+                        </span>
                     </div>
-                    <div class="form-group">
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Agreed price</span>
                         <input class="form-control input-sm" type="text" ng-model="pcm_customer.currencynm" />
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <p></p>
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Discounted price (10 sessions)</div>
@@ -126,10 +109,8 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Agreed conditions</div>
@@ -137,15 +118,12 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <div class="input-group input-group-sm">
-                        <div class="input-group-addon textarea-sm">Note</div>
-                        <textarea class="form-control texarea-sm" type="text" ng-model="pcm_customer.note">
-                        </textarea>
+                    <div class="input-group">
+                        <div class="input-group-addon input-sm">Note</div>
+                        <textarea class="form-control input-sm" rows="5" ng-model="pcm_customer.note"></textarea>
                     </div>
                 </div>
             </div>
