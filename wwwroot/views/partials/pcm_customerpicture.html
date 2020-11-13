@@ -1,0 +1,34 @@
+﻿<form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+
+    <div class="modal-header">
+        <h2 class="modal-title">
+            {{pcm_customer.firstname}} {{pcm_customer.surname}} {{customerfilename}}
+        </h2>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+            <div class="col-md-12" style="min-height:75px">
+                <img ng-src="{{pcm_customer.photo}}" class="img img-rounded img-responsive">
+            </div>
+        </div>
+ 
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <span class="btn btn-primary">
+                            <input type="file" onchange="angular.element(this).scope().profileimage(this)" single />
+                        </span>
+                        <button class="btn btn-warning" ng-click="cancel()">Close</button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

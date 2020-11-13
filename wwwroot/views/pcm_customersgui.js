@@ -16,9 +16,15 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
              .then(function success(response) {
                  $scope.pcm_customers = response.data;
                  //console.log("pcm_customers", $scope.pcm_customers);
+                 angular.forEach($scope.pcm_customers, function (item, index) {
+                     $scope.pcm_customers[index].photo = atob(item.photo);
+                 });
+
              }, function error(error) {
                      if (error.status == 401)
                          alert("Access Denied!!!");
+                     else
+                         alert("Unknows Error!");
                  console.error('error', error);
              });
 
@@ -62,8 +68,10 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
             /* ok */
 
             container.type = parseInt(container.type);
+            var xcont = JSON.stringify(container);
 
             if (container.id) {
+                container.photo = btoa(container.photo);
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
@@ -77,14 +85,17 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                         $scope.loadData();
                     }, function error(error) {
                             if (error.status == 401)
-                                alert("Access Denied!!!");
-                        console.error('error', error);
+                                alert("Access Denied!!!")
+                            else
+                                alert("Unknown Error");
+                            console.error('error', error);
                     });
             }
             else {
                 // create a container without "id" field
                 var l_container = angular.copy(container); //Object.assign({}, container);
                 delete l_container['id'];
+                l_container.photo = btoa(l_container.photo);
               
                 //INSERT
                 $http({
@@ -99,8 +110,10 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                         $scope.loadData();
                     }, function error(error) {
                             if (error.status == 401)
-                                alert("Access Denied!!!");
-                        console.error('error', error);
+                                alert("Access Denied!!!")
+                            else
+                                alert("Unknown Error!");
+                            console.error('error', error);
                     });
             }
 
@@ -122,6 +135,8 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
             }, function error(error) {
                     if (error.status == 401)
                         alert("Access Denied!!!");
+                    else
+                        alert("Unknows Error!");
                 console.error('error', error);
             });
     };
@@ -145,22 +160,82 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                 //console.log("selectedpcm_customer", $scope.selectedpcm_customer);
 
             }, function error(error) {
-                console.error('error', error);
+                    if (error.status == 401)
+                        alert("Access Denied!!!");
+                    else
+                        alert("Unknows Error!");
+                    console.error('error', error);
             });
     };
 
 });
 
-app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container) {
+app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+
+    $scope.currencylist = [
+        { Value: null, Text: "--Currency--" },
+        { Value: "CZK", Text: "CZK" },
+        { Value: "EUR", Text: "EUR" },
+        { Value: "USD", Text: "USD" }
+    ];
 
     $scope.pcm_customer = container;
     //console.log($scope.pcm_customer);
+
+    $scope.pcm_customerpictureedit = function (pcm_customer) {
+
+        var modal2Instance = $uibModal.open({
+            templateUrl: 'views/partials/pcm_customerpicture.html',
+            controller: 'pcm_customerpicturecontroller',
+            size: 'lg',
+            backdrop: 'static',
+            resolve: {
+                container: function () {
+                    return pcm_customer;
+                }
+            }
+        });
+
+        modal2Instance.result.then(function (container) {
+            /* ok */
+
+        }, function () { /* cancel */ });
+    };
 
     $scope.ok = function () {
         $uibModalInstance.close($scope.pcm_customer);
     };
 
     $scope.cancel = function () {        
+        $scope.myForm.$rollbackViewValue();
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+
+// Function that calls ng-upload's Upload function
+
+app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
+    $scope.pcm_customer = container;
+    //console.log($scope.pcm_customer);
+
+    $scope.profileimage = function (selectimage) {
+        console.log(selectimage.files[0]);
+        var selectfile = selectimage.files[0];
+        r = new FileReader();
+        r.onloadend = function (e) {
+            //debugger;
+            $scope.pcm_customer.photo = e.target.result;
+        }
+        r.readAsDataURL(selectfile);
+        $uibModalInstance.close($scope.pcm_customer);
+    }
+
+    $scope.ok = function () {
+         $uibModalInstance.close($scope.pcm_customer);
+    };
+
+    $scope.cancel = function () {
         $scope.myForm.$rollbackViewValue();
         $uibModalInstance.dismiss('cancel');
     };
