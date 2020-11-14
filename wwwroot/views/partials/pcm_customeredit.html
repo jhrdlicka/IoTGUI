@@ -13,9 +13,8 @@
         <div class="row">
 
             <div class="col-md-3" style="min-height:75px">
-                <div>
-                    <img ng-src="{{pcm_customer.photo}}" class="img img-rounded img-responsive" ng-click="pcm_customerpictureedit(pcm_customer)" ng-dblclick="pcm_customerpictureedit(pcm_customer)">
-                    <!--img src="https://img.ceskatelevize.cz/program/porady/24972/foto09/1280_01.jpg?1523709558&_ga=2.265486092.2093404743.1605205832-841847133.1600198482" class="img img-rounded img-responsive" ng-click="pcm_customerpictureedit(pcm_customer)" ng-dblclick="pcm_customerpictureedit(pcm_customer)"-->
+                <div ng-if="pcm_customer.id">
+                    <img ng-src="{{pcm_customer.photodocument.content}}" class="img img-rounded img-responsive" ng-click="pcm_customerpictureedit(pcm_customer)" ng-dblclick="pcm_customerpictureedit(pcm_customer)" alt="Add picture">
                 </div>
 
             </div>

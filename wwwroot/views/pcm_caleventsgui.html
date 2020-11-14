@@ -1,0 +1,69 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 id="tableLabel">
+                Events
+
+                <span class="pull-right">
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit()" title="New session">new</button>
+                    <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+                </span>
+            </h1>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <p ng-if="!pcm_calevents"><em>Loading...</em></p>
+
+            <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="pcm_calevents">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Duration</th>
+                        <th>Client</th>
+                        <th>Google</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="pcm_calevent in pcm_calevents"
+                        ng-dblclick="pcm_caleventedit(pcm_calevent)"
+                        ng-click="pcm_caleventdata(pcm_calevent)"
+                        class="clickable">
+                        <td>{{pcm_calevent.startdate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{ pcm_calevent.starttime | date:'HH:mm'}}</td>
+                        <td>{{ pcm_calevent.totime | date:'HH:mm'}}</td>
+                        <td>{{ pcm_calevent.durationtime | date:'HH:mm'}}</td>
+                        <td>{{ pcm_calevent.customer.firstname}} {{pcm_calevent.customer.surname}}</td>
+                        <td>{{ pcm_calevent.title}}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="pcm_caleventdelete(pcm_calevent)">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="pcm_caleventedit(pcm_calevent)">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="col-md-12" ng-if="selectedpcm_calevent">
+            <hr />
+            <h3>Selected Event</h3>
+            <p>
+                <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.firstname}} {{selectedpcm_calevent.customer.surname}}
+                <br>                
+            </p>
+            <div id="tester" style="width:600px;height:250px;"></div>
+
+        </div>
+
+    </div>
+</div>
+
+
