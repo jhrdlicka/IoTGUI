@@ -5,6 +5,8 @@
                 Events
 
                 <span class="pull-right">
+                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Authorize</button>
+                    <button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button>
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit()" title="New session">new</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
                 </span>
@@ -25,6 +27,7 @@
                         <th>To</th>
                         <th>Duration</th>
                         <th>Client</th>
+                        <th>Title</th>
                         <th>Google</th>
                     </tr>
                 </thead>
@@ -39,6 +42,7 @@
                         <td>{{ pcm_calevent.durationtime | date:'HH:mm'}}</td>
                         <td>{{ pcm_calevent.customer.firstname}} {{pcm_calevent.customer.surname}}</td>
                         <td>{{ pcm_calevent.title}}</td>
+                        <td>{{ pcm_calevent.gcalid}}</td>
                         <td style="width:1%">
                             <button class="btn btn-danger btn-xs" ng-click="pcm_caleventdelete(pcm_calevent)">Delete</button>
                         </td>
@@ -51,19 +55,73 @@
             </table>
 
         </div>
+        <div class="col-md-12">
+            <p ng-if="!pcm_gcalevents"><em>Loading...</em></p>
 
-        <div class="col-md-12" ng-if="selectedpcm_calevent">
-            <hr />
-            <h3>Selected Event</h3>
-            <p>
-                <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.firstname}} {{selectedpcm_calevent.customer.surname}}
-                <br>                
-            </p>
-            <div id="tester" style="width:600px;height:250px;"></div>
+            <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="pcm_gcalevents">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Duration</th>
+                        <th>Participants</th>
+                        <th>Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
+                        class="clickable">
+                        <td>{{pcm_gcalevent.startdate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{ pcm_gcalevent.starttime | date:'HH:mm'}}</td>
+                        <td>{{ pcm_gcalevent.totime | date:'HH:mm'}}</td>
+                        <td>{{ pcm_gcalevent.durationtime | date:'HH:mm'}}</td>
+                        <td>
+                            <div ng-repeat="participant in pcm_gcalevent.participantlist">
+                               {{ participant}}<br>
+                            </div>
+                        </td>
+                        <td>{{ pcm_gcalevent.summary}}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="pcm_gcaleventdelete(pcm_gcalevent)">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="pcm_gcaleventedit(pcm_gcalevent)">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
 
         </div>
 
+        <div class="row">
+            <div class="col-md-12" ng-if="selectedpcm_calevent">
+                <hr />
+                <h3>Selected Event</h3>
+                <p>
+                    <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.firstname}} {{selectedpcm_calevent.customer.surname}}
+                    <br>
+                </p>
+                <div id="tester" style="width:600px;height:250px;"></div>
+
+            </div>
+            <div class="col-md-12" ng-if="selectedpcm_gcalevent">
+                <hr />
+                <h3>Selected GcalEvent</h3>
+                <p>
+                    <b>{{selectedpcm_gcalevent.id}}</b> {{selectedpcm_gcalevent.customer.firstname}} {{selectedpcm_gcalevent.customer.surname}}
+                    <br>
+                    {{selectedpcm_gcalevent.gcaljson}}
+                    <br>
+                </p>
+                <div id="tester" style="width:600px;height:250px;"></div>
+
+            </div>
+        </div>
+
     </div>
+
 </div>
 
 
