@@ -5,8 +5,9 @@
                 Events
 
                 <span class="pull-right">
-                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Authorize</button>
+                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
                     <button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button>
+                    <button class="btn btn-sm btn-danger" id="loadgdata_button" ng-click="loadGData()">Reload GoogleCal Events</button>
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit()" title="New session">new</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
                 </span>
@@ -15,7 +16,7 @@
     </div>
 
 
-    <div class="row">
+    <div class="row" id="gcaleventsdiv">
         <div class="col-md-12">
             <p ng-if="!pcm_calevents"><em>Loading...</em></p>
 
@@ -71,6 +72,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
+                        ng-click="pcm_gcaleventdata(pcm_gcalevent)"
                         class="clickable">
                         <td>{{pcm_gcalevent.startdate | date:'MM/dd/yyyy'}}</td>
                         <td>{{ pcm_gcalevent.starttime | date:'HH:mm'}}</td>
@@ -96,17 +98,17 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12" ng-if="selectedpcm_calevent">
+            <div class="col-md-6" ng-if="selectedpcm_calevent">
                 <hr />
                 <h3>Selected Event</h3>
                 <p>
                     <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.firstname}} {{selectedpcm_calevent.customer.surname}}
                     <br>
                 </p>
-                <div id="tester" style="width:600px;height:250px;"></div>
+                <div id="tester" style="width:400px;height:250px;"></div>
 
             </div>
-            <div class="col-md-12" ng-if="selectedpcm_gcalevent">
+            <div class="col-md-6" ng-if="selectedpcm_gcalevent">
                 <hr />
                 <h3>Selected GcalEvent</h3>
                 <p>
@@ -115,7 +117,7 @@
                     {{selectedpcm_gcalevent.gcaljson}}
                     <br>
                 </p>
-                <div id="tester" style="width:600px;height:250px;"></div>
+                <div id="tester" style="width:400px;height:250px;"></div>
 
             </div>
         </div>

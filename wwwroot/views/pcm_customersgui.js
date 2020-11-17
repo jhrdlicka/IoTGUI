@@ -233,7 +233,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
     };
 
     $scope.pcm_customerdelete = function (pcm_customer) {
-        if (!confirm("Delete client '" + pcm_customer.Firstname + pcm_customer.surname + "'. Are you sure?"))
+        if (!confirm("Delete client '" + pcm_customer.name+"'. Are you sure?"))
             return;
 
         $http({

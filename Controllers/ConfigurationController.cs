@@ -21,7 +21,9 @@ namespace IoT_GUI.Controllers
         {
             return Ok(new Dictionary<string, string>
         {
-            { "ApiAddress", _configuration["ApiAddress"] }
+            { "ApiAddress", _configuration["ApiAddress"] },
+            { "CLIENT_ID", _configuration["CLIENT_ID"] },
+            { "API_KEY", _configuration["API_KEY"] }
         });
         }
     }
