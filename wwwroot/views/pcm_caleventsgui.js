@@ -21,7 +21,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         var authorizeButton = document.getElementById('authorize_button');
         var signoutButton = document.getElementById('signout_button');
-        var loadgdataButton = document.getElementById('loadgdata_button');
 
         gapi.client.init({
             apiKey: $scope.API_KEY,
@@ -29,33 +28,47 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             discoveryDocs: DISCOVERY_DOCS,
             scope: SCOPES
         }).then(function () {
+
+            const googleAuth = gapi.auth2.getAuthInstance()
+
+            if (googleAuth.isSignedIn.get()) {
+                var profile = googleAuth.currentUser.get().getBasicProfile();
+                //            console.log('ID: ' + profile.getId());
+                //            console.log('Full Name: ' + profile.getName());
+                //            console.log('Given Name: ' + profile.getGivenName());
+                //            console.log('Family Name: ' + profile.getFamilyName());
+                //            console.log('Image URL: ' + profile.getImageUrl());
+                //            console.log('Email: ' + profile.getEmail());
+                $scope.useremail = profile.getEmail();
+            }
+
             // Listen for sign-in state changes.
-            gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+            googleAuth.isSignedIn.listen(updateSigninStatus);
 
             // Handle the initial sign-in state.
-            updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+            updateSigninStatus(googleAuth.isSignedIn.get());
             authorizeButton.onclick = handleAuthClick;
             signoutButton.onclick = handleSignoutClick;
         }, function (error) {
             appendPre(JSON.stringify(error, null, 2));
         });
     }
+
     function updateSigninStatus(isSignedIn) {
         var authorizeButton = document.getElementById('authorize_button');
         var signoutButton = document.getElementById('signout_button');
-        var loadgdataButton = document.getElementById('loadgdata_button');
 
         if (isSignedIn) {
             authorizeButton.style.display = 'none';
             signoutButton.style.display = 'block';
-            loadgdataButton.style.display = 'block';
-            $scope.runimportGCalEvents();
+
+            $scope.runimportCalEvents();
         } else {
             authorizeButton.style.display = 'block';
             signoutButton.style.display = 'none';
-            loadgdataButton.style.display = 'none';
         }
     }
+
     function handleAuthClick(event) {
         gapi.auth2.getAuthInstance().signIn();
     }
@@ -72,21 +85,11 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.isAuthorize = false;
     }
 
+
     $scope.runimportGCalEvents = function () {
-        const googleAuth = gapi.auth2.getAuthInstance()
 
-        var useremail = "";
-
-        if (googleAuth.isSignedIn.get()) {
-            var profile = googleAuth.currentUser.get().getBasicProfile();
-//            console.log('ID: ' + profile.getId());
-//            console.log('Full Name: ' + profile.getName());
-//            console.log('Given Name: ' + profile.getGivenName());
-//            console.log('Family Name: ' + profile.getFamilyName());
-//            console.log('Image URL: ' + profile.getImageUrl());
-//            console.log('Email: ' + profile.getEmail());
-            useremail = profile.getEmail();
-        }        
+        $scope.pcm_gcalevents = null;
+        $scope.selectedpcm_gcalevent = null;
 
         gapi.client.calendar.events.list({
             'calendarId': 'primary',
@@ -98,57 +101,52 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }).then(function (response) {
             $scope.pcm_gcalevents = response.result.items;
             angular.forEach($scope.pcm_gcalevents, function (item, index) {
-//                var l_teststring = item.start.dateTime.toISOString();
-                $scope.pcm_gcalevents[index].id = index; 
-                $scope.pcm_gcalevents[index].startdate = new Date(item.start.dateTime); //"2020-11-13T21:42:18.77"   "2020-11-27T08:00:00+01:00"
-                $scope.pcm_gcalevents[index].starttime = new Date(item.start.dateTime);
+                //                var l_teststring = item.start.dateTime.toISOString();
+                $scope.pcm_gcalevents[index].index = index;
+                $scope.pcm_gcalevents[index].starttime = new Date(item.start.dateTime); //"2020-11-13T21:42:18.77"   "2020-11-27T08:00:00+01:00"
                 $scope.pcm_gcalevents[index].totime = new Date(item.end.dateTime);
-//                $scope.pcm_gcalevents[index].durationtime = new Date("2020-01-01T00:00:00+01:00");
                 $scope.pcm_gcalevents[index].durationtime = new Date();
-                $scope.pcm_gcalevents[index].durationtime = $scope.timeDifference($scope.pcm_gcalevents[index].starttime, $scope.pcm_gcalevents[index].totime);                     
-                $scope.pcm_gcalevents[index].gcaljson = JSON.stringify(item);     
+                $scope.pcm_gcalevents[index].durationtime = $scope.timeDifference($scope.pcm_gcalevents[index].starttime, $scope.pcm_gcalevents[index].totime);
+                $scope.pcm_gcalevents[index].gcaljson = JSON.stringify(item);
                 $scope.pcm_gcalevents[index].participantlist = [];
+
                 var i = 0;
-                $scope.pcm_gcalevents[index].participants = "";
-
-                if (!item.organizer) {
-                    item.organizer = { "email": "noemail" };
-                }
-                else {
-                    if (item.organizer.email != useremail) {
-                       i = 1;
-                       if (!item.organizer.displayName) {
-                            $scope.pcm_gcalevents[index].participantlist[0] = '<' + item.organizer.email + '>';
-                            $scope.pcm_gcalevents[index].participants = '\n <' + item.organizer.email + '>';
-                       }
-                       else {
-                            $scope.pcm_gcalevents[index].participantlist[0] = '"' + item.organizer.displayName + '" <' + item.organizer.email + '>';
-                            $scope.pcm_gcalevents[index].participants = '\n "' + item.organizer.displayName + '" <' + item.organizer.email + '>';
+                
+                if (item.organizer) {
+                    if (item.organizer.email != $scope.useremail) {
+                        if (!item.organizer.displayName)
+                            $scope.pcm_gcalevents[index].participantlist[0] = {
+                                "displayname": '<' + item.organizer.email + '>',
+                                "email": item.organizer.email
                             }
-                       }
-                }
-                angular.forEach(item.attendees, function (participant, index2) {
-                    if (participant.email != item.organizer.email)
-                        if(participant.email!= useremail)
-                        {
-                            if (!participant.displayName) {
-                                $scope.pcm_gcalevents[index].participantlist[i] = '<' + participant.email + '>';
-                                $scope.pcm_gcalevents[index].participants = $scope.pcm_gcalevents[index].participants + '\n <' + participant.email + '>';
-                            }
-                            else {
-                                $scope.pcm_gcalevents[index].participantlist[i] = '"' + participant.displayName + '" <' + participant.email + '>';
-                                $scope.pcm_gcalevents[index].participants = $scope.pcm_gcalevents[index].participants + '\n "' + participant.displayName + '" <' + participant.email + '>';
+                        else
+                            $scope.pcm_gcalevents[index].participantlist[0] = {
+                                "displayname": '"' + item.organizer.displayName + '" <' + item.organizer.email + '>',
+                                "email": item.organizer.email
                             };
-                            i = i + 1;
-                        }
-                });                
-                $scope.pcm_gcalevents[index].participants = $scope.pcm_gcalevents[index].participants.substring(2);
-
-                //$scope.pcm_gcalevents[index].startdate = new Date(item.start);
-                //console.error('Event:', item.summary + ' (' + item.start.date + ')');
+                        i = 1;
+                    };
+                } else
+                    item.organizer = { "email": "noemail" };
+                                        
+                angular.forEach(item.attendees, function (participant, index2) {
+                    if ((participant.email != item.organizer.email) && (participant.email != $scope.useremail)) {
+                        if (!participant.displayName)
+                            $scope.pcm_gcalevents[index].participantlist[i] = {
+                                "displayname": '<' + participant.email + '>',
+                                "email": participant.email
+                            }
+                        else
+                            $scope.pcm_gcalevents[index].participantlist[i] = {
+                                "displayname": '"' + participant.displayName + '" <' + participant.email + '>',
+                                "email": participant.email
+                            }
+                        i = i + 1;
+                    }
+                });
             });
 
-            $scope.$apply() 
+            $scope.$apply()
 
         }, function error(error) {
             if (error.status == 401)
@@ -166,12 +164,12 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_customer/"+$scope.pcm_calevents[caleventid].customerid,
+            url: $scope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventid].customerid,
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                $scope.pcm_calevents[caleventid].customer = response.data;                
+                $scope.pcm_calevents[caleventid].customer = response.data;
 
             }, function error(error) {
                 if (error.status == 401)
@@ -183,57 +181,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             });
     };
 
-
     $scope.loadData = function () {
-        $scope.pcm_calevents = null;
-        $scope.selectedpcm_calevent = null;
-
-        $http({
-             headers: { "Content-Type": "application/json" },
-             url: $scope.ApiAddress + "api/pcm_calevent",
-             withCredentials: true,
-             method: 'GET'
-        })
-             .then(function success(response) {
-                 $scope.pcm_calevents = response.data;
-                 //console.log("pcm_calevents", $scope.pcm_calevents);
-                 angular.forEach($scope.pcm_calevents, function (item, index) {
-                     $scope.pcm_calevents[index].startdate = new Date(item.start);
-                     $scope.pcm_calevents[index].starttime = new Date(item.start);                   
-                     $scope.pcm_calevents[index].totime = new Date(item.start);
-                     $scope.pcm_calevents[index].totime.setMinutes($scope.pcm_calevents[index].totime.getMinutes() + item.duration.value.totalMinutes);
-                     $scope.pcm_calevents[index].durationtime = new Date();
-                     $scope.pcm_calevents[index].durationtime = $scope.timeDifference($scope.pcm_calevents[index].starttime, $scope.pcm_calevents[index].totime);                     
-                     $scope.getcustomer(index);
-
-                     $scope.pcm_calevents[index].totime = $scope.pcm_calevents[index].totime;  //  null command                   
-
-                 });
-
-             }, function error(error) {
-                     if (error.status == 401)
-                         alert("Access Denied!!!");
-                     else
-                         alert("Unknown Error!");
-                 console.error('error', error);
-             });
-
-    };
-
-    /**
-     * Print the summary and start datetime/date of the next ten events in
-     * the authorized user's calendar. If no events are found an
-     * appropriate message is printed.
-     */
-    $scope.importGCalEvents = function () {
-
-
-    };
-
-    $scope.loadGData = function () {
-        $scope.pcm_gcalevents = null;
-        $scope.selectedpcm_gcalevent = null;
-
 
         $http({
             method: 'GET',
@@ -251,31 +199,102 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             // or server returns response with an error status.
         });
 
+    }
 
+    $scope.runimportCalEvents = function () {
 
-        /*
+        $scope.pcm_calevents = null;
+        $scope.selectedpcm_calevent = null;
+
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_gcalevent",
+            url: $scope.ApiAddress + "api/pcm_calevent",
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                $scope.pcm_gcalevents = response.data;
-                //console.log("pcm_gcalevents", $scope.pcm_gcalevents);
-                angular.forEach($scope.pcm_gcalevents, function (item, index) {
-                    item.start = new Date();                    // set to "now" for time being :)
-                    item.duration = { "totalMinutes": 30 };       // set to 30 min for time being :)
-                    $scope.pcm_gcalevents[index].startdate = new Date(item.start);
-                    $scope.pcm_gcalevents[index].starttime = new Date(item.start);
-                    $scope.pcm_gcalevents[index].totime = new Date(item.start);
-                    $scope.pcm_gcalevents[index].totime.setMinutes($scope.pcm_gcalevents[index].totime.getMinutes() + item.duration.value.totalMinutes);
-                    $scope.pcm_gcalevents[index].durationtime = new Date($scope.pcm_gcalevents[index].totime - $scope.pcm_calevents[index].starttime);
-                    $scope.getgcustomer(index);
+                $scope.pcm_calevents = response.data;
+                //console.log("pcm_calevents", $scope.pcm_calevents);
+                angular.forEach($scope.pcm_calevents, function (item, index) {
+                    if (item.start)
+                        $scope.pcm_calevents[index].start = item.start+"Z";
+                    $scope.pcm_calevents[index].index = index;
+                    $scope.pcm_calevents[index].starttime = new Date(item.start);
+                    $scope.pcm_calevents[index].totime = new Date(item.start);
+                    $scope.pcm_calevents[index].totime.setSeconds($scope.pcm_calevents[index].totime.getSeconds() + item.duration);
+                    $scope.pcm_calevents[index].durationtime = new Date();
+                    $scope.pcm_calevents[index].durationtime = $scope.timeDifference($scope.pcm_calevents[index].starttime, $scope.pcm_calevents[index].totime);
+                    if (!$scope.pcm_calevents[index].gcalid)
+                        $scope.pcm_calevents[index].gcalidflag = false;
+                    else
+                        $scope.pcm_calevents[index].gcalidflag = true;
+                    $scope.getcustomer(index);
 
-                    $scope.pcm_gcalevents[index].totime = $scope.pcm_gcalevents[index].totime;  //  null command              
+                    if (item.gcaljson) {
+                        $scope.pcm_calevents[index].gcaldata = JSON.parse(item.gcaljson);
+                        $scope.pcm_calevents[index].gcalsummary = $scope.pcm_calevents[index].gcaldata.summary;
+                        $scope.pcm_calevents[index].gcalcreated = new Date($scope.pcm_calevents[index].gcaldata.created);
+                        $scope.pcm_calevents[index].gcalupdated = new Date($scope.pcm_calevents[index].gcaldata.updated);
+                        $scope.pcm_calevents[index].gcalhtmllink = $scope.pcm_calevents[index].gcaldata.htmlLink;
+                        $scope.pcm_calevents[index].gcalstatus = $scope.pcm_calevents[index].gcaldata.status;
+                        if ($scope.pcm_calevents[index].gcaldata.description)
+                            $scope.pcm_calevents[index].gcaldescription = $scope.pcm_calevents[index].gcaldata.description;
+                        else
+                            $scope.pcm_calevents[index].gcaldescription = "";
+                        $scope.pcm_calevents[index].gcallocation = $scope.pcm_calevents[index].gcaldata.location;
+                        $scope.pcm_calevents[index].gcalstarttime = new Date($scope.pcm_calevents[index].gcaldata.start.dateTime);
+                        $scope.pcm_calevents[index].gcaltotime = new Date($scope.pcm_calevents[index].gcaldata.end.dateTime);
+                        $scope.pcm_calevents[index].gcaldurationtime = $scope.timeDifference($scope.pcm_calevents[index].gcalstarttime, $scope.pcm_calevents[index].gcaltotime);
+
+                        $scope.pcm_calevents[index].gcalparticipantlist = [];
+                        var i = 0;
+                        if (!$scope.pcm_calevents[index].gcaldata.organizer) {
+                            $scope.pcm_calevents[index].gcaldata.organizer = { "email": "noemail" };
+                        }
+                        else {
+                            if ($scope.pcm_calevents[index].gcaldata.organizer.email != $scope.useremail) {
+                                if (!$scope.pcm_calevents[index].gcaldata.organizer.displayName) {
+                                    $scope.pcm_calevents[index].gcalparticipantlist[0] = {
+                                        "displayname": '<' + $scope.pcm_calevents[index].gcaldata.organizer.email + '>',
+                                        "email": $scope.pcm_calevents[index].gcaldata.organizer.email
+                                    };
+                                }
+                                else {
+                                    $scope.pcm_calevents[index].gcalparticipantlist[0] = {
+                                        "displayname": '"' + $scope.pcm_calevents[index].gcaldata.organizer.displayName + '" <' + $scope.pcm_calevents[index].gcaldata.organizer.email + '>',
+                                        "email": $scope.pcm_calevents[index].gcaldata.organizer.email
+                                    };
+                                }
+                                i = 1;
+                            }
+                        }
+                        angular.forEach($scope.pcm_calevents[index].gcaldata.attendees, function (participant, index2) {
+                            if (participant.email != $scope.pcm_calevents[index].gcaldata.organizer.email)
+                                if (participant.email != $scope.useremail) {
+                                    if (!participant.displayName) {
+                                        $scope.pcm_calevents[index].gcalparticipantlist[i] = {
+                                            "displayname": '<' + participant.email + '>',
+                                            "email": participant.email 
+                                        };
+                                    }
+                                    else {
+                                        $scope.pcm_calevents[index].gcalparticipantlist[i] = {
+                                            "displayname": '"' + participant.displayName + '" <' + participant.email + '>',
+                                            "email": participant.email
+                                        };
+                                    };
+                                    i = i + 1;
+                                }
+                        });
+
+                    }
+
+
 
                 });
+
+                $scope.runimportGCalEvents();
+
 
             }, function error(error) {
                 if (error.status == 401)
@@ -285,9 +304,64 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 console.error('error', error);
             });
 
-*/
+        
 
     };
+
+    $scope.pcm_caleventsave = function (container) {
+        container.type = parseInt(container.type);
+        var l_container = angular.copy(container); 
+        l_container.start = l_container.starttime.toJSON();
+        l_container.duration = l_container.durationtime.getHours() * 60 * 60 + l_container.durationtime.getMinutes() * 60 + l_container.durationtime.getSeconds();
+        l_json = JSON.stringify(l_container);
+
+        if (container.id) {
+
+            //UPDATE
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $scope.ApiAddress + "api/pcm_calevent/" + l_container.id,
+                withCredentials: true,
+                method: 'PUT',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    $scope.loadData();
+                }, function error(error) {
+                    if (error.status == 401)
+                        alert("Access Denied!!!")
+                    else
+                        alert("Unknown Error");
+                    console.error('error', error);
+                });
+        }
+        else {
+            // create a container without "id" field
+            delete l_container['id'];
+
+            //INSERT
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $scope.ApiAddress + "api/pcm_calevent",
+                withCredentials: true,
+                method: 'POST',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    $scope.loadData();
+                }, function error(error) {
+                    if (error.status == 401)
+                        alert("Access Denied!!!")
+                    else
+                        alert("Unknown Error!");
+                    console.error('error', error);
+                });
+        }
+
+
+    }
 
     $scope.pcm_caleventedit = function (pcm_calevent) {
         if (!pcm_calevent)
@@ -307,57 +381,37 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         modalInstance.result.then(function (container) {
             /* ok */
-
-            container.type = parseInt(container.type);
-            var xcont = JSON.stringify(container);
-
-            if (container.id) {
-                //UPDATE
-                $http({
-                    headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/pcm_calevent/" + container.id,
-                    withCredentials: true,
-                    method: 'PUT',
-                    datatype: "json",
-                    data: JSON.stringify(container)
-                })
-                    .then(function success(response) {
-                        $scope.loadData();
-                    }, function error(error) {
-                        if (error.status == 401)
-                            alert("Access Denied!!!")
-                        else
-                            alert("Unknown Error");
-                        console.error('error', error);
-                    });
-            }
-            else {
-                // create a container without "id" field
-                var l_container = angular.copy(container); 
-                delete l_container['id'];
-
-                //INSERT
-                $http({
-                    headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/pcm_calevent",
-                    withCredentials: true,
-                    method: 'POST',
-                    datatype: "json",
-                    data: JSON.stringify(l_container)
-                })
-                    .then(function success(response) {
-                        $scope.loadData();
-                    }, function error(error) {
-                        if (error.status == 401)
-                            alert("Access Denied!!!")
-                        else
-                            alert("Unknown Error!");
-                        console.error('error', error);
-                    });
-            }
+            $scope.pcm_caleventsave(container);
 
         }, function () { /* cancel */ });
     };
+
+    $scope.pcm_caleventmerge = function (forceupdate) {
+        var gcaleventindex = $scope.selectedpcm_gcalevent.index;
+        var caleventindex = $scope.selectedpcm_calevent.index;
+        if (!$scope.selectedpcm_gcalevent || !$scope.selectedpcm_calevent)
+            return;
+        $scope.pcm_calevents[caleventindex].gcaljson = $scope.pcm_gcalevents[gcaleventindex].gcaljson;
+        $scope.pcm_calevents[caleventindex].gcalid = $scope.pcm_gcalevents[gcaleventindex].id;
+        $scope.pcm_calevents[caleventindex].gcalsummary = $scope.pcm_gcalevents[gcaleventindex].summary;
+
+        if (forceupdate || !$scope.pcm_calevents[caleventindex].starttime) {
+            $scope.pcm_calevents[caleventindex].starttime = $scope.pcm_gcalevents[gcaleventindex].starttime;
+        }
+        if (forceupdate || !$scope.pcm_calevents[caleventindex].totime) {
+            $scope.pcm_calevents[caleventindex].totime = $scope.pcm_gcalevents[gcaleventindex].totime;
+        }
+        if (forceupdate || !$scope.pcm_calevents[caleventindex].durationtime) {
+            $scope.pcm_calevents[caleventindex].durationtime = $scope.pcm_gcalevents[gcaleventindex].durationtime;
+        }
+        if (forceupdate || !$scope.pcm_calevents[caleventindex].title) {
+            $scope.pcm_calevents[caleventindex].title = $scope.pcm_gcalevents[gcaleventindex].summary;
+        }
+
+        $scope.pcm_caleventsave($scope.pcm_calevents[caleventindex]);
+
+
+    }
 
     $scope.pcm_caleventdelete = function (pcm_calevent) {
         if (!confirm("Delete event with '" + pcm_calevent.customer.firstname + pcm_calevent.customer.surname + "'. Are you sure?"))
@@ -396,6 +450,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.selectedpcm_gcalevent = pcm_gcalevent;
     };
 
+    $scope.useremail = "";
+
     $scope.CLIENT_ID = "";
     $scope.API_KEY = "";
 
@@ -412,7 +468,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         console.log("ApiAddress", $scope.ApiAddress);
 
         $scope.loadData();
-        $scope.loadGData();
 
     }, function errorCallback(response) {
         // called asynchronously if an error occurs

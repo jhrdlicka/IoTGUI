@@ -7,7 +7,6 @@
                 <span class="pull-right">
                     <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
                     <button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button>
-                    <button class="btn btn-sm btn-danger" id="loadgdata_button" ng-click="loadGData()">Reload GoogleCal Events</button>
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit()" title="New session">new</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
                 </span>
@@ -37,18 +36,21 @@
                         ng-dblclick="pcm_caleventedit(pcm_calevent)"
                         ng-click="pcm_caleventdata(pcm_calevent)"
                         class="clickable">
-                        <td>{{pcm_calevent.startdate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{pcm_calevent.starttime | date:'dd.MM.yyyy'}}</td>
                         <td>{{ pcm_calevent.starttime | date:'HH:mm'}}</td>
                         <td>{{ pcm_calevent.totime | date:'HH:mm'}}</td>
                         <td>{{ pcm_calevent.durationtime | date:'HH:mm'}}</td>
-                        <td>{{ pcm_calevent.customer.firstname}} {{pcm_calevent.customer.surname}}</td>
-                        <td>{{ pcm_calevent.title}}</td>
-                        <td>{{ pcm_calevent.gcalid}}</td>
+                        <td>{{ pcm_calevent.customer.name }}</td>
+                        <td>{{ pcm_calevent.title }}</td>
+                        <td>{{ pcm_calevent.gcalidflag }}</td> 
                         <td style="width:1%">
                             <button class="btn btn-danger btn-xs" ng-click="pcm_caleventdelete(pcm_calevent)">Delete</button>
                         </td>
                         <td style="width:1%">
                             <button class="btn btn-primary btn-xs" ng-click="pcm_caleventedit(pcm_calevent)">Edit</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="pcm_caleventmerge(true)">Merge</button>
                         </td>
                     </tr>
 
@@ -74,13 +76,13 @@
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
                         ng-click="pcm_gcaleventdata(pcm_gcalevent)"
                         class="clickable">
-                        <td>{{pcm_gcalevent.startdate | date:'MM/dd/yyyy'}}</td>
+                        <td>{{pcm_gcalevent.starttime | date:'dd.MM.yyyy'}}</td>
                         <td>{{ pcm_gcalevent.starttime | date:'HH:mm'}}</td>
                         <td>{{ pcm_gcalevent.totime | date:'HH:mm'}}</td>
                         <td>{{ pcm_gcalevent.durationtime | date:'HH:mm'}}</td>
                         <td>
                             <div ng-repeat="participant in pcm_gcalevent.participantlist">
-                               {{ participant}}<br>
+                                {{ participant.displayname }}<br>
                             </div>
                         </td>
                         <td>{{ pcm_gcalevent.summary}}</td>
