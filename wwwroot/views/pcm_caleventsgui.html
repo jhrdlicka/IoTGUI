@@ -20,7 +20,7 @@
         <div class="col-md-12">
             <p ng-if="!pcm_calevents"><em>Loading...</em></p>
 
-            <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="pcm_calevents">
+            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_calevents">
                 <thead>
                     <tr>
                         <th></th>
@@ -37,9 +37,8 @@
                     <tr ng-repeat="pcm_calevent in pcm_calevents"
                         ng-dblclick="pcm_caleventedit(pcm_calevent)"
                         ng-click="selectRow(caleventlist, $event, $index)" 
-                        ng-class="{highlitedRow: isRowSelected(caleventlist, $index)}"
-                        class="clickable">
-                        <td><input type="checkbox" class="custom-checkbox" ng-checked="isRowSelected(caleventlist, $index)"></td>
+                        ng-class="{active: isRowSelected(caleventlist, $index)}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(caleventlist, $index)"></td>
                         <td>{{pcm_calevent.starttime | date:'dd.MM.yyyy'}}</td>
                         <td>{{ pcm_calevent.starttime | date:'HH:mm'}}</td>
                         <td>{{ pcm_calevent.totime | date:'HH:mm'}}</td>
@@ -80,8 +79,8 @@
                 <tbody>
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
                         ng-click="selectRow(gcaleventlist, $event, $index)" 
-                        ng-class="{highlitedRow: isRowSelected(gcaleventlist, $index)}">
-                        <td><input type="checkbox" class="custom-control-input" ng-checked="isRowSelected(gcaleventlist, $index)"></td>
+                        ng-class="{active: isRowSelected(gcaleventlist, $index)}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(gcaleventlist, $index)"></td>
                         <td>{{pcm_gcalevent.starttime | date:'dd.MM.yyyy'}}</td>
                         <td>{{ pcm_gcalevent.starttime | date:'HH:mm'}}</td>
                         <td>{{ pcm_gcalevent.totime | date:'HH:mm'}}</td>
