@@ -126,21 +126,8 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
             });
     }
 
-    $http({
-        method: 'GET',
-        url: '/api/Configuration/ConfigurationData'
-    }).then(function successCallback(response) {
-        // this callback will be called asynchronously
-        // when the response is available
-        $scope.ApiAddress = response.data.ApiAddress;
-        console.log("ApiAddress", $scope.ApiAddress);
 
-        $scope.loadData();
-
-    }, function errorCallback(response) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-    });
+    $scope.loadData();
 
     $scope.editCoordinates = function () {
 
@@ -164,67 +151,6 @@ app.controller('fetchDataController', function ($scope, $http, $filter, $uibModa
             $scope.loadData();
         }, function () { /* cancel */ });
     }
-
-    $.urlParam = function (name) {
-        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-        if (results == null) {
-            return null;
-        }
-        else {
-            return decodeURI(results[1]) || 0;
-        }
-    }
-
-    $scope.isAuthorize = $cookies.get(".AspNetCore.Cookies");
-    var token = $.urlParam("token");
-    if (token && !$scope.isAuthorize) {
-        $cookies.put(".AspNetCore.Cookies", token);
-        $scope.isAuthorize = true;
-    }
-
-    $scope.googleLogin = function () {
-        const url = $scope.ApiAddress + "account/google-login?redirectUrl=" + encodeURIComponent(window.location.href);
-
-        window.location.replace(url);
-    }
-
-
-    $scope.googleLogout = function () {
-
-        const url = "http://accounts.google.com/Logout?redirectUrl=" + encodeURIComponent(window.location.href);
-
-        window.open(url);
-//        window.location.replace(url);
-
-//        $location.search('token', null);
-
-//        var auth2 = gapi.auth2.getAuthInstance();
-//        auth2.signOut().then(function ()
-//        myAuth.signOut().then(function ()
-//        {
-            $window.signedIn = false;
-            $cookies.remove(".AspNetCore.Cookies");
-            $scope.isAuthorize = false;
-//        }, (error) => {
-//            console.log("error:", error);
-//        });
-    }
-
-    $scope.testAuthorize = function () {
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/TestAuthorize",
-            withCredentials: true,            
-            method: 'GET'
-        })
-            .then(function success(response) {
-                console.log(response);
-                alert(response.data);
-            }, function error(error) {
-                console.error('error', error);
-            });
-    }
-
 });
 
 app.controller('coordinatesController', function ($scope, $uibModalInstance, container) {

@@ -7,17 +7,21 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#/">Angular JS</a>
+            <a class="navbar-brand" href="#/">Hrdlicky.eu</a>
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <div class="collapse navbar-collapse navbar-ex1-collapse" ng-if="isAuthorized">
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#/">Home</a>
+                </li>
+
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown">Smart-home <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="#/">Sensors</a>
+                            <a href="#/sensors">Sensors</a>
                         </li>
                         <li>
                             <a href="#/blog">???</a>

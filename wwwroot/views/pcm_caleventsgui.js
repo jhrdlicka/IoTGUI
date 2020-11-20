@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies,  $window) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope) {
 
     $scope.timeDifference = function (start, end) {
         var l_base=new Date("2020-01-01T00:00:00+01:00");
@@ -23,8 +23,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         var signoutButton = document.getElementById('signout_button');
 
         gapi.client.init({
-            apiKey: $scope.API_KEY,
-            clientId: $scope.CLIENT_ID,
+            apiKey: $rootScope.API_KEY,
+            clientId: $rootScope.CLIENT_ID,
             discoveryDocs: DISCOVERY_DOCS,
             scope: SCOPES
         }).then(function () {
@@ -47,8 +47,10 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
             // Handle the initial sign-in state.
             updateSigninStatus(googleAuth.isSignedIn.get());
-            authorizeButton.onclick = handleAuthClick;
-            signoutButton.onclick = handleSignoutClick;
+            if (authorizeButton)
+                authorizeButton.onclick = handleAuthClick;
+            if (signoutButton)
+                signoutButton.onclick = handleSignoutClick;
         }, function (error) {
             appendPre(JSON.stringify(error, null, 2));
         });
@@ -59,13 +61,17 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         var signoutButton = document.getElementById('signout_button');
 
         if (isSignedIn) {
-            authorizeButton.style.display = 'none';
-            signoutButton.style.display = 'block';
+            if (authorizeButton)
+                authorizeButton.style.display = 'none';
+            if (signoutButton)
+                signoutButton.style.display = 'block';
 
             $scope.runimportCalEvents();
         } else {
-            authorizeButton.style.display = 'block';
-            signoutButton.style.display = 'none';
+            if (authorizeButton)
+                authorizeButton.style.display = 'block';
+            if (signoutButton)
+                signoutButton.style.display = 'none';
         }
     }
 
@@ -75,14 +81,11 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     function handleSignoutClick(event) {
         gapi.auth2.getAuthInstance().signOut();
 
-        $window.signedIn = false;
         $cookies.remove(".AspNetCore.Cookies");
-        $scope.isAuthorize = false;
+        $rootScope.isAuthorized = false;
 
         const url = "http://accounts.google.com/Logout?redirectUrl=" + encodeURIComponent(window.location.href);
         window.open(url);
-
-        $scope.isAuthorize = false;
     }
 
 
@@ -169,7 +172,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventid].customerid,
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventid].customerid,
             withCredentials: true,
             method: 'GET'
         })
@@ -188,21 +191,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.loadData = function () {
 
-        $http({
-            method: 'GET',
-            url: '/api/Configuration/ConfigurationData'
-        }).then(function successCallback(response) {
-            // this callback will be called asynchronously
-            // when the response is available
-            $scope.CLIENT_ID = response.data.CLIENT_ID;
-            $scope.API_KEY = response.data.API_KEY;
-
-            gapi.load('client:auth2', initClient);
-
-        }, function errorCallback(response) {
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
-        });
+        gapi.load('client:auth2', initClient);
 
     }
 
@@ -213,7 +202,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_calevent",
+            url: $rootScope.ApiAddress + "api/pcm_calevent",
             withCredentials: true,
             method: 'GET'
         })
@@ -326,7 +315,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             //UPDATE
             $http({
                 headers: { "Content-Type": "application/json" },
-                url: $scope.ApiAddress + "api/pcm_calevent/" + l_container.id,
+                url: $rootScope.ApiAddress + "api/pcm_calevent/" + l_container.id,
                 withCredentials: true,
                 method: 'PUT',
                 datatype: "json",
@@ -350,7 +339,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             //INSERT
             $http({
                 headers: { "Content-Type": "application/json" },
-                url: $scope.ApiAddress + "api/pcm_calevent",
+                url: $rootScope.ApiAddress + "api/pcm_calevent",
                 withCredentials: true,
                 method: 'POST',
                 datatype: "json",
@@ -455,7 +444,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
             $http({
                 headers: { "Content-Type": "application/json" },
-                url: $scope.ApiAddress + "api/pcm_calevent/" + pcm_calevent.id,
+                url: $rootScope.ApiAddress + "api/pcm_calevent/" + pcm_calevent.id,
                 withCredentials: true,
                 method: 'DELETE'
             })
@@ -587,28 +576,10 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.useremail = "";
 
-    $scope.CLIENT_ID = "";
-    $scope.API_KEY = "";
-
     $scope.selectedpcm_calevent = null;
     $scope.selectedpcm_gcalevent = null;
 
-    $http({
-        method: 'GET',
-        url: '/api/Configuration/ConfigurationData'
-    }).then(function successCallback(response) {
-        // this callback will be called asynchronously
-        // when the response is available
-        $scope.ApiAddress = response.data.ApiAddress;
-        console.log("ApiAddress", $scope.ApiAddress);
-
-        $scope.loadData();
-
-    }, function errorCallback(response) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-    });
-
+    $scope.loadData();
 });
 
 app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {

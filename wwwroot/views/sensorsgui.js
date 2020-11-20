@@ -1,7 +1,7 @@
 /**
  * Sensor list
  */
-app.controller('sensorController', function ($scope, $http, $uibModal) {
+app.controller('sensorController', function ($scope, $http, $uibModal, $rootScope) {
 
      $scope.loadData = function () {
         $scope.sensors = null;
@@ -9,7 +9,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
         $http({
              headers: { "Content-Type": "application/json" },
-             url: $scope.ApiAddress + "api/Sensors",
+             url: $rootScope.ApiAddress + "api/Sensors",
              withCredentials: true,
              method: 'GET'
         })
@@ -24,23 +24,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
     };
 
-    $http({
-        method: 'GET',
-        url: '/api/Configuration/ConfigurationData'
-    }).then(function successCallback(response) {
-        // this callback will be called asynchronously
-        // when the response is available
-        $scope.ApiAddress = response.data.ApiAddress;
-        console.log("ApiAddress", $scope.ApiAddress);
-
-        $scope.loadData();
-
-    }, function errorCallback(response) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-    });
-
-
+    $scope.loadData();
 
     $scope.sensorEdit = function (sensor) {
         if (!sensor)
@@ -67,7 +51,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/Sensors/" + container.id,
+                    url: $rootScope.ApiAddress + "api/Sensors/" + container.id,
                     withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
@@ -89,7 +73,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/Sensors",
+                    url: $rootScope.ApiAddress + "api/Sensors",
                     withCredentials: true,
                     method: 'POST',
                     datatype: "json",
@@ -113,7 +97,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $rootScope.ApiAddress + "api/Sensors/" + sensor.id,
             withCredentials: true,
             method: 'DELETE'
         })
@@ -136,7 +120,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal) {
         $http({
             headers: { "Content-Type": "application/json" },
 //            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
-            url: $scope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $rootScope.ApiAddress + "api/Sensors/" + sensor.id,
             withCredentials: true,
             method: 'GET'
         })

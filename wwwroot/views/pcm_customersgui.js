@@ -1,7 +1,7 @@
 /**
  * pcm_customer list
  */
-app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope) {
 
     $scope.getphoto = function (index) {
         if (!$scope.pcm_customers[index].id)  // customer does not exist
@@ -13,8 +13,8 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
             else {
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    //            url: $scope.ApiAddress + "api/pcm_customer/" + $scope.pcm_customers[index].id+"/photo",
-                    url: $scope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[index].photodocumentid,
+                    //            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_customers[index].id+"/photo",
+                    url: $rootScope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[index].photodocumentid,
                     withCredentials: true,
                     method: 'GET'
                 })
@@ -37,7 +37,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
         $http({
              headers: { "Content-Type": "application/json" },
-             url: $scope.ApiAddress + "api/pcm_customer",
+             url: $rootScope.ApiAddress + "api/pcm_customer",
              withCredentials: true,
              method: 'GET'
         })
@@ -59,23 +59,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
     };
 
-    $http({
-        method: 'GET',
-        url: '/api/Configuration/ConfigurationData'
-    }).then(function successCallback(response) {
-        // this callback will be called asynchronously
-        // when the response is available
-        $scope.ApiAddress = response.data.ApiAddress;
-        console.log("ApiAddress", $scope.ApiAddress);
-
-        $scope.loadData();
-
-    }, function errorCallback(response) {
-        // called asynchronously if an error occurs
-        // or server returns response with an error status.
-    });
-
-
+    $scope.loadData();
 
     $scope.pcm_customeredit = function (pcm_customer) {
         if (!pcm_customer)
@@ -104,7 +88,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/pcm_customer/" + l_container.id,
+                    url: $rootScope.ApiAddress + "api/pcm_customer/" + l_container.id,
                     withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
@@ -134,7 +118,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                     //INSERT PHOTODOCUMENT
                     $http({
                         headers: { "Content-Type": "application/json" },
-                        url: $scope.ApiAddress + "api/doc_document",
+                        url: $rootScope.ApiAddress + "api/doc_document",
                         withCredentials: true,
                         method: 'POST',
                         datatype: "json",
@@ -147,7 +131,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
                             $http({
                                 headers: { "Content-Type": "application/json" },
-                                url: $scope.ApiAddress + "api/pcm_customer/"+l_container.id,
+                                url: $rootScope.ApiAddress + "api/pcm_customer/"+l_container.id,
                                 withCredentials: true,
                                 method: 'PUT',
                                 datatype: "json",
@@ -180,7 +164,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                     l_container.photodocument.content = btoa(l_container.photodocument.content);
                     $http({
                         headers: { "Content-Type": "application/json" },
-                        url: $scope.ApiAddress + "api/doc_document/" + l_container.photodocumentid,
+                        url: $rootScope.ApiAddress + "api/doc_document/" + l_container.photodocumentid,
                         withCredentials: true,
                         method: 'PUT',
                         datatype: "json",
@@ -212,7 +196,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $scope.ApiAddress + "api/pcm_customer",
+                    url: $rootScope.ApiAddress + "api/pcm_customer",
                     withCredentials: true,
                     method: 'POST',
                     datatype: "json",
@@ -238,7 +222,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
             withCredentials: true,
             method: 'DELETE'
         })
@@ -262,7 +246,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal) {
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $scope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
             withCredentials: true,
             method: 'GET'
         })
