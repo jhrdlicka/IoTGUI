@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline) {
 
     $scope.timeDifference = function (start, end) {
         var l_base=new Date("2020-01-01T00:00:00+01:00");
@@ -149,7 +149,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 });
             });
 
-            resetSelection($scope.gcaleventlist);
+            $rootScope.resetSelection($rootScope.gcaleventlistid);
 
             $scope.$apply()
 
@@ -286,7 +286,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 
                 });
-                resetSelection($scope.caleventlist);
+                $rootScope.resetSelection($rootScope.caleventlistid);
 
                 $scope.runimportGCalEvents();
 
@@ -366,7 +366,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             return; // temporary bastl
         } 
         else {
-            l_calevents = getSelectedRows($scope.caleventlist);
+            l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
             if (l_calevents.length != 1) {
                 console.error('error', 'invalid number of records');
                 return;
@@ -394,14 +394,14 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     };
 
     $scope.pcm_caleventmerge = function (forceupdate) {
-        l_calevents = getSelectedRows($scope.caleventlist);
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
         if (l_calevents.length != 1) {
             console.error('error', 'invalid number of records');
             return;
         }
         caleventindex = l_calevents[0].index;
 
-        l_gcalevents = getSelectedRows($scope.gcaleventlist);
+        l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
         if (l_gcalevents.length != 1) {
             console.error('error', 'invalid number of records');
             alert('Select exactly one Google event');
@@ -430,21 +430,20 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
     $scope.pcm_caleventdelete = function () {
-        l_calevents = getSelectedRows($scope.caleventlist);
-        if (l_calevents.length == 0) {
+        l_items = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+        if (l_items.length == 0) {
             console.error('error', 'invalid number of records');
             return;
         }
 
-        if (!confirm("Delete " + l_calevents.length + " records?"))
+        if (!confirm("Delete " + l_items.length + " records?"))
             return;
 
-
-        angular.forEach(l_calevents, function (pcm_calevent, index) {
+        angular.forEach(l_items, function (item, index) {
 
             $http({
                 headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/pcm_calevent/" + pcm_calevent.id,
+                url: $rootScope.ApiAddress + "api/pcm_calevent/" + item.id,
                 withCredentials: true,
                 method: 'DELETE'
             })
@@ -463,110 +462,24 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     $scope.pcm_caleventdata = function () {
         $scope.selectedpcm_calevent = null;
 
-        l_calevents = getSelectedRows($scope.caleventlist);
-        if (l_calevents.length != 1) {
+        l_items = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+        if (l_items.length != 1) {
             return;
         }
 
-        $scope.selectedpcm_calevent = l_calevents[0];
+        $scope.selectedpcm_calevent = l_items[0];
     };
 
     $scope.pcm_gcaleventdata = function () {
         $scope.selectedpcm_gcalevent = null;
 
-        l_gcalevents = getSelectedRows($scope.gcaleventlist);
-        if (l_gcalevents.length != 1) {
+        l_items = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
+        if (l_items.length != 1) {
             return;
         }
 
-        $scope.selectedpcm_gcalevent = l_gcalevents[0];
+        $scope.selectedpcm_gcalevent = l_items[0];
     };
-
-
-    $scope.selectRow = function (list, event, rowIndex) {
-        if (event.ctrlKey) {
-            changeSelectionStatus(list, rowIndex);
-        } else if (event.shiftKey) {
-            selectWithShift(list, rowIndex);
-        } else {
-            $scope.selectedRowsIndexes[list] = [rowIndex];
-        }
-
-    };
-
-    function selectWithShift(list, rowIndex) {
-        var lastSelectedRowIndexInSelectedRowsList = $scope.selectedRowsIndexes[list].length - 1;
-        var lastSelectedRowIndex = $scope.selectedRowsIndexes[list][lastSelectedRowIndexInSelectedRowsList];
-        var selectFromIndex = Math.min(rowIndex, lastSelectedRowIndex);
-        var selectToIndex = Math.max(rowIndex, lastSelectedRowIndex);
-        selectRows(list, selectFromIndex, selectToIndex);
-    }
-
-    function getSelectedRows(list) {
-        var selectedRows = [];
-        angular.forEach($scope.selectedRowsIndexes[list], function (rowIndex) {
-            if (list == $scope.caleventlist)
-                selectedRows.push($scope.pcm_calevents[rowIndex]);
-            if (list == $scope.gcaleventlist)
-                selectedRows.push($scope.pcm_gcalevents[rowIndex]);
-        });
-        return selectedRows;
-    }
-
-    function getFirstSelectedRow(list) {
-        var firstSelectedRowIndex = $scope.selectedRowsIndexes[list][0];
-        if (list == $scope.caleventlist) 
-            return $scope.pcm_calevents[firstSelectedRowIndex];
-        if (list == $scope.gcaleventlist) 
-            return $scope.pcm_gcalevents[firstSelectedRowIndex];
-    }
-
-    function selectRows(list, selectFromIndex, selectToIndex) {
-        for (var rowToSelect = selectFromIndex; rowToSelect <= selectToIndex; rowToSelect++) {
-            select(list, rowToSelect);
-        }
-    }
-
-    function changeSelectionStatus(list, rowIndex) {
-        if ($scope.isRowSelected(list, rowIndex)) {
-            unselect(list, rowIndex);
-        } else {
-            select(list, rowIndex);
-        }
-    }
-
-    function select(list, rowIndex) {
-        if (!$scope.isRowSelected(list, rowIndex)) {
-            $scope.selectedRowsIndexes[list].push(rowIndex)
-        }
-    }
-
-    function unselect(list, rowIndex) {
-        var rowIndexInSelectedRowsList = $scope.selectedRowsIndexes[list].indexOf(rowIndex);
-        var unselectOnlyOneRow = 1;
-        $scope.selectedRowsIndexes[list].splice(rowIndexInSelectedRowsList, unselectOnlyOneRow);
-    }
-
-    function resetSelection(list) {
-        $scope.selectedRowsIndexes[list] = [];
-    }
-
-    $scope.isRowSelected = function (list, rowIndex) {
-        return $scope.selectedRowsIndexes[list].indexOf(rowIndex) > -1;
-    };
-
-    /*
-    $scope.$on('ngTableAfterReloadData', function () {
-        resetSelection($scope.caleventlist);
-        resetSelection($scope.gcaleventlist);
-    });
-    */
-
-    $scope.caleventlist = 1;
-    $scope.gcaleventlist = 2;
-    $scope.selectedRowsIndexes = [];
-    $scope.selectedRowsIndexes[$scope.caleventlist] = [];
-    $scope.selectedRowsIndexes[$scope.gcaleventlist] = [];
 
     $scope.useremail = "";
 

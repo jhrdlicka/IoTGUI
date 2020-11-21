@@ -80,7 +80,7 @@ app.service('multiline', function ($rootScope) {
         $rootScope.selectedRowsIndexes[listid].splice(rowIndexInSelectedRowsList, unselectOnlyOneRow);
     }
 
-    function resetSelection(listid) {
+    $rootScope.resetSelection = function(listid) {
         $rootScope.selectedRowsIndexes[listid] = [];
     }
 

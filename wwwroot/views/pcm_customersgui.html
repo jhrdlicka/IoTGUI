@@ -5,8 +5,6 @@
                 Clients
 
                 <span class="pull-right">
-                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Authorize</button>
-                    <button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button>
                     <button class="btn btn-sm btn-primary" ng-click="new()" title="New client">new</button>
                     <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected clients">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
@@ -43,13 +41,13 @@
                         <td>{{ pcm_customer.emailcalendar }}<br>{{ pcm_customer.emailinvoice }}</td>
                         <td>{{ pcm_customer.phone }}</td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(customerlistid, $event, $index); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, $index)">Select</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, $index);refreshdetail()">Select</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, $index); edit()">Edit</button>
                         </td>
                     </tr>
 
