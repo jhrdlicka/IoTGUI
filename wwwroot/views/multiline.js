@@ -12,12 +12,7 @@ app.service('multiline', function ($rootScope) {
             $rootScope.selectedRowsIndexes[listid] = [rowIndex];
         }
         
-        console.log($rootScope.selectedRowsIndexes[listid]);
-//        console.log($rootScope.getSelectedRows(listid, $scope.pcm_customers));
-//        console.log(getFirstSelectedRow(listid));
-        
-//        $rootScope.pcm_caleventdata();  // refresh detail
-//        $rootScope.pcm_gcaleventdata();
+//        console.log($rootScope.selectedRowsIndexes[listid]);
     };
 
     function selectWithShift(listid, rowIndex) {
@@ -32,13 +27,6 @@ app.service('multiline', function ($rootScope) {
         var selectedRows = [];
         angular.forEach($rootScope.selectedRowsIndexes[listid], function (rowIndex) {
             selectedRows.push(list[rowIndex]);
-
-            /*
-            if (listid == $rootScope.caleventlistid)
-                selectedRows.push($rootScope.pcm_gcalevents[rowIndex]);
-            if (listid == $rootScope.gcaleventlistid)
-                selectedRows.push($rootScope.pcm_gcalevents[rowIndex]);
-                */
         });
         return selectedRows;
     }
@@ -46,12 +34,6 @@ app.service('multiline', function ($rootScope) {
     $rootScope.getFirstSelectedRow = function(listid, list) {
         var firstSelectedRowIndex = $rootScope.selectedRowsIndexes[listid][0];
         return list[firstSelectedRowIndex];
-        /*
-        if (listid == $rootScope.caleventlistid) 
-            return $rootScope.pcm_calevents[firstSelectedRowIndex];
-        if (listid == $rootScope.gcaleventlistid) 
-            return $rootScope.pcm_gcalevents[firstSelectedRowIndex];
-            */
     }
 
     function selectRows(listid, selectFromIndex, selectToIndex) {

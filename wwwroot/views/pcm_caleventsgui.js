@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline, $sce) {
 
     $scope.timeDifference = function (start, end) {
         var l_base=new Date("2020-01-01T00:00:00+01:00");
@@ -78,6 +78,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     function handleAuthClick(event) {
         gapi.auth2.getAuthInstance().signIn();
     }
+
     function handleSignoutClick(event) {
         gapi.auth2.getAuthInstance().signOut();
 
@@ -104,7 +105,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }).then(function (response) {
             $scope.pcm_gcalevents = response.result.items;
             angular.forEach($scope.pcm_gcalevents, function (item, index) {
-                //                var l_teststring = item.start.dateTime.toISOString();
                 $scope.pcm_gcalevents[index].index = index;
                 $scope.pcm_gcalevents[index].starttime = new Date(item.start.dateTime); //"2020-11-13T21:42:18.77"   "2020-11-27T08:00:00+01:00"
                 $scope.pcm_gcalevents[index].totime = new Date(item.end.dateTime);
@@ -280,11 +280,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                                     i = i + 1;
                                 }
                         });
-
                     }
-
-
-
                 });
                 $rootScope.resetSelection($rootScope.caleventlistid);
 
@@ -298,9 +294,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                     alert("Unknown Error!");
                 console.error('error', error);
             });
-
-        
-
     };
 
     $scope.pcm_caleventsave = function (container) {
@@ -355,9 +348,25 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                     console.error('error', error);
                 });
         }
+    }
 
+    $scope.pcm_gcaleventedit = function () {
+       
+            l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
+            if (l_gcalevents.length > 10) {
+                console.error('error', 'invalid number of records');
+                return;
+            }
+
+        angular.forEach(l_gcalevents, function (item, index) {
+            window.open(item.htmlLink);
+        }, function () { /* cancel */ });
+    };
+
+    $scope.new = function () {
 
     }
+
 
     $scope.pcm_caleventedit = function (createnew) {
         if (createnew) {
@@ -393,21 +402,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }, function () { /* cancel */ });
     };
 
-    $scope.pcm_caleventmerge = function (forceupdate) {
-        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
-        if (l_calevents.length != 1) {
-            console.error('error', 'invalid number of records');
-            return;
-        }
-        caleventindex = l_calevents[0].index;
-
-        l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
-        if (l_gcalevents.length != 1) {
-            console.error('error', 'invalid number of records');
-            alert('Select exactly one Google event');
-            return;
-        }
-        gcaleventindex = l_gcalevents[0].index;
+    $scope.i_pcm_caleventmerge = function (caleventindex, gcaleventindex, forceupdate) {
 
         $scope.pcm_calevents[caleventindex].gcaljson = $scope.pcm_gcalevents[gcaleventindex].gcaljson;
         $scope.pcm_calevents[caleventindex].gcalid = $scope.pcm_gcalevents[gcaleventindex].id;
@@ -427,6 +422,67 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         $scope.pcm_caleventsave($scope.pcm_calevents[caleventindex]);
+    }
+
+
+    $scope.pcm_caleventmerge = function (forceupdate) {
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+        if (l_calevents.length != 1) {
+            console.error('error', 'invalid number of records');
+            return;
+        }
+        caleventindex = l_calevents[0].index;
+
+        l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
+        if (l_gcalevents.length != 1) {
+            console.error('error', 'invalid number of records');
+            alert('Select exactly one Google event');
+            return;
+        }
+        gcaleventindex = l_gcalevents[0].index;
+
+        $scope.i_pcm_gcaleventmerge(caleventindex, gcaleventindex, forceupdate);
+    }
+
+    $scope.pcm_caleventgenerate = function () {
+        l_items = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
+        if (l_items.length == 0) {
+            console.error('error', 'invalid number of records');
+            return;
+        }
+
+        if (!confirm("Generate " + l_items.length + " records?"))
+            return;
+
+        angular.forEach(l_items, function (item, index) {
+            var l_container = { type: null, description: null, starttime: new Date(), durationtime: new Date(), xordered: false };
+
+            // create a container without "id" field
+            xjson = JSON.stringify(l_container);
+
+            //INSERT
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/pcm_calevent",
+                withCredentials: true,
+                method: 'POST',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    var caleventindex = $scope.pcm_calevents.length;
+                    $scope.pcm_calevents[caleventindex] = response.data;
+                    $scope.i_pcm_caleventmerge(caleventindex, item.index, true);
+                }, function error(error) {
+                    if (error.status == 401)
+                        alert("Access Denied!!!")
+                    else
+                        alert("Unknown Error!");
+                    console.error('error', error);
+                });
+
+        });
+
     }
 
     $scope.pcm_caleventdelete = function () {
@@ -468,6 +524,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         $scope.selectedpcm_calevent = l_items[0];
+        if ($scope.selectedpcm_calevent.gcalhtmllink)
+            $scope.detailFrame = $sce.trustAsResourceUrl($scope.selectedpcm_calevent.gcalhtmllink);              
     };
 
     $scope.pcm_gcaleventdata = function () {
@@ -502,7 +560,22 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
     //console.log($scope.pcm_calevent);
 
     $scope.ok = function () {
-        $uibModalInstance.close($scope.pcm_customer);
+        $uibModalInstance.close($scope.pcm_calevent);
+    };
+
+    $scope.cancel = function () {
+        $scope.myForm.$rollbackViewValue();
+        $uibModalInstance.dismiss('cancel');
+    };
+});
+
+app.controller('pcm_gcaleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+
+    $scope.pcm_gcalevent = container;
+    //console.log($scope.pcm_calevent);
+
+    $scope.ok = function () {
+        $uibModalInstance.close($scope.pcm_gcalevent);
     };
 
     $scope.cancel = function () {

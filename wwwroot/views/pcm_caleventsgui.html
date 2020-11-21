@@ -5,8 +5,6 @@
                 Events
 
                 <span class="pull-right">
-                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
-                    <!--button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button-->
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New session">new</button>
                     <button class="btn btn-sm btn-danger" ng-click="pcm_caleventdelete()">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
@@ -36,7 +34,7 @@
                 <tbody>
                     <tr ng-repeat="pcm_calevent in pcm_calevents"
                         ng-dblclick="pcm_caleventedit(false)"
-                        ng-click="selectRow(caleventlistid, $event, $index);pcm_caleventdata()" 
+                        ng-click="selectRow(caleventlistid, $event, $index);pcm_caleventdata()"
                         ng-class="{active: isRowSelected(caleventlistid, $index)}">
                         <td><input type="checkbox" ng-checked="isRowSelected(caleventlistid, $index)"></td>
                         <td>{{pcm_calevent.starttime | date:'dd.MM.yyyy'}}</td>
@@ -61,6 +59,18 @@
             </table>
 
         </div>
+
+        <h2 id="tableLabel">
+            Google Events
+
+            <span class="pull-right">
+                <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
+                <!--button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button-->
+                <button class="btn btn-sm btn-primary" ng-click="pcm_caleventgenerate()">generate</button>
+                <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+            </span>
+        </h2>
+
         <div class="col-md-12">
             <p ng-if="!pcm_gcalevents"><em>Loading...</em></p>
 
@@ -78,7 +88,8 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
-                        ng-click="selectRow(gcaleventlistid, $event, $index);pcm_gcaleventdata()" 
+                        ng-dblclick="pcm_gcaleventedit()"
+                        ng-click="selectRow(gcaleventlistid, $event, $index);pcm_gcaleventdata()"
                         ng-class="{active: isRowSelected(gcaleventlistid, $index)}">
                         <td><input type="checkbox" ng-checked="isRowSelected(gcaleventlistid, $index)"></td>
                         <td>{{pcm_gcalevent.starttime | date:'dd.MM.yyyy'}}</td>
@@ -91,6 +102,13 @@
                             </div>
                         </td>
                         <td>{{ pcm_gcalevent.summary}}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, $index); pcm_gcaleventedit()">Edit</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, $index); pcm_caleventgenerate()">Generate</button>
+                        </td>
+
                     </tr>
 
                 </tbody>
@@ -103,19 +121,20 @@
                 <hr />
                 <h3>Selected Event</h3>
                 <p>
-                    <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.firstname}} {{selectedpcm_calevent.customer.surname}}
+                    <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.name}}
                     <br>
                 </p>
-                <div id="tester" style="width:400px;height:250px;"></div>
+                <iframe width="500" height="400" ng-src="{{detailFrame}}"></iframe>
+
 
             </div>
             <div class="col-md-6" ng-if="selectedpcm_gcalevent">
                 <hr />
                 <h3>Selected GcalEvent</h3>
                 <p>
-                    <b>{{selectedpcm_gcalevent.id}}</b> {{selectedpcm_gcalevent.customer.firstname}} {{selectedpcm_gcalevent.customer.surname}}
+                    <b>{{selectedpcm_gcalevent.index}}</b>
                     <br>
-                    {{selectedpcm_gcalevent.gcaljson}}
+                    {{selectedpcm_gcalevent.summary}}
                     <br>
                 </p>
                 <div id="tester" style="width:400px;height:250px;"></div>
