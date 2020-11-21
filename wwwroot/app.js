@@ -1,8 +1,22 @@
 var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
 app.run(function ($rootScope, $cookies, $http) {
+
+    // register multiline lists and initiate multiline structures
+    $rootScope.caleventlistid = 1;
+    $rootScope.gcaleventlistid = 2;
+    $rootScope.customerlistid = 3;
+
+    $rootScope.selectedRowsIndexes = [];
+    for (var i = 1; i <= 3; i++) {
+        $rootScope.selectedRowsIndexes[i] = [];
+    }
+
+
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
 
+
+    // read environment configuration data
     $http({
         method: 'GET',
         url: '/api/Configuration/ConfigurationData'
@@ -13,8 +27,6 @@ app.run(function ($rootScope, $cookies, $http) {
         console.log("ApiAddress", $rootScope.ApiAddress);
         $rootScope.CLIENT_ID = response.data.CLIENT_ID;
         $rootScope.API_KEY = response.data.API_KEY;
-
-
 
     }, function errorCallback(response) {
         // called asynchronously if an error occurs

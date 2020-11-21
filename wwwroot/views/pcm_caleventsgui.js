@@ -491,13 +491,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         } else {
             $scope.selectedRowsIndexes[list] = [rowIndex];
         }
-        /*
-        console.log($scope.selectedRowsIndexes[list]);
-        console.log(getSelectedRows(list));
-        console.log(getFirstSelectedRow(list));
-        */
-        $scope.pcm_caleventdata();
-        $scope.pcm_gcaleventdata();
+
     };
 
     function selectWithShift(list, rowIndex) {
@@ -520,7 +514,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
     function getFirstSelectedRow(list) {
-        var firstSelectedRowIndex = $scope.selectedRowsIndexes[0];
+        var firstSelectedRowIndex = $scope.selectedRowsIndexes[list][0];
         if (list == $scope.caleventlist) 
             return $scope.pcm_calevents[firstSelectedRowIndex];
         if (list == $scope.gcaleventlist) 

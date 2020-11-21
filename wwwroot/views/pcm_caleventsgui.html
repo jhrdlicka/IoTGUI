@@ -5,7 +5,7 @@
                 Events
 
                 <span class="pull-right">
-                    <!--button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button-->
+                    <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
                     <!--button class="btn btn-sm btn-danger" id="signout_button" style="display: none;">Sign Out</button-->
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New session">new</button>
                     <button class="btn btn-sm btn-danger" ng-click="pcm_caleventdelete()">delete</button>
@@ -36,7 +36,7 @@
                 <tbody>
                     <tr ng-repeat="pcm_calevent in pcm_calevents"
                         ng-dblclick="pcm_caleventedit(pcm_calevent)"
-                        ng-click="selectRow(caleventlist, $event, $index)" 
+                        ng-click="selectRow(caleventlist, $event, $index);$scope.pcm_caleventdata()" 
                         ng-class="{active: isRowSelected(caleventlist, $index)}">
                         <td><input type="checkbox" ng-checked="isRowSelected(caleventlist, $index)"></td>
                         <td>{{pcm_calevent.starttime | date:'dd.MM.yyyy'}}</td>
@@ -45,7 +45,7 @@
                         <td>{{ pcm_calevent.durationtime | date:'HH:mm'}}</td>
                         <td>{{ pcm_calevent.customer.name }}</td>
                         <td>{{ pcm_calevent.title }}</td>
-                        <td><input type="checkbox" value="{{ pcm_calevent.gcalidflag }}"></td>
+                        <td><input type="checkbox" ng-checked="pcm_calevent.gcalidflag"></td>
                         <td style="width:1%">
                             <button class="btn btn-danger btn-xs" ng-click="selectRow(caleventlist, $event, $index); pcm_caleventdelete()">Delete</button>
                         </td>
@@ -78,7 +78,7 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
-                        ng-click="selectRow(gcaleventlist, $event, $index)" 
+                        ng-click="selectRow(gcaleventlist, $event, $index);$scope.pcm_gcaleventdata()" 
                         ng-class="{active: isRowSelected(gcaleventlist, $index)}">
                         <td><input type="checkbox" ng-checked="isRowSelected(gcaleventlist, $index)"></td>
                         <td>{{pcm_gcalevent.starttime | date:'dd.MM.yyyy'}}</td>

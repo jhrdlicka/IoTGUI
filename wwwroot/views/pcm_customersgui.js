@@ -1,7 +1,7 @@
 /**
  * pcm_customer list
  */
-app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, multiline) {
 
     $scope.getphoto = function (index) {
         if (!$scope.pcm_customers[index].id)  // customer does not exist
@@ -13,7 +13,6 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
             else {
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    //            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_customers[index].id+"/photo",
                     url: $rootScope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[index].photodocumentid,
                     withCredentials: true,
                     method: 'GET'
@@ -61,9 +60,23 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
     $scope.loadData();
 
-    $scope.pcm_customeredit = function (pcm_customer) {
-        if (!pcm_customer)
-            pcm_customer = { id: null, type: null, description: null }; 
+
+    $scope.new = function () {
+        l_data = { id: null };  // set id to null and other items to defaults
+        $scope.detail(l_data);
+    }
+
+    $scope.edit = function () {
+        l_data = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
+        if (l_data.length != 1) {
+            console.error('error', 'invalid number of records');
+            return;
+        }
+        
+        $scope.detail(l_data[0]);
+    };
+
+    $scope.detail = function (l_data) {
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_customeredit.html',
@@ -72,7 +85,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
             backdrop: 'static',
             resolve: {
                 container: function () {
-                    return pcm_customer;
+                    return l_data;
                 }
             }
         });
@@ -81,21 +94,24 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
             /* ok */
             container.type = parseInt(container.type);
 
-            if (container.id) {
-                var l_container = angular.copy(container); //Object.assign({}, container);
-                var l_containerupdate = angular.copy(l_container); //Object.assign({}, container);
-                delete l_containerupdate['photodocument']; 
+            if (container.id) {  
                 //UPDATE
+
+                var l_container = angular.copy(container); 
+
+                // update main entity
+                var l_containerupdate = angular.copy(l_container); 
+                delete l_containerupdate['photodocument'];   // delete fields not fitting to main object entity
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $rootScope.ApiAddress + "api/pcm_customer/" + l_container.id,
+                    url: $rootScope.ApiAddress + "api/pcm_customer/" + l_containerupdate.id,
                     withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
                     data: JSON.stringify(l_containerupdate)
                 })
                     .then(function success(response) {
-//                        $scope.loadData();
+//                        $scope.loadData();  // refresh data if necessary (data could be changed by API)
                     }, function error(error) {
                             if (error.status == 401)
                                 alert("Access Denied!!!")
@@ -104,18 +120,18 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                             console.error('error', error);
                     });
 
+
+                // update related entities 
                 if (!l_container.photodocumentid) {
                     // create a new document
 
-                    var l_photocontainer = angular.copy(l_container.photodocument); //Object.assign({}, container);
+                    var l_photocontainer = angular.copy(l_container.photodocument); 
                     delete l_photocontainer['id'];
                     l_photocontainer.content = btoa(l_photocontainer.content);
 
-                    //                l_container.photo = btoa(l_container.photo);
-
                     var xjson = JSON.stringify(l_photocontainer);
 
-                    //INSERT PHOTODOCUMENT
+                    //insert photodocument
                     $http({
                         headers: { "Content-Type": "application/json" },
                         url: $rootScope.ApiAddress + "api/doc_document",
@@ -125,6 +141,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                         data: xjson
                     })
                         .then(function success(response) {
+
                             // udpate pcm_customer.photodocumentid
                             l_container.photodocumentid = response.data.id;
                             delete l_container['photodocument'];
@@ -187,9 +204,6 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                 // create a container without "id" field
                 var l_container = angular.copy(container); //Object.assign({}, container);
                 delete l_container['id'];
-                delete l_container['photo'];
-
-//                l_container.photo = btoa(l_container.photo);
 
                 var xjson = JSON.stringify(l_container);
 
@@ -216,52 +230,47 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
         }, function () { /* cancel */ });
     };
 
-    $scope.pcm_customerdelete = function (pcm_customer) {
-        if (!confirm("Delete client '" + pcm_customer.name+"'. Are you sure?"))
+    $scope.delete = function () {
+        l_items = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
+        if (l_items.length == 0) {
+            console.error('error', 'invalid number of records');
+            return;
+        }
+
+        if (!confirm("Delete " + l_items.length + " records?"))
             return;
 
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
-            withCredentials: true,
-            method: 'DELETE'
-        })
-            .then(function success(response) {
-                $scope.loadData();
-            }, function error(error) {
+        angular.forEach(l_items, function (item, index) {
+
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/pcm_customer/" + item.id,
+                withCredentials: true,
+                method: 'DELETE'
+            })
+                .then(function success(response) {
+                    $scope.loadData();
+                }, function error(error) {
                     if (error.status == 401)
                         alert("Access Denied!!!");
                     else
-                        alert("6: Unknown Error!");
-                console.error('error', error);
-            });
+                        alert("6 Unknown Error!");
+                    console.error('error', error);
+                });
+        });
     };
 
     $scope.selectedpcm_customer = null;
 
-    $scope.pcm_customerdata = function (pcm_customer) {
+    $scope.refreshdetail = function () {
         $scope.selectedpcm_customer = null;
-        if (!pcm_customer)
+
+        l_selecteddata = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
+        if (l_selecteddata.length != 1) {
             return;
+        }
 
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + pcm_customer.id,
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                $scope.selectedpcm_customer = response.data;
-
-                //console.log("selectedpcm_customer", $scope.selectedpcm_customer);
-
-            }, function error(error) {
-                    if (error.status == 401)
-                        alert("Access Denied!!!");
-                    else
-                        alert("7: Unknown Error!");
-                    console.error('error', error);
-            });
+        $scope.selectedpcm_customer = l_selecteddata[0];
     };
 
 });
@@ -308,8 +317,6 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
     };
 });
 
-
-// Function that calls ng-upload's Upload function
 
 app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
     $scope.pcm_customer = container;
