@@ -13,6 +13,15 @@
         </div>
     </div>
 
+    <div>
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon input-sm">Display events for:</div>
+            <select class="form-control input-sm" id="displaycustomers" ng-model="displaycustomers" >
+                <option ng-repeat="displaycustomersoption in displaycustomersoptions" value="{{displaycustomersoption.Value}}" ng-selected="displaycustomersoption.Value == displaycustomers">{{displaycustomersoption.Text}}</option>
+            </select>
+        </div>
+
+    </div>
 
     <div class="row">
         <div class="col-md-12">
@@ -32,7 +41,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="pcm_calevent in pcm_calevents"
+                    <tr ng-repeat="pcm_calevent in pcm_calevents | filter:filterCalevents"
                         ng-dblclick="pcm_caleventedit(false)"
                         ng-click="selectRow(caleventlistid, $event, $index);pcm_caleventdata()"
                         ng-class="{active: isRowSelected(caleventlistid, $index)}">
@@ -60,8 +69,8 @@
 
         </div>
 
-        <h2 id="tableLabel">
-            Google Events
+        <h1 id="tableLabel">
+            Google Calendar
 
             <span class="pull-right">
                 <button class="btn btn-sm btn-danger" id="authorize_button" style="display: none;">Import Google Calendar</button>
@@ -69,7 +78,16 @@
                 <button class="btn btn-sm btn-primary" ng-click="pcm_caleventgenerate()">generate</button>
                 <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
             </span>
-        </h2>
+        </h1>
+        <div>
+            <div class="input-group input-group-sm">
+                <div class="input-group-addon input-sm">Display Google events for:</div>
+                <select class="form-control input-sm" id="displaycalevents" ng-model="displaycalevents">
+                    <option ng-repeat="displaycaleventsoption in displaycaleventsoptions" value="{{displaycaleventsoption.Value}}" ng-selected="displaycaleventsoption.Value == displaycalevents">{{displaycaleventsoption.Text}}</option>
+                </select>
+            </div>
+        </div>
+
 
         <div class="col-md-12">
             <p ng-if="!pcm_gcalevents"><em>Loading...</em></p>
@@ -87,7 +105,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="pcm_gcalevent in pcm_gcalevents"
+                    <tr ng-repeat="pcm_gcalevent in pcm_gcalevents| filter:filterGcalvents"
                         ng-dblclick="pcm_gcaleventedit()"
                         ng-click="selectRow(gcaleventlistid, $event, $index);pcm_gcaleventdata()"
                         ng-class="{active: isRowSelected(gcaleventlistid, $index)}">

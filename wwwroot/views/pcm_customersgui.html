@@ -13,6 +13,10 @@
         </div>
     </div>
 
+    <div class="input-group input-group-sm col-md-12">
+        <div class="input-group-addon input-sm">Search:</div>
+        <input class="input-sm col-md-12" ng-model="searchText">
+    </div>
 
     <div class="row">
         <div class="col-md-12">
@@ -30,7 +34,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="pcm_customer in pcm_customers"
+                    <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
                         ng-dblclick="edit()"
                         ng-click="selectRow(customerlistid, $event, $index);refreshdetail()"
                         ng-class="{active: isRowSelected(customerlistid, $index)}">
@@ -56,13 +60,16 @@
 
         </div>
 
+        <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller"></div>
+
         <div class="col-md-12" ng-if="selectedpcm_customer">
             <hr />
             <h3>Selected Client</h3>
             <p>
-                <b>{{selectedpcm_customer.id}}</b> {{selectedpcm_customer.name}} 
-                <br>                
+                <b>{{selectedpcm_customer.id}}</b> {{selectedpcm_customer.name}}
+                <br>
             </p>
+
             <div id="tester" style="width:600px;height:250px;"></div>
 
         </div>

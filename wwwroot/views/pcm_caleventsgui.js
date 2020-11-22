@@ -194,6 +194,115 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         gapi.load('client:auth2', initClient);
 
     }
+    
+    $scope.filterCalevents = function (item) {
+        var dispcustfield = document.getElementById('displaycustomers');        
+        $scope.displaycustomers = dispcustfield.value;
+
+        if ($scope.displaycustomers == 'ALL') {
+            return true;
+        }
+        if (!item.customer) {
+            //console.log("customer not found", item.id);
+
+            if ($scope.displaycustomers == 'SELECTED+' || $scope.displaycustomers == 'NULL')
+                return true;
+            else
+                return false;
+        }
+
+        if ($scope.displaycustomers == 'NULL')
+            return false;
+
+        l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $rootScope.pcm_customers);
+
+        l_result = false;
+        angular.forEach(l_customers, function (customer, index) {
+            if (customer.id == item.customer.id) {
+//                console.log("found", item.id);
+                l_result = true;
+                return true;
+            }
+        }, function () { /* cancel */ });
+
+        //if (!l_result)
+          //  console.log("not found", item.id);
+        //else 
+          //  console.log("found", item.id);
+
+        return l_result;        
+    };
+
+    $scope.filterGcalvents = function (item) {
+        var dispcalfield = document.getElementById('displaycalevents');
+        $scope.displaycalevents = dispcalfield.value;
+//        console.log('type', $scope.displaycalevents);
+
+        if ($scope.displaycalevents == 'ALL') {
+//            console.log('type', '1');
+            return true;
+        }
+
+        // lets seaarch the calevent within selected calevents
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+
+        l_result = false;
+        angular.forEach(l_calevents, function (calevent, index) {
+            if (calevent.gcalid == item.id) {
+                //                console.log("found", item.id);
+                l_result = true;
+                return true;
+            }
+        }, function () { /* cancel */ });
+
+        // there exists any connected calevent from selected calevents
+        if (l_result) {
+//            console.log('type', '2');
+            if ($scope.displaycalevents == 'NULL')
+                return false;
+            else
+                return true;
+        };
+
+        // so the gcalevent is not found in seleted calevents
+
+
+        if ($scope.displaycalevents == 'SELECTED') {
+//            console.log('type', '3');
+            return false;
+        }
+
+        // lets seaarch the calevent within all calevents
+
+        angular.forEach($scope.pcm_calevents, function (calevent, index) {
+            if (calevent.gcalid == item.id) {
+                //                console.log("found", item.id);
+                l_result = true;
+                return true;
+            }
+        }, function () { /* cancel */ });
+
+        // here the gcalevent is surely not between selected calevents so depends on calevents
+        if (l_result) {
+//            console.log('type', '4');
+            if ($scope.displaycalevents == 'NULL')
+                return false;
+            else
+                if ($scope.displaycalevents == 'SELECTED+')
+                    return false;
+                else
+                    return true; // remains only type CONNECTED
+        };
+
+        // here the gcalevent is surely not between any calevents
+        if ($scope.displaycalevents == 'NULL' || $scope.displaycalevents == 'SELECTED+') {
+//            console.log('type', '5');
+            return true;
+        }
+
+//        console.log('type', '6');
+        return false;      
+    };
 
     $scope.runimportCalEvents = function () {
 
@@ -540,11 +649,30 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     };
 
     $scope.useremail = "";
+    $scope.displaycustomers = "ALL";
+    $scope.displaycustomersoptions = [
+        { Value: "ALL", Text: "All" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
+        { Value: "SELECTED", Text: "Connected to seleted customers" },
+        { Value: "NULL", Text: "Not connected to customers" }
+    ];
+    $scope.displaycalevents = "ALL";
+    $scope.displaycaleventsoptions = [
+        { Value: "ALL", Text: "All" },
+        { Value: "CONNECTED", Text: "Connected to any event" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to seleted events" },
+        { Value: "SELECTED", Text: "Connected to seleted events" },
+        { Value: "NULL", Text: "Not connected any event" }
+    ];
+
 
     $scope.selectedpcm_calevent = null;
     $scope.selectedpcm_gcalevent = null;
 
+
     $scope.loadData();
+
+
 });
 
 app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {

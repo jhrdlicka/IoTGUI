@@ -42,6 +42,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
         })
              .then(function success(response) {
                  $scope.pcm_customers = response.data;
+                 $rootScope.pcm_customers = $scope.pcm_customers;
 
                  $rootScope.resetSelection($rootScope.customerlistid);
                  //console.log("pcm_customers", $scope.pcm_customers);
