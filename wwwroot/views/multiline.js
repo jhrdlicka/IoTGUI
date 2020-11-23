@@ -37,8 +37,28 @@ app.service('multiline', function ($rootScope) {
     }
 
     function selectRows(listid, selectFromIndex, selectToIndex) {
-        for (var rowToSelect = selectFromIndex; rowToSelect <= selectToIndex; rowToSelect++) {
-            select(listid, rowToSelect);
+        var myTab = document.getElementById('table.'+listid);
+        var selectedRow = false;
+        // LOOP THROUGH EACH ROW OF THE TABLE AFTER HEADER.
+        for (i = 1; i < myTab.rows.length; i++) {
+//            console.log('rowid', myTab.rows.item(i).id);            
+            rowid = myTab.rows.item(i).id;
+            rowindex = parseInt(rowid.substring(rowid.indexOf(":")+1));
+//            console.log('rowindex', rowindex);            
+
+            if ((myTab.rows.item(i).id == 'tr.' + listid + ':' + selectFromIndex) || (myTab.rows.item(i).id == 'tr.' + listid + ':' + selectToIndex)) {
+                if (selectedRow) { // last selected row
+                    select(listid, rowindex);
+//                    console.log('selectedRow 1', rowindex);            
+                    selectedRow = false;
+                } else {  // first selected row
+                    selectedRow = true;
+                }
+            }
+            if (selectedRow) {
+//                console.log('selectedRow 2', rowindex);            
+                select(listid, rowindex);
+            }
         }
     }
 

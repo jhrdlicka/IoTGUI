@@ -22,7 +22,7 @@
         <div class="col-md-12">
             <p ng-if="!pcm_customers"><em>Loading...</em></p>
 
-            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers">
+            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{customerlistid}}">
                 <thead>
                     <tr>
                         <th></th>
@@ -36,22 +36,23 @@
                 <tbody>
                     <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
                         ng-dblclick="edit()"
-                        ng-click="selectRow(customerlistid, $event, $index);refreshdetail()"
-                        ng-class="{active: isRowSelected(customerlistid, $index)}">
-                        <td><input type="checkbox" ng-checked="isRowSelected(customerlistid, $index)"></td>
+                        ng-click="selectRow(customerlistid, $event, pcm_customer.index);refreshdetail()"
+                        ng-class="{active: isRowSelected(customerlistid, pcm_customer.index)}"
+                        id="tr.{{customerlistid}}:{{pcm_customer.index}}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(customerlistid, pcm_customer.index)"></td>
                         <td><img ng-src="{{pcm_customer.photodocument.content}}" class="img-rounded" width="60"></td>
                         <td>{{ pcm_customer.id }}</td>
                         <td>{{ pcm_customer.name }}</td>
                         <td>{{ pcm_customer.emailcalendar }}<br>{{ pcm_customer.emailinvoice }}</td>
                         <td>{{ pcm_customer.phone }}</td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(customerlistid, $event, $index); delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, $index);refreshdetail()">Select</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index);refreshdetail()">Select</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, $index); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index); edit()">Edit</button>
                         </td>
                     </tr>
 

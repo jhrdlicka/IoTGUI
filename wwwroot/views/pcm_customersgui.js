@@ -32,7 +32,9 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
      $scope.loadData = function () {
         $scope.pcm_customers = null;
-        $scope.selectedpcm_customer = null;
+         $scope.selectedpcm_customer = null;
+         $rootScope.resetSelection($rootScope.customerlistid);
+
 
         $http({
              headers: { "Content-Type": "application/json" },
@@ -42,13 +44,16 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
         })
              .then(function success(response) {
                  $scope.pcm_customers = response.data;
-                 $rootScope.pcm_customers = $scope.pcm_customers;
 
                  $rootScope.resetSelection($rootScope.customerlistid);
                  //console.log("pcm_customers", $scope.pcm_customers);
                  angular.forEach($scope.pcm_customers, function (item, index) {
+                     $scope.pcm_customers[index].index = index;
                      $scope.getphoto(index);
+
                  });
+
+                 $rootScope.pcm_customers = $scope.pcm_customers; // make a copy of the data to use them for interaction with other entities (calevents)
 
              }, function error(error) {
 /*                     if (error.status == 401)
