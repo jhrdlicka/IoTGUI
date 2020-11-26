@@ -514,11 +514,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }, function () { /* cancel */ });
     };
 
-    $scope.new = function () {
-
-    }
-
-
     $scope.pcm_caleventedit = function (createnew) {
         if (createnew) {
             var pcm_calevent = { id: null, type: null, description: null, starttime: new Date(), durationtime: new Date(), xordered: false};
@@ -579,6 +574,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     $scope.pcm_caleventmerge = function (forceupdate) {
         l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
         if (l_calevents.length != 1) {
+            alert('Select exactly one Calendar event');
             console.error('error', 'invalid number of records');
             return;
         }
@@ -636,6 +632,51 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         });
 
     }
+
+    $scope.pcm_connectcaleventstocustomer = function () {
+
+
+        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+            if (l_customers.length != 1) {
+                alert('Select exactly one Customer');
+                console.error('error', 'invalid number of records');
+                return;
+            }
+        }
+        else
+            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+                l_customers = [{
+                        id: $scope.$parent.pcm_customer.id,
+                        name: $scope.$parent.pcm_customer.name                    
+                }];
+
+            } else {
+                alert('Customer lookup not yet implemented');
+                console.error('error', 'not implemented');
+                return;
+            }
+
+
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+
+        if (!confirm("Connect " + l_calevents.length + " events to client " + l_customers[0].name + "?"))
+            return;
+
+        angular.forEach(l_calevents, function (calevent, index) {
+            if (calevent.customerid) {
+                if (calevent.customerid == l_customers[0].id)
+                    return;
+                if (!confirm("Event nr. " + calevent.id + " is already connected to client " + calevent.customer.name + ". Reconnect to " + l_customers[0].name + "?"))
+                    return;
+            }
+
+            calevent.customerid = l_customers[0].id;            
+            $scope.pcm_caleventsave(calevent);
+        });
+
+    }
+
 
     $scope.pcm_caleventdelete = function () {
         l_items = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
