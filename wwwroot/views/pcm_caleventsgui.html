@@ -1,7 +1,7 @@
-﻿<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h1 id="tableLabel">
+﻿<div class="container col-md-12">
+    <div class="col-md-6" style="min-width:800px">
+        <div>
+            <h1>
                 Events
 
                 <span class="pull-right">
@@ -11,20 +11,15 @@
                 </span>
             </h1>
         </div>
-    </div>
 
-    <div>
         <div class="input-group input-group-sm">
             <div class="input-group-addon input-sm">Display events for:</div>
-            <select class="form-control input-sm" id="displaycustomers" ng-model="displaycustomers" >
+            <select class="form-control input-sm" id="displaycustomers" ng-model="displaycustomers">
                 <option ng-repeat="displaycustomersoption in displaycustomersoptions" value="{{displaycustomersoption.Value}}" ng-selected="displaycustomersoption.Value == displaycustomers">{{displaycustomersoption.Text}}</option>
             </select>
         </div>
 
-    </div>
-
-    <div class="row">
-        <div class="col-md-12">
+        <div>
             <p ng-if="!pcm_calevents"><em>Loading...</em></p>
 
             <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_calevents" id="table.{{caleventlistid}}">
@@ -69,8 +64,10 @@
             </table>
 
         </div>
+    </div>
+    <div class="col-md-6" style="min-width:800px">
 
-        <h1 id="tableLabel">
+        <h1>
             Google Calendar
 
             <span class="pull-right">
@@ -90,7 +87,7 @@
         </div>
 
 
-        <div class="col-md-12">
+        <div>
             <p ng-if="!pcm_gcalevents"><em>Loading...</em></p>
 
             <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="pcm_gcalevents" id="table.{{gcaleventlistid}}">
@@ -135,35 +132,30 @@
             </table>
 
         </div>
-
-        <div class="row">
-            <div class="col-md-6" ng-if="selectedpcm_calevent">
-                <hr />
-                <h3>Selected Event</h3>
-                <p>
-                    <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.name}}
-                    <br>
-                </p>
-                <iframe width="500" height="400" ng-src="{{detailFrame}}"></iframe>
-
-
-            </div>
-            <div class="col-md-6" ng-if="selectedpcm_gcalevent">
-                <hr />
-                <h3>Selected GcalEvent</h3>
-                <p>
-                    <b>{{selectedpcm_gcalevent.index}}</b>
-                    <br>
-                    {{selectedpcm_gcalevent.summary}}
-                    <br>
-                </p>
-                <div id="tester" style="width:400px;height:250px;"></div>
-
-            </div>
-        </div>
-
     </div>
 
-</div>
 
+
+    <div class="col-md-6" style="min-width:800px">
+        <div ng-if="selectedpcm_calevent">
+            <hr />
+            <h3>Selected Event</h3>
+            <p>
+                <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.name}}
+                <br>
+            </p>
+
+        </div>
+        <div ng-if="selectedpcm_gcalevent">
+            <hr />
+            <h3>Selected GcalEvent</h3>
+            <p>
+                <b>{{selectedpcm_gcalevent.index}}</b>
+                <br>
+                {{selectedpcm_gcalevent.summary}}
+                <br>
+            </p>
+        </div>
+    </div>
+</div>
 

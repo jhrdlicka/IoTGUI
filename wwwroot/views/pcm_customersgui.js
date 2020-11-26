@@ -89,7 +89,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_customeredit.html',
             controller: 'pcm_customereditcontroller',
-            size: 'lg',
+            size: 'xl',
             backdrop: 'static',
             resolve: {
                 container: function () {

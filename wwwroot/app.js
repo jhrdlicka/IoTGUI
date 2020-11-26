@@ -1,6 +1,6 @@
 var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
-app.run(function ($rootScope, $cookies, $http) {
+app.run(function ($rootScope, $cookies, $http, $window) {
 
     // register multiline lists and initiate multiline structures
     $rootScope.caleventlistid = 1;
@@ -33,6 +33,13 @@ app.run(function ($rootScope, $cookies, $http) {
         // or server returns response with an error status.
     });
 
+//    $window.document.documentElement.clientWidth = 1800;
+    console.log('Current clientWidth : %s', document.body.clientWidth);
+    console.log('Current width : %s', document.body.width);
+    console.log($window.document.documentElement.clientWidth); // 0
+
+    //using defineProperty
+//    Object.defineProperty(dom.window.HTMLHtmlElement.prototype, 'clientWidth', { value: 1234 });
 });
 
 /**

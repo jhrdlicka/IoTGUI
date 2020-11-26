@@ -667,8 +667,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         $scope.selectedpcm_calevent = l_items[0];
-        if ($scope.selectedpcm_calevent.gcalhtmllink)
-            $scope.detailFrame = $sce.trustAsResourceUrl($scope.selectedpcm_calevent.gcalhtmllink);              
+//        if ($scope.selectedpcm_calevent.gcalhtmllink)
+//            $scope.detailFrame = $sce.trustAsResourceUrl($scope.selectedpcm_calevent.gcalhtmllink);              
     };
 
     $scope.pcm_gcaleventdata = function () {
