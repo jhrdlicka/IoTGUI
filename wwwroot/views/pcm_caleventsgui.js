@@ -1,7 +1,9 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline, $sce) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline) {
+
+    $scope.controllerName = 'pcm_caleventcontroller';
 
     $scope.timeDifference = function (start, end) {
         var l_base=new Date("2020-01-01T00:00:00+01:00");
@@ -196,7 +198,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
     
     $scope.filterCalevents = function (item) {
-        var dispcustfield = document.getElementById('displaycustomers');        
+        var dispcustfield = document.getElementById('displaycustomers');
         $scope.displaycustomers = dispcustfield.value;
 
         if ($scope.displaycustomers == 'ALL') {
@@ -214,7 +216,21 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.displaycustomers == 'NULL')
             return false;
 
-        l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $rootScope.pcm_customers);
+        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        }
+        else
+            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+                l_customers = {
+                    customer: {
+                        id: $scope.$parent.pcm_customer.id
+                    }
+                };
+
+             } else {
+                  l_customers = null;
+               }
+
 
         l_result = false;
         angular.forEach(l_customers, function (customer, index) {
@@ -732,6 +748,8 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
 });
 
 app.controller('pcm_gcaleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+
+    $scope.controllerName = 'pcm_gcaleventeditcontroller';
 
     $scope.pcm_gcalevent = container;
     //console.log($scope.pcm_calevent);

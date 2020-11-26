@@ -2,6 +2,7 @@
  * pcm_customer list
  */
 app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, multiline) {
+    $scope.controllerName = 'pcm_customercontroller';
 
     $scope.getphoto = function (index) {
         if (!$scope.pcm_customers[index].id)  // customer does not exist
@@ -53,7 +54,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
                  });
 
-                 $rootScope.pcm_customers = $scope.pcm_customers; // make a copy of the data to use them for interaction with other entities (calevents)
+//                 $rootScope.pcm_customers = $scope.pcm_customers; // make a copy of the data to use them for interaction with other entities (calevents)
 
              }, function error(error) {
 /*                     if (error.status == 401)
@@ -284,7 +285,8 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 });
 
 app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
-
+    $scope.controllerName = 'pcm_customereditcontroller';
+    
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
         { Value: "CZK", Text: "CZK" },
@@ -327,6 +329,8 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
 
 
 app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
+    $scope.controllerName = 'pcm_customerpicturecontroller';
+
     $scope.pcm_customer = container;
     //console.log($scope.pcm_customer);
 
