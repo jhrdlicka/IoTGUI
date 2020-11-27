@@ -114,7 +114,7 @@
                 </div>
             </div>
 
-            <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6"  style="min-width:1000px"></div>
+            <div ng-if="pcm_customer.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6"  style="min-width:1000px"></div>
 
 
         </div>

@@ -1,7 +1,7 @@
 /**
  * pcm_customer list
  */
-app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, multiline) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, multiline, guialert) {
     $scope.controllerName = 'pcm_customercontroller';
 
     $scope.getphoto = function (index) {
@@ -23,7 +23,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                         $scope.pcm_customers[index].photodocument.content = atob($scope.pcm_customers[index].photodocument.content);  // transform json data from base-64 encoded string to raw string
 
                     }, function error(error) {
-                        console.error('error', error);
+                            $rootScope.showerror($scope, 'getphoto', error); 
                             $scope.pcm_customers[index].photodocument = { "content": null, "url": null, "id": null };
                     });
             }
@@ -47,22 +47,14 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                  $scope.pcm_customers = response.data;
 
                  $rootScope.resetSelection($rootScope.customerlistid);
-                 //console.log("pcm_customers", $scope.pcm_customers);
                  angular.forEach($scope.pcm_customers, function (item, index) {
                      $scope.pcm_customers[index].index = index;
                      $scope.getphoto(index);
 
                  });
 
-//                 $rootScope.pcm_customers = $scope.pcm_customers; // make a copy of the data to use them for interaction with other entities (calevents)
-
              }, function error(error) {
-/*                     if (error.status == 401)
-                         alert("Access Denied!!!");
-                     else
-                         alert("Unknown Error!");
-                         */
-                 console.error('error', error);
+                 $rootScope.showerror($scope, 'loadData', error); 
              });
 
     };
@@ -121,12 +113,8 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                 })
                     .then(function success(response) {
 //                        $scope.loadData();  // refresh data if necessary (data could be changed by API)
-                    }, function error(error) {
-                            if (error.status == 401)
-                                alert("Access Denied!!!")
-                            else
-                                alert("1: Unknown Error");
-                            console.error('error', error);
+                    }, function error(error) {                            
+                            $rootScope.showerror($scope, 'detail', error); 
                     });
 
 
@@ -167,23 +155,13 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
                                     $scope.loadData();
                                 }, function error(error) {
-                                    if (error.status == 401)
-                                        alert("Access Denied!!!")
-                                    else
-                                        alert("2: Unknown Error!");
-                                    console.error('error', error);
+                                        $rootScope.showerror($scope, 'detail.2', error);
                                 });
 
                             $scope.loadData();
                         }, function error(error) {
-                            if (error.status == 401)
-                                alert("Access Denied!!!")
-                            else
-                                alert("3: Unknown Error!");
-                            console.error('error', error);
+                            $rootScope.showerror($scope, 'detail.3', error);
                         });
-
-
                 }
                 else {
                     // update existing photodocument
@@ -199,15 +177,9 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                         .then(function success(response) {
                             //$scope.loadData();
                         }, function error(error) {
-                            if (error.status == 401)
-                                alert("Access Denied!!!")
-                            else
-                                alert("4: Unknown Error");
-                            console.error('error', error);
+                            $rootScope.showerror($scope, 'detail.4', error);
                         });
                 }
-
-
             }
             else {
                 // create a container without "id" field
@@ -228,25 +200,20 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                     .then(function success(response) {
                         $scope.loadData();
                     }, function error(error) {
-                            if (error.status == 401)
-                                alert("Access Denied!!!")
-                            else
-                                alert("5: Unknown Error!");
-                            console.error('error', error);
+                            $rootScope.showerror($scope, 'detail.5', error);
                     });
             }
-
         }, function () { /* cancel */ });
     };
 
     $scope.delete = function () {
         l_items = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
         if (l_items.length == 0) {
-            console.error('error', 'invalid number of records');
+            $rootScope.showalert("error", "Delete Client(s)", "No records selected!")
             return;
         }
 
-        if (!confirm("Delete " + l_items.length + " records?"))
+        if (!$rootScope.showalert("confirm", "Delete Client(s)", "Delete " + l_items.length + " records?"))
             return;
 
         angular.forEach(l_items, function (item, index) {
@@ -260,11 +227,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                 .then(function success(response) {
                     $scope.loadData();
                 }, function error(error) {
-                    if (error.status == 401)
-                        alert("Access Denied!!!");
-                    else
-                        alert("6 Unknown Error!");
-                    console.error('error', error);
+                        $rootScope.showerror($scope, 'delete', error);
                 });
         });
     };
@@ -332,14 +295,11 @@ app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInsta
     $scope.controllerName = 'pcm_customerpicturecontroller';
 
     $scope.pcm_customer = container;
-    //console.log($scope.pcm_customer);
 
     $scope.profileimage = function (selectimage) {
-        console.log(selectimage.files[0]);
         var selectfile = selectimage.files[0];
         r = new FileReader();
         r.onloadend = function (e) {
-            //debugger;
             $scope.pcm_customer.photodocument.content = e.target.result;
         }
         r.readAsDataURL(selectfile);
