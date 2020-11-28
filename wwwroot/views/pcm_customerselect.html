@@ -1,0 +1,67 @@
+﻿<div class="modal-header">
+    <h2 class="modal-title">
+        Select Client(s)
+    </h2>
+</div>
+
+<div class="modal-body">
+
+    <div class="container col-md-12">
+        <div class="col-md-6" style="min-width:1000px">
+            <div class="col-md-6" style="min-width:1000px">
+
+                <h1 id="tableLabel">
+                    Clients
+                </h1>
+                <div class="input-group input-group-sm col-md-6" style="min-width:1000px">
+                    <div class="input-group-addon input-sm">Search:</div>
+                    <input class="input-sm col-md-6" ng-model="searchText">
+                </div>
+
+            </div>
+
+            <div class="col-md-6" style="min-width:1000px">
+                <p ng-if="!pcm_customers"><em>Loading...</em></p>
+
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{selectcustomerlistid}}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Photo</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>e-mail</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
+                            ng-click="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed);refreshdetail()"
+                            ng-class="{active: isRowSelected(customerselectlistid, pcm_customer.index)}"
+                            id="tr.{{customerselectlistid}}:{{pcm_customer.index}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(customerselectlistid, pcm_customer.index)"></td>
+                            <td><img ng-src="{{pcm_customer.photodocument.content}}" class="img-rounded" width="60"></td>
+                            <td>{{ pcm_customer.id }}</td>
+                            <td>{{ pcm_customer.name }}</td>
+                            <td>{{ pcm_customer.emailcalendar }}<br>{{ pcm_customer.emailinvoice }}</td>
+                            <td>{{ pcm_customer.phone }}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
+
+
+

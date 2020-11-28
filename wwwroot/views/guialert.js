@@ -1,7 +1,7 @@
 /**
  * handling of seletion in lists
  */
-app.service('guialert', function ($rootScope) {
+app.service('guialert', function ($rootScope, $q, $uibModal) {
 
     $rootScope.showerror = function (callscope, modulenm, error) {
         if (!error)
@@ -10,7 +10,7 @@ app.service('guialert', function ($rootScope) {
         if (error.status == 401)
             alert("Access Denied!!!")
         else
-            alert("1: Unknown Error");
+            alert("Unknown Error");
         console.error('Controller:' + callscope.controllerName + ' Module: ' + modulenm + ' error', error);
     }
 
@@ -25,6 +25,32 @@ app.service('guialert', function ($rootScope) {
             return l_return;
         }
     }
+
+    $rootScope.entitySelect = function (entity, multilineallowed) {
+        var defer = $q.defer();
+        var modalInstance = $uibModal.open({
+            templateUrl: 'views/' + entity + 'select.html',
+            controller: entity + 'selectcontroller',
+            size: 'xl',
+            backdrop: 'static',
+            resolve: {
+                multilineallowed: function () {
+                    return multilineallowed;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (container) {
+            /* ok */
+            defer.resolve(container);
+        }, function (error) {
+            /* cancel */
+            defer.reject(error);
+        });
+
+        return defer.promise;
+    };
+
 
 });
 

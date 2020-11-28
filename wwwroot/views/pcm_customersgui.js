@@ -1,41 +1,38 @@
 /**
  * pcm_customer list
  */
-app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, multiline, guialert) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert) {
     $scope.controllerName = 'pcm_customercontroller';
+    $scope.multilineallowed = true;
 
-    $scope.getphoto = function (index) {
-        if (!$scope.pcm_customers[index].id)  // customer does not exist
-            $scope.pcm_customers[index].photodocument = { "content": null, "url": null, "id": null };
+    $scope.getphoto = function (pIndex) {
+        if (!$scope.pcm_customers[pIndex].id)  // customer does not exist
+            $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
         else
-
-            if (!$scope.pcm_customers[index].photodocumentid)  // customer picture does not exist
-                $scope.pcm_customers[index].photodocument = {"content":null, "url":null, "id":null};
+            if (!$scope.pcm_customers[pIndex].photodocumentid)  // customer picture does not exist
+                $scope.pcm_customers[pIndex].photodocument = {"content":null, "url":null, "id":null};
             else {
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $rootScope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[index].photodocumentid,
+                    url: $rootScope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[pIndex].photodocumentid,
                     withCredentials: true,
                     method: 'GET'
                 })
                     .then(function success(response) {
-                        $scope.pcm_customers[index].photodocument = response.data;
-                        $scope.pcm_customers[index].photodocument.content = atob($scope.pcm_customers[index].photodocument.content);  // transform json data from base-64 encoded string to raw string
+                        $scope.pcm_customers[pIndex].photodocument = response.data;
+                        $scope.pcm_customers[pIndex].photodocument.content = atob($scope.pcm_customers[pIndex].photodocument.content);  // transform json data from base-64 encoded string to raw string
 
                     }, function error(error) {
                             $rootScope.showerror($scope, 'getphoto', error); 
-                            $scope.pcm_customers[index].photodocument = { "content": null, "url": null, "id": null };
+                            $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
                     });
             }
-
-
     };
 
-     $scope.loadData = function () {
+    $scope.loadData = function () {
         $scope.pcm_customers = null;
-         $scope.selectedpcm_customer = null;
-         $rootScope.resetSelection($rootScope.customerlistid);
-
+        $scope.selectedpcm_customer = null;
+        $rootScope.resetSelection($rootScope.customerlistid);
 
         $http({
              headers: { "Content-Type": "application/json" },
@@ -47,9 +44,9 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
                  $scope.pcm_customers = response.data;
 
                  $rootScope.resetSelection($rootScope.customerlistid);
-                 angular.forEach($scope.pcm_customers, function (item, index) {
-                     $scope.pcm_customers[index].index = index;
-                     $scope.getphoto(index);
+                 angular.forEach($scope.pcm_customers, function (item, lIndex) {
+                     $scope.pcm_customers[lIndex].index = lIndex;
+                     $scope.getphoto(lIndex);
 
                  });
 
@@ -59,25 +56,22 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
     };
 
-    $scope.loadData();
-
-
     $scope.new = function () {
-        l_data = { id: null };  // set id to null and other items to defaults
-        $scope.detail(l_data);
+        lData = { id: null };  // set id to null and other items to defaults
+        $scope.detail(lData);
     }
 
     $scope.edit = function () {
-        l_data = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
-        if (l_data.length != 1) {
-            console.error('error', 'invalid number of records');
+        lData = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
+        if (lData.length != 1) {
+            $rootScope.showalert("error", "Edit", "Select exactly one record!", "OK")
             return;
         }
         
-        $scope.detail(l_data[0]);
+        $scope.detail(lData[0]);
     };
 
-    $scope.detail = function (l_data) {
+    $scope.detail = function (pData) {
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_customeredit.html',
@@ -86,7 +80,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
             backdrop: 'static',
             resolve: {
                 container: function () {
-                    return l_data;
+                    return pData;
                 }
             }
         });
@@ -207,16 +201,16 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
     };
 
     $scope.delete = function () {
-        l_items = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
-        if (l_items.length == 0) {
+        lItems = $rootScope.getSelectedRows($scope.customerlistid, $scope.pcm_customers);
+        if (lItems.length == 0) {
             $rootScope.showalert("error", "Delete Client(s)", "No records selected!")
             return;
         }
 
-        if (!$rootScope.showalert("confirm", "Delete Client(s)", "Delete " + l_items.length + " records?"))
+        if (!$rootScope.showalert("confirm", "Delete Client(s)", "Delete " + lItems.length + " records?"))
             return;
 
-        angular.forEach(l_items, function (item, index) {
+        angular.forEach(lItems, function (item, index) {
 
             $http({
                 headers: { "Content-Type": "application/json" },
@@ -232,8 +226,6 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
         });
     };
 
-    $scope.selectedpcm_customer = null;
-
     $scope.refreshdetail = function () {
         $scope.selectedpcm_customer = null;
 
@@ -244,6 +236,10 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
         $scope.selectedpcm_customer = l_selecteddata[0];
     };
+
+    $scope.selectedpcm_customer = null;
+    $scope.loadData();
+
 
 });
 
@@ -258,7 +254,6 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
     ];
 
     $scope.pcm_customer = container;
-    //console.log($scope.pcm_customer);
 
     $scope.pcm_customerpictureedit = function (pcm_customer) {
 
@@ -290,19 +285,85 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
     };
 });
 
+app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
+    $scope.controllerName = 'pcm_customerselectcontroller';
+    $scope.mulitilineallowed = multilineallowed;
+
+    $scope.getphoto = function (pIndex) {
+        if (!$scope.pcm_customers[pIndex].id)  // customer does not exist
+            $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
+        else
+            if (!$scope.pcm_customers[pIndex].photodocumentid)  // customer picture does not exist
+                $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
+            else {
+                $http({
+                    headers: { "Content-Type": "application/json" },
+                    url: $rootScope.ApiAddress + "api/doc_document/" + $scope.pcm_customers[pIndex].photodocumentid,
+                    withCredentials: true,
+                    method: 'GET'
+                })
+                    .then(function success(response) {
+                        $scope.pcm_customers[pIndex].photodocument = response.data;
+                        $scope.pcm_customers[pIndex].photodocument.content = atob($scope.pcm_customers[pIndex].photodocument.content);  // transform json data from base-64 encoded string to raw string
+
+                    }, function error(error) {
+                            $rootScope.showerror($scope, 'getphoto', error);
+                            $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
+                    });
+            }
+    };
+
+    $scope.loadData = function () {
+        $scope.pcm_customers = null;
+        $rootScope.resetSelection($rootScope.customerselectlistid);
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_customer",
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                $scope.pcm_customers = response.data;
+
+                $rootScope.resetSelection($rootScope.customerselectlistid);
+                angular.forEach($scope.pcm_customers, function (item, index) {
+                    $scope.pcm_customers[index].index = index;
+                    $scope.getphoto(index);
+
+                });
+
+            }, function error(error) {
+                $rootScope.showerror($scope, 'loadData', error);
+            });
+
+    };
+
+    $scope.ok = function () {
+        lContainer = $rootScope.getSelectedRows($rootScope.customerselectlistid, $scope.pcm_customers);
+        $uibModalInstance.close(lContainer);
+    };
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+    $scope.loadData();
+});
+
 
 app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
     $scope.controllerName = 'pcm_customerpicturecontroller';
 
     $scope.pcm_customer = container;
 
-    $scope.profileimage = function (selectimage) {
-        var selectfile = selectimage.files[0];
+    $scope.profileimage = function (pSelectimage) {
+        var lSelectfile = pSelectimage.files[0];
         r = new FileReader();
         r.onloadend = function (e) {
             $scope.pcm_customer.photodocument.content = e.target.result;
         }
-        r.readAsDataURL(selectfile);
+        r.readAsDataURL(lSelectfile);
         $uibModalInstance.close($scope.pcm_customer);
     }
 

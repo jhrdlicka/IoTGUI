@@ -3,10 +3,10 @@
  */
 app.service('multiline', function ($rootScope) {
 
-    $rootScope.selectRow = function (listid, event, rowIndex) {
-        if (event.ctrlKey) {
+    $rootScope.selectRow = function (listid, event, rowIndex, multilineallowed) {
+        if (event.ctrlKey && multilineallowed) {
             changeSelectionStatus(listid, rowIndex);
-        } else if (event.shiftKey) {
+        } else if (event.shiftKey && multilineallowed) {
             selectWithShift(listid, rowIndex);
         } else {
             $rootScope.selectedRowsIndexes[listid] = [rowIndex];
@@ -41,22 +41,18 @@ app.service('multiline', function ($rootScope) {
         var selectedRow = false;
         // LOOP THROUGH EACH ROW OF THE TABLE AFTER HEADER.
         for (i = 1; i < myTab.rows.length; i++) {
-//            console.log('rowid', myTab.rows.item(i).id);            
             rowid = myTab.rows.item(i).id;
             rowindex = parseInt(rowid.substring(rowid.indexOf(":")+1));
-//            console.log('rowindex', rowindex);            
 
             if ((myTab.rows.item(i).id == 'tr.' + listid + ':' + selectFromIndex) || (myTab.rows.item(i).id == 'tr.' + listid + ':' + selectToIndex)) {
                 if (selectedRow) { // last selected row
                     select(listid, rowindex);
-//                    console.log('selectedRow 1', rowindex);            
                     selectedRow = false;
                 } else {  // first selected row
                     selectedRow = true;
                 }
             }
             if (selectedRow) {
-//                console.log('selectedRow 2', rowindex);            
                 select(listid, rowindex);
             }
         }

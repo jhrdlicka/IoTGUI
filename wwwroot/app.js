@@ -6,9 +6,10 @@ app.run(function ($rootScope, $cookies, $http, $window) {
     $rootScope.caleventlistid = 1;
     $rootScope.gcaleventlistid = 2;
     $rootScope.customerlistid = 3;
+    $rootScope.customerselectlistid = 4;
 
     $rootScope.selectedRowsIndexes = [];
-    for (var i = 1; i <= 3; i++) {
+    for (var i = 1; i <= 4; i++) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
 
