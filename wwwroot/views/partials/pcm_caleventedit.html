@@ -1,6 +1,6 @@
 ﻿
 
-<form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+<form name="myForm" ng-submit="ok()">
 
     <div class="modal-header">
         <h2 class="modal-title">
@@ -16,23 +16,36 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Title</span>
-                        <input class="form-control input-sm" type="text" ng-model="pcm_calevent.title" />
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.title" />
                     </div>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Date</span>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{datetimeFormat}}" ng-model="dataCopy.starttime" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />                        
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <!--Active-->
-                        <div class="input-group-addon" ng-click="pcm_calevent.canceled=!pcm_calevent.canceled" style="cursor: pointer;">
-                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="pcm_calevent.canceled"></span>
-                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!pcm_calevent.canceled"></span>
+                        <div class="input-group-addon" ng-click="dataCopy.canceled=!pcm_calevent.canceled" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.canceled"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.canceled"></span>
                             Canceled
                         </div>
 
                         <span class="input-group-addon input-sm">Reason:</span>
-                        <input class="form-control input-sm" type="text" ng-model="pcm_calevent.canceledreason" />
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.canceledreason" />
 
 
                     </div>
@@ -45,10 +58,10 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Price</span>
-                        <input class="form-control input-sm" type="number" data-toggle="Price" ng-model="pcm_calevent.price" />
+                        <input class="form-control input-sm" type="number" data-toggle="Price" ng-model="dataCopy.price" />
                         <span class="input-group-addon input-sm" style="min-width:200px">
-                            <select class="form-control input-sm" ng-model="pcm_calevent.currencynm">
-                                <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == pcm_calevent.currencynm">{{currency.Text}}</option>
+                            <select class="form-control input-sm" ng-model="dataCopy.currencynm">
+                                <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>
                             </select>
                         </span>
 
@@ -60,7 +73,7 @@
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon input-sm">Text on invoice</div>
-                        <textarea class="form-control input-sm" rows="5" ng-model="pcm_calevent.invoicetext"></textarea>
+                        <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.invoicetext"></textarea>
                     </div>
                 </div>
             </div>
@@ -70,8 +83,11 @@
 
     <div class="modal-footer">
         <div class="text-right">
-            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-primary" ng-click="ok()">Save</button>
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
         </div>
     </div>
+
+
 </form>
+

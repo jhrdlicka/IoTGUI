@@ -778,7 +778,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 });
 
-app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, uibDateParser) {
+    $scope.controllerName = 'pcm_caleventeditcontroller';
 
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
@@ -787,25 +788,37 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
         { Value: "USD", Text: "USD" }
     ];
 
+
     $scope.pcm_calevent = container;
-    //console.log($scope.pcm_calevent);
+    $scope.dataCopy = angular.copy($scope.pcm_calevent);
+    $scope.popup1 = { opened: false }; // initialize datapicker for fromdate
 
     $scope.ok = function () {
+        angular.forEach($scope.dataCopy, function (value, key) {
+            $scope.pcm_calevent[key] = value;
+        });
+
         $uibModalInstance.close($scope.pcm_calevent);
     };
 
     $scope.cancel = function () {
-        $scope.myForm.$rollbackViewValue();
+        angular.forEach($scope.pcm_calevent, function (value, key) {
+            $scope.dataCopy[key] = value;
+        });
+
         $uibModalInstance.dismiss('cancel');
+    };
+
+    $scope.open1 = function () { // open datapicker for fromdate
+        $scope.popup1.opened = true;
     };
 });
 
 app.controller('pcm_gcaleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
-
+    
     $scope.controllerName = 'pcm_gcaleventeditcontroller';
 
     $scope.pcm_gcalevent = container;
-    //console.log($scope.pcm_calevent);
 
     $scope.ok = function () {
         $uibModalInstance.close($scope.pcm_gcalevent);

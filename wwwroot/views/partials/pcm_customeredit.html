@@ -1,5 +1,5 @@
 ﻿<div>
-    <form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+    <form name="myForm" ng-submit="ok()">
 
         <div class="modal-header">
             <h2 class="modal-title">
@@ -12,8 +12,8 @@
             <div class="row">
 
                 <div class="col-md-3" style="min-height:75px">
-                    <div ng-if="pcm_customer.id">
-                        <img ng-src="{{pcm_customer.photodocument.content}}" class="img img-rounded img-responsive" ng-click="pcm_customerpictureedit(pcm_customer)" ng-dblclick="pcm_customerpictureedit(pcm_customer)" alt="Add picture">
+                    <div ng-if="dataCopy.id">
+                        <img ng-src="{{dataCopy.photodocument.content}}" class="img img-rounded img-responsive" ng-click="pcm_customerpictureedit(dataCopy)" ng-dblclick="pcm_customerpictureedit(dataCopy)" alt="Add picture">
                     </div>
 
                 </div>
@@ -23,12 +23,12 @@
                         <div class="form-group">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon input-sm">Name</span>
-                                <input class="form-control input-sm" type="text" ng-model="pcm_customer.name" />
+                                <input class="form-control input-sm" type="text" ng-model="dataCopy.name" />
 
                                 <!--Active-->
-                                <div class="input-group-addon" ng-click="pcm_customer.active=!pcm_customer.active" style="cursor: pointer;">
-                                    <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="pcm_customer.active"></span>
-                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!pcm_customer.active"></span>
+                                <div class="input-group-addon" ng-click="dataCopy.active=!dataCopy.active" style="cursor: pointer;">
+                                    <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.active"></span>
+                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.active"></span>
                                     Active
                                 </div>
 
@@ -40,7 +40,7 @@
                         <div class="form-group">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-addon input-sm">e-mail (calendar)</div>
-                                <input class="form-control input-sm" type="email" ng-model="pcm_customer.emailcalendar" />
+                                <input class="form-control input-sm" type="email" ng-model="dataCopy.emailcalendar" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-envelope" aria-hidden="true"> </span>
                                 </span>
@@ -52,7 +52,7 @@
                         <div class="form-group">
                             <div class="input-group input-group-sm">
                                 <div class="input-group-addon input-sm">e-mail (invoicing)</div>
-                                <input class="form-control input-sm" type="email" ng-model="pcm_customer.emailinvoice" />
+                                <input class="form-control input-sm" type="email" ng-model="dataCopy.emailinvoice" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-envelope" aria-hidden="true"> </span>
                                 </span>
@@ -65,7 +65,7 @@
                         <div class="form-group">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon input-sm">Phone</span>
-                                <input class="form-control input-sm" type="tel" ng-model="pcm_customer.phone" />
+                                <input class="form-control input-sm" type="tel" ng-model="dataCopy.phone" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-phone-alt" aria-hidden="true"> </span>
                                 </span>
@@ -84,11 +84,11 @@
                     <div class="form-group">
                         <div class="input-group input-group-sm">
                             <span class="input-group-addon input-sm">Agreed price</span>
-                            <input class="form-control input-sm" type="number" data-toggle="price per session" placeholder="per session" ng-model="pcm_customer.pricesession" style="min-width:100px" />
-                            <input class="form-control input-sm" type="number" data-toggle="discounted price per 10 sessions" placeholder="per 10 sessions" ng-model="pcm_customer.price10sessions" style="min-width:100px" />
+                            <input class="form-control input-sm" type="number" data-toggle="price per session" placeholder="per session" ng-model="dataCopy.pricesession" style="min-width:100px" />
+                            <input class="form-control input-sm" type="number" data-toggle="discounted price per 10 sessions" placeholder="per 10 sessions" ng-model="dataCopy.price10sessions" style="min-width:100px" />
                             <span class="input-group-addon" style="min-width:150px">
-                                <select class="form-control input-sm" ng-model="pcm_customer.currencynm">
-                                    <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == pcm_customer.currencynm">{{currency.Text}}</option>
+                                <select class="form-control input-sm" ng-model="dataCopy.currencynm">
+                                    <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>
                                 </select>
                             </span>
                         </div>
@@ -99,7 +99,7 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-addon input-sm">Agreed conditions</div>
-                            <textarea class="form-control input-sm" rows="5" ng-model="pcm_customer.agreedconditions" />
+                            <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.agreedconditions" />
                         </div>
                     </div>
                 </div>
@@ -108,20 +108,20 @@
                     <div class="form-group">
                         <div class="input-group">
                             <div class="input-group-addon input-sm">Note</div>
-                            <textarea class="form-control input-sm" rows="5" ng-model="pcm_customer.note"></textarea>
+                            <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.note"></textarea>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div ng-if="pcm_customer.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6"  style="min-width:1000px"></div>
+            <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6"  style="min-width:1000px"></div>
 
 
         </div>
 
         <div class="modal-footer">
             <div class="text-right">
-                <button class="btn btn-primary" type="submit">Save</button>
+                <button class="btn btn-primary" ng-click="ok()">Save</button>
                 <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
             </div>
         </div>

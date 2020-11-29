@@ -253,9 +253,11 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
         { Value: "USD", Text: "USD" }
     ];
 
-    $scope.pcm_customer = container;
+    $scope.objectData = container;
+    $scope.dataCopy = angular.copy($scope.objectData);
 
-    $scope.pcm_customerpictureedit = function (pcm_customer) {
+
+    $scope.pcm_customerpictureedit = function (pCustomer) {
 
         var modal2Instance = $uibModal.open({
             templateUrl: 'views/partials/pcm_customerpicture.html',
@@ -264,7 +266,7 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
             backdrop: 'static',
             resolve: {
                 container: function () {
-                    return pcm_customer;
+                    return pCustomer;
                 }
             }
         });
@@ -276,11 +278,18 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
     };
 
     $scope.ok = function () {
-        $uibModalInstance.close($scope.pcm_customer);
+        angular.forEach($scope.dataCopy, function (value, key) {
+            $scope.objectData[key] = value;
+        });
+
+        $uibModalInstance.close($scope.objectData);
     };
 
     $scope.cancel = function () {        
-        $scope.myForm.$rollbackViewValue();
+        angular.forEach($scope.objectData, function (value, key) {
+            $scope.dataCopy[key] = value;
+        });
+
         $uibModalInstance.dismiss('cancel');
     };
 });
@@ -355,24 +364,32 @@ app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstan
 app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
     $scope.controllerName = 'pcm_customerpicturecontroller';
 
-    $scope.pcm_customer = container;
+    $scope.objectData = container;
+    $scope.dataCopy = angular.copy($scope.objectData);
 
     $scope.profileimage = function (pSelectimage) {
         var lSelectfile = pSelectimage.files[0];
         r = new FileReader();
         r.onloadend = function (e) {
-            $scope.pcm_customer.photodocument.content = e.target.result;
+            $scope.objectData.photodocument.content = e.target.result;
         }
         r.readAsDataURL(lSelectfile);
-        $uibModalInstance.close($scope.pcm_customer);
+        $uibModalInstance.close($scope.objectData);
     }
 
     $scope.ok = function () {
-         $uibModalInstance.close($scope.pcm_customer);
+        angular.forEach($scope.dataCopy, function (value, key) {
+            $scope.objectData[key] = value;
+        });
+
+        $uibModalInstance.close($scope.objectData);
     };
 
     $scope.cancel = function () {
-        $scope.myForm.$rollbackViewValue();
+        angular.forEach($scope.objectData, function (value, key) {
+            $scope.dataCopy[key] = value;
+        });
+
         $uibModalInstance.dismiss('cancel');
     };
 });

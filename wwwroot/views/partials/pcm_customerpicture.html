@@ -1,8 +1,8 @@
-﻿<form name="myForm" ng-model-options="{updateOn: 'submit'}" ng-submit="ok()">
+﻿<form name="myForm" ng-submit="ok()">
 
     <div class="modal-header">
         <h2 class="modal-title">
-            {{pcm_customer.name}}
+            {{dataCopy.name}}
         </h2>
     </div>
 
@@ -10,7 +10,7 @@
 
         <div class="row">
             <div class="col-md-12" style="min-height:75px">
-                <img ng-src="{{pcm_customer.photodocument.content}}" class="img img-rounded img-responsive">
+                <img ng-src="{{dataCopy.photodocument.content}}" class="img img-rounded img-responsive">
             </div>
         </div>
  

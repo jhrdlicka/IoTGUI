@@ -13,6 +13,11 @@ app.run(function ($rootScope, $cookies, $http, $window) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
 
+    // shared parameters
+    $rootScope.dateFormat = 'dd.MM.yyyy';
+    $rootScope.timeFormat = 'HH:mm';
+    $rootScope.datetimeFormat = 'dd.MM.yyyy HH:mm';
+    $rootScope.dateOptions = { startingDay: 1 };
 
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
 
