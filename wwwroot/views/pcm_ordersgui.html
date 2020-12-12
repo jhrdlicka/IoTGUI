@@ -32,7 +32,8 @@
                         <th></th>
                         <th>ID</th>
                         <th>Client</th>
-                        <th>Sessions</th>
+                        <th>Ordered Sessions</th>
+                        <th>Scheduled</th>
                         <th>Fully scheduled</th>
                         <th>Invoiced</th>
                     </tr>
@@ -47,6 +48,7 @@
                         <td>{{ pcm_order.id }}</td>
                         <td>{{ pcm_order.customer.name }}</td>
                         <td>{{ pcm_order.sessions }}</td>
+                        <td>{{ pcm_order.ordersessions.length }}</td>
                         <td><input type="checkbox" ng-checked="pcm_order.xfullyscheduled"></td>
                         <td><input type="checkbox" ng-checked="pcm_order.xinvoiced"></td>
                         <td style="width:1%">

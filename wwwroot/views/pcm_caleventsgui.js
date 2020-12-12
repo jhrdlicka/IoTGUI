@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, multiline, guialert) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, $filter, multiline, guialert) {
 
     $scope.controllerName = 'pcm_caleventcontroller';
     $scope.multilineallowed = true;
@@ -166,32 +166,56 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     }
 
-    $scope.getcustomer = function (caleventid) {
-        if (!$scope.pcm_calevents[caleventid].customerid) {
-            $scope.pcm_calevents[caleventid].customer = null;
+    $scope.getcustomer = function (caleventindex) {
+        if (!$scope.pcm_calevents[caleventindex].customerid) {
+            $scope.pcm_calevents[caleventindex].customer = null;
             return;
         }
         
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventid].customerid,
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventindex].customerid,
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {                
 //                console.log("customerid", $scope.pcm_calevents[caleventid].customerid);
 //                console.log("id", $scope.pcm_calevents[caleventid].id);
-                $scope.pcm_calevents[caleventid].customer = response.data;
+                $scope.pcm_calevents[caleventindex].customer = response.data;
 
             }, function error(error) {
                 if (error.status == 401)
                     alert("Access Denied!!!");
                 else
                     alert("Unknown Error!");
-                console.error('error', error);
-                $scope.pcm_calevents[caleventid].customer = null;
+                    console.error('error', error);
+                    $scope.pcm_calevents[caleventindex].customer = null;
             });
     };
+
+    $scope.getordersessions = function (caleventindex) {
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession/caleventid/" + $scope.pcm_calevents[caleventindex].id,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                //                console.log("customerid", $scope.pcm_calevents[caleventid].customerid);
+                //                console.log("id", $scope.pcm_calevents[caleventid].id);                
+                 //               console.log("ordersessions", response.data);                
+                $scope.pcm_calevents[caleventindex].ordersessions = response.data;
+
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+//                    alert("Unknown Error!");
+                    console.error('error', error);
+                    $scope.pcm_calevents[caleventindex].ordersessions = null;
+            });
+    };
+
 
     $scope.loadData = function () {
 
@@ -206,7 +230,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.displayorders == 'ALL') {
             return true;
         }
-        if (!item.orderid) {
+        if (!item.ordersessions) {
             //console.log("customer not found", item.id);
 
             if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL')
@@ -231,13 +255,17 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         l_result = false;
+        console.log("calevent", item.id);
         angular.forEach(l_orders, function (order, index) {
-            if (order.id == item.order.id) {
-                //                console.log("found", item.id);
+//            console.log("order", order.id);
+            l_ordersessions = $filter('filter')(item.ordersessions, { orderid: order.id });
+//            console.log("ordersessions", l_ordersessions);
+            if (l_ordersessions.length>0) { 
+//                                console.log("found", order.id);
                 l_result = true;
                 return true;
             }
-        }, function () { /* cancel */ });
+        });
 
         //if (!l_result)
         //  console.log("not found", item.id);
@@ -289,7 +317,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 if (order.customer) {
                     l_customers.push({ id: order.customer.id });
                 }
-            }, function () { /* cancel */ });
+            });
             
         } else{
             l_customers = null;
@@ -333,7 +361,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 l_result = true;
                 return true;
             }
-        }, function () { /* cancel */ });
+        });
 
         // there exists any connected calevent from selected calevents
         if (l_result) {
@@ -360,7 +388,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 l_result = true;
                 return true;
             }
-        }, function () { /* cancel */ });
+        });
 
         // here the gcalevent is surely not between selected calevents so depends on calevents
         if (l_result) {
@@ -399,6 +427,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             $scope.pcm_calevents[index].gcalidflag = false;
         else
             $scope.pcm_calevents[index].gcalidflag = true;
+        $scope.getordersessions(index);
         $scope.getcustomer(index);
 
         if (item.gcaljson) {
@@ -697,6 +726,95 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     }
 
+    function i_createordersession(calevent, order) {
+        var pcm_ordersession = { orderid: order.id, invoicetext: null, price: null, currencynm: null, caleventid: calevent.id };
+
+        // create a container without "id" field
+        xjson = JSON.stringify(pcm_ordersession);
+
+        //INSERT
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession",
+            withCredentials: true,
+            method: 'POST',
+            datatype: "json",
+            data: xjson
+        })
+            .then(function success(response) {
+                $scope.getordersessions(calevent.index);
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!")
+                else
+                    alert("Unknown Error!");
+                console.error('error', error);
+            });
+    }
+
+    function i_pcm_connectcaleventstoorder(pOrders) {
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+
+        if (!confirm("Connect " + l_calevents.length + " events to order of " + pOrders[0].customer.name + "?"))
+            return;
+
+        angular.forEach(l_calevents, function (calevent, index) {
+            l_exists = false; 
+            if (calevent.ordersessions) {
+                angular.forEach(calevent.ordersessions, function (ordersession, index2) {
+                    if (ordersession.orderid == pOrders[0].id)
+                        l_exists = true;
+                });
+            }
+            if (!l_exists) {
+                if (calevent.ordersessions) {
+                /* the session is connected to another order - confirm creation */
+                    if (!confirm("Event nr. " + calevent.id + " is already connected to another order. Connect to more events?"))
+                        return;
+                }
+
+                /* create a new ordersession and refresh the calevent */
+                i_createordersession(calevent, pOrders[0]);                
+            }
+        });
+
+    }
+
+    $scope.pcm_connectcaleventstoorder = function () {
+
+
+        if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+            if (l_orders.length != 1) {
+                alert('Select exactly one Order');
+                console.error('error', 'invalid number of records');
+                return;
+            }
+            i_pcm_connectcaleventstoorder(l_orders);
+        }
+        else
+            if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+                l_orders = [{
+                    id: $scope.$parent.dataCopy.id,
+                    customer: {
+                        name: $scope.$parent.dataCopy.customer.name
+                    }
+                }];
+                i_pcm_connectcaleventstoorder(l_orders);
+
+            } else { /* call customer lookup */
+                $rootScope.entitySelect('pcm_orders', false).then(function (l_orders) {
+                    i_pcm_connectcaleventstoorders(l_orders);
+                }, function (error) {
+                    if (error == "cancel") {
+                        //   $rootScope.showalert("error", "Connect Calevents to Orders", "No order selected", "OK");
+                    }
+                    else
+                        $rootScope.showerror($scope, 'pcm_connectcaleventstoorder', error);
+                });
+            }
+    }
+
 
     function i_pcm_connectcaleventstocustomer(pCustomers) {
         l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
@@ -724,7 +842,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.$parent.controllerName == 'pcm_customercontroller') {
             l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
             if (l_customers.length != 1) {
-                alert('Select exactly one Customer');
+                alert('Select exactly one Client');
                 console.error('error', 'invalid number of records');
                 return;
             }
@@ -733,8 +851,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         else
             if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
                 l_customers = [{
-                        id: $scope.$parent.pcm_customer.id,
-                        name: $scope.$parent.pcm_customer.name                    
+                        id: $scope.$parent.dataCopy.id,
+                        name: $scope.$parent.dataCopy.name                    
                 }];
                 i_pcm_connectcaleventstocustomer(l_customers);
 

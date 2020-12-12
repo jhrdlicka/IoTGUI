@@ -6,27 +6,52 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     $scope.multilineallowed = true;
 
 
-    $scope.getcustomer = function (orderid) {
-        if (!$scope.pcm_orders[orderid].customerid) {
-            $scope.pcm_orders[orderid].customer = null;
+    $scope.getcustomer = function (orderindex) {
+        if (!$scope.pcm_orders[orderindex].customerid) {
+            $scope.pcm_orders[orderindex].customer = null;
             return;
         }
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_orders[orderid].customerid,
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_orders[orderindex].customerid,
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                //                console.log("customerid", $scope.pcm_orders[orderid].customerid);
-                //                console.log("id", $scope.pcm_orders[orderid].id);
-                $scope.pcm_orders[orderid].customer = response.data;
+                //                console.log("customerid", $scope.pcm_orders[orderindex].customerid);
+                //                console.log("id", $scope.pcm_orders[orderindex].id);
+                $scope.pcm_orders[orderindex].customer = response.data;
 
             }, function error(error) {
-                $rootScope.showerror($scope, 'getcustomer', error);
+                    $rootScope.showerror($scope, 'getcustomer', error);
+                    $scope.pcm_orders[orderindex].customer = null;
             });
     };
+
+    $scope.getordersessions = function (orderindex) {
+        $scope.pcm_orders[orderindex].xfullyscheduled = false;
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession/orderid/" + $scope.pcm_orders[orderindex].id,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                //                console.log("customerid", $scope.pcm_orders[caleventid].customerid);
+                //                console.log("id", $scope.pcm_orders[caleventid].id);                
+                //               console.log("ordersessions", response.data);                
+                $scope.pcm_orders[orderindex].ordersessions = response.data;
+                if ($scope.pcm_orders[orderindex].ordersessions.length >= $scope.pcm_orders[orderindex].sessions)
+                    $scope.pcm_orders[orderindex].xfullyscheduled = true;
+
+            }, function error(error) {
+                $rootScope.showerror($scope, 'getordersessions', error);
+                $scope.pcm_orders[orderindex].ordersessions = null;
+            });
+    };
+
 
     $scope.loadData = function () {
         $scope.pcm_orders = null;
@@ -46,6 +71,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
                 angular.forEach($scope.pcm_orders, function (item, lIndex) {
                     $scope.pcm_orders[lIndex].index = lIndex;
                     $scope.getcustomer(lIndex);
+                    $scope.getordersessions(lIndex);
                 });
 
             }, function error(error) {
@@ -121,6 +147,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
             }
 
             order.customerid = pCustomers[0].id;
+            order.customer = {id:pCustomers[0].id, name:pCustomers[0].name};
             $scope.save(order);
         });
 
@@ -238,6 +265,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
                 data: JSON.stringify(l_containerupdate)
             })
                 .then(function success(response) {
+                    $scope.getordersessions(container.index);
                     //                        $scope.loadData();  // refresh data if necessary (data could be changed by API)
                 }, function error(error) {
                     $rootScope.showerror($scope, 'save.1', error);

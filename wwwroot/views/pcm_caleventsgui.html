@@ -7,6 +7,7 @@
                 <span class="pull-right">
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New session">new</button>
                     <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstocustomer()" title="Connect calevents to customer">connect to customer</button>
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstoorder()" title="Connect calevents to order">connect to order</button>
                     <button class="btn btn-sm btn-danger" ng-click="pcm_caleventdelete()">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
                 </span>
@@ -150,6 +151,22 @@
             <p>
                 <b>{{selectedpcm_calevent.id}}</b> {{selectedpcm_calevent.customer.name}}
                 <br>
+                <table class='table table-responsive table-hover' aria-labelledby="tableLabel" ng-if="selectedpcm_calevent.ordersessions" >
+                    <thead>
+                        <tr>
+                            <th>orderid</th>
+                            <th>caleventid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ordersession in selectedpcm_calevent.ordersessions">
+                        <td>{{ordersession.orderid}}</td>
+                        <td>{{ordersession.caleventid}}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
             </p>
 
         </div>
