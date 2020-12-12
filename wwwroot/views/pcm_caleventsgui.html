@@ -6,7 +6,7 @@
 
                 <span class="pull-right">
                     <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New session">new</button>
-                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstocustomer()" title="Connect calevents to customer">connect to customer</button>
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstocustomer()" title="Connect calevents to customer" ng_if="!hideItem_ConnectCustomers">connect to customer</button>
                     <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstoorder()" title="Connect calevents to order">connect to order</button>
                     <button class="btn btn-sm btn-danger" ng-click="pcm_caleventdelete()">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
@@ -14,7 +14,7 @@
             </h1>
         </div>
 
-        <div class="input-group input-group-sm">
+        <div class="input-group input-group-sm" ng_if="!hideItem_FilterCustomers">
             <div class="input-group-addon input-sm">Filter by clients:</div>
             <select class="form-control input-sm" id="displaycustomers" ng-model="displaycustomers">
                 <option ng-repeat="displaycustomersoption in displaycustomersoptions" value="{{displaycustomersoption.Value}}" ng-selected="displaycustomersoption.Value == displaycustomers">{{displaycustomersoption.Text}}</option>
@@ -63,7 +63,7 @@
                         <td style="width:1%">
                             <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventedit(false)">Edit</button>
                         </td>
-                        <td style="width:1%">
+                        <td style="width:1%" ng-if="!hideItem_ButtonMergecalvents">
                             <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventmerge(true)">Merge</button>
                         </td>
                     </tr>
@@ -73,7 +73,7 @@
 
         </div>
     </div>
-    <div class="col-md-6" style="min-width:800px">
+    <div class="col-md-6" style="min-width:800px" ng-if="!hideItem_ListGCalEvent">
 
         <h1>
             Google Calendar
@@ -144,7 +144,7 @@
 
 
 
-    <div class="col-md-6" style="min-width:800px">
+    <div class="col-md-6" style="min-width:800px" ng-if="false">
         <div ng-if="selectedpcm_calevent">
             <hr />
             <h3>Selected Event</h3>

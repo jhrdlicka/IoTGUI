@@ -68,16 +68,17 @@
 
     <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
 
-    <div class="col-md-6" ng-if="selectedpcm_order">
-        <hr />
-        <h3>Selected Order</h3>
-        <p>
-            <b>{{selectedpcm_order.id}}</b> {{selectedpcm_order.invoiceText}}
-            <br>
-        </p>
+    <div ng-if="false">
+        <div class="col-md-6" ng-if="selectedpcm_order">
+            <hr />
+            <h3>Selected Order</h3>
+            <p>
+                <b>{{selectedpcm_order.id}}</b> {{selectedpcm_order.invoiceText}}
+                <br>
+            </p>
+        </div>
+
     </div>
-
-
 
 </div>
 

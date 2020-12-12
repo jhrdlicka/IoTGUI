@@ -230,7 +230,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.displayorders == 'ALL') {
             return true;
         }
-        if (!item.ordersessions) {
+        if (!item.ordersessions || item.ordersessions.length==0) {
             //console.log("customer not found", item.id);
 
             if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL')
@@ -255,7 +255,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         l_result = false;
-        console.log("calevent", item.id);
+        //console.log("calevent", item.id);
         angular.forEach(l_orders, function (order, index) {
 //            console.log("order", order.id);
             l_ordersessions = $filter('filter')(item.ordersessions, { orderid: order.id });
@@ -278,6 +278,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.filterCalevents = function (item) {
         var dispcustfield = document.getElementById('displaycustomers');
+        if (!dispcustfield)
+            return true;
         $scope.displaycustomers = dispcustfield.value;
 
         if ($scope.displaycustomers == 'ALL') {
@@ -938,9 +940,14 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
         { Value: "SELECTED", Text: "Connected to seleted customers" },
         { Value: "NULL", Text: "Not connected to customers" }
-    ];
+    ];    
 
-    $scope.displayorders = "ALL";
+    if ($scope.$parent.controllerName =="pcm_ordereditcontroller")
+        $scope.displayorders = "SELECTED";
+    else if ($scope.$parent.controllerName == "pcm_ordercontroller")
+        $scope.displayorders = "SELECTED+";
+    else
+        $scope.displayorders = "ALL";
     $scope.displayordersoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "SELECTED+", Text: "Not conntected or connected to seleted orders" },

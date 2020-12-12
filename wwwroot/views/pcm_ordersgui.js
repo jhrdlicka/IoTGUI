@@ -366,6 +366,11 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 
+    $scope.hideItem_FilterCustomers = true;
+    $scope.hideItem_ConnectCustomers = true;
+    $scope.hideItem_ListGCalEvent = true;
+    $scope.hideItem_ButtonMergecalvents = true;
+
     $scope.selectedpcm_order = null;
     $scope.loadData();
 
@@ -400,6 +405,13 @@ app.controller('pcm_ordereditcontroller', function ($scope, $uibModalInstance, c
 
         $uibModalInstance.dismiss('cancel');
     };
+
+
+    $scope.hideItem_FilterCustomers = true;
+    $scope.hideItem_ConnectCustomers = true;
+    $scope.hideItem_ListGCalEvent = true;
+    $scope.hideItem_ButtonMergecalvents = true;
+    
 });
 
 app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
