@@ -14,9 +14,15 @@
         </div>
 
         <div class="input-group input-group-sm">
-            <div class="input-group-addon input-sm">Display events for:</div>
+            <div class="input-group-addon input-sm">Filter by clients:</div>
             <select class="form-control input-sm" id="displaycustomers" ng-model="displaycustomers">
                 <option ng-repeat="displaycustomersoption in displaycustomersoptions" value="{{displaycustomersoption.Value}}" ng-selected="displaycustomersoption.Value == displaycustomers">{{displaycustomersoption.Text}}</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm">
+            <div class="input-group-addon input-sm">Filter by orders:</div>
+            <select class="form-control input-sm" id="displayorders" ng-model="displayorders">
+                <option ng-repeat="displayordersoption in displayordersoptions" value="{{displayordersoption.Value}}" ng-selected="displayordersoption.Value == displayorders">{{displayordersoption.Text}}</option>
             </select>
         </div>
 
@@ -37,7 +43,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="pcm_calevent in pcm_calevents | filter:filterCalevents"
+                    <tr ng-repeat="pcm_calevent in pcm_calevents | filter:filterCalevents | filter:filterCaleventsByOrders"
                         ng-dblclick="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventedit(false)"
                         ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed);pcm_caleventdata()"
                         ng-class="{active: isRowSelected(caleventlistid, pcm_calevent.index)}"
@@ -80,7 +86,7 @@
         </h1>
         <div>
             <div class="input-group input-group-sm">
-                <div class="input-group-addon input-sm">Display Google events for:</div>
+                <div class="input-group-addon input-sm">Filter by events:</div>
                 <select class="form-control input-sm" id="displaycalevents" ng-model="displaycalevents">
                     <option ng-repeat="displaycaleventsoption in displaycaleventsoptions" value="{{displaycaleventsoption.Value}}" ng-selected="displaycaleventsoption.Value == displaycalevents">{{displaycaleventsoption.Text}}</option>
                 </select>

@@ -198,7 +198,56 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         gapi.load('client:auth2', initClient);
 
     }
-    
+
+    $scope.filterCaleventsByOrders = function (item) {
+        var dispordfield = document.getElementById('displayorders');
+        $scope.displayorders = dispordfield.value;
+
+        if ($scope.displayorders == 'ALL') {
+            return true;
+        }
+        if (!item.orderid) {
+            //console.log("customer not found", item.id);
+
+            if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL')
+                return true;
+            else
+                return false;
+        }
+
+        if ($scope.displayorders == 'NULL')
+            return false;
+
+        if  ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+            l_orders = {
+                order: {
+                    id: $scope.$parent.dataCopy.id
+                }
+            };
+        } else if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+        } else {
+            l_orders = null;
+        }
+
+        l_result = false;
+        angular.forEach(l_orders, function (order, index) {
+            if (order.id == item.order.id) {
+                //                console.log("found", item.id);
+                l_result = true;
+                return true;
+            }
+        }, function () { /* cancel */ });
+
+        //if (!l_result)
+        //  console.log("not found", item.id);
+        //else 
+        //  console.log("found", item.id);
+
+        return l_result;
+    };
+
+
     $scope.filterCalevents = function (item) {
         var dispcustfield = document.getElementById('displaycustomers');
         $scope.displaycustomers = dispcustfield.value;
@@ -221,17 +270,30 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.$parent.controllerName == 'pcm_customercontroller') {
             l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
         }
-        else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+        else if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.pcm_customer.id
+                        id: $scope.$parent.dataCopy.id
                     }
                 };
-
-             } else {
-                  l_customers = null;
-               }
+        } else if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+                    l_customers = {
+                        customer: {
+                            id: $scope.$parent.dataCopy.customer.id
+                        }
+                    };
+        } else if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+            var l_customers = [];
+            angular.forEach(l_orders, function (order, index) {
+                if (order.customer) {
+                    l_customers.push({ id: order.customer.id });
+                }
+            }, function () { /* cancel */ });
+            
+        } else{
+            l_customers = null;
+        }
 
 
         l_result = false;
@@ -759,6 +821,15 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         { Value: "SELECTED", Text: "Connected to seleted customers" },
         { Value: "NULL", Text: "Not connected to customers" }
     ];
+
+    $scope.displayorders = "ALL";
+    $scope.displayordersoptions = [
+        { Value: "ALL", Text: "All" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to seleted orders" },
+        { Value: "SELECTED", Text: "Connected to seleted orders" },
+        { Value: "NULL", Text: "Not connected to orders" }
+    ];
+
     $scope.displaycalevents = "ALL";
     $scope.displaycaleventsoptions = [
         { Value: "ALL", Text: "All" },

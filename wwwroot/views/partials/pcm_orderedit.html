@@ -4,7 +4,7 @@
 
     <div class="modal-header">
         <h2 class="modal-title">
-            Calendar event
+            Order
         </h2>
     </div>
 
@@ -49,7 +49,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-addon" ng-click="dataCopy.xfullyscheduled=dataCopy.xfullyscheduled" style="cursor: pointer;" disabled>  
+                        <div class="input-group-addon" ng-click="dataCopy.xfullyscheduled=dataCopy.xfullyscheduled" style="cursor: pointer;" disabled>
                             <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.xfullyscheduled"></span>
                             <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.xfullyscheduled"></span>
                             Fully Scheduled
@@ -85,6 +85,7 @@
                 </div>
             </div>
         </div>
+        <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6" style="min-width:1000px"></div>
 
     </div>
 

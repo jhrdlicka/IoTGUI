@@ -17,7 +17,7 @@
             <input class="input-sm col-md-12" ng-model="searchText">
         </div>
         <div class="input-group input-group-sm  col-md-12">
-            <div class="input-group-addon input-sm">Display events for:</div>
+            <div class="input-group-addon input-sm">Filter by clients:</div>
             <select class="form-control input-sm" id="displayocustomers" ng-model="displayocustomers">
                 <option ng-repeat="displayocustomersoption in displayocustomersoptions" value="{{displayocustomersoption.Value}}" ng-selected="displayocustomersoption.Value == displayocustomers">{{displayocustomersoption.Text}}</option>
             </select>
