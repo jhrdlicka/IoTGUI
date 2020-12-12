@@ -7,9 +7,10 @@ app.run(function ($rootScope, $cookies, $http, $window) {
     $rootScope.gcaleventlistid = 2;
     $rootScope.customerlistid = 3;
     $rootScope.customerselectlistid = 4;
+    $rootScope.orderlistid = 5;
 
     $rootScope.selectedRowsIndexes = [];
-    for (var i = 1; i <= 4; i++) {
+    for (var i = 1; i <= 5; i++) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
 
@@ -60,6 +61,7 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/fetch", { templateUrl: "views/fetch-data.html", controller: "fetchDataController" })
         .when("/pcm_customers", { templateUrl: "views/pcm_customersgui.html", controller: "pcm_customercontroller" })
         .when("/pcm_calevents", { templateUrl: "views/pcm_caleventsgui.html", controller: "pcm_caleventcontroller" })
+        .when("/pcm_orders", { templateUrl: "views/pcm_ordersgui.html", controller: "pcm_ordercontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 
