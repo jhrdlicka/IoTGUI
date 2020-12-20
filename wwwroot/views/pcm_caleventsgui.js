@@ -225,16 +225,23 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.filterCaleventsByOrders = function (item) {
         var dispordfield = document.getElementById('displayorders');
+        if (!dispordfield)
+            return true;
+
+//        console.log("displayorders", $scope.displayorders );
+
         $scope.displayorders = dispordfield.value;
 
         if ($scope.displayorders == 'ALL') {
             return true;
         }
         if (!item.ordersessions || item.ordersessions.length==0) {
-            //console.log("customer not found", item.id);
+//            console.log("no order found", item.id);
 
-            if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL')
+            if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL') {
+//                console.log("no order found 1", item.id);
                 return true;
+            }
             else
                 return false;
         }
@@ -278,9 +285,13 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.filterCalevents = function (item) {
         var dispcustfield = document.getElementById('displaycustomers');
-        if (!dispcustfield)
+        if (!dispcustfield) {
+//            console.log("no calevent filter", item.id);
             return true;
+        }
+
         $scope.displaycustomers = dispcustfield.value;
+        //console.log("calevent filter", $scope.displaycustomers);
 
         if ($scope.displaycustomers == 'ALL') {
             return true;
@@ -297,6 +308,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if ($scope.displaycustomers == 'NULL')
             return false;
 
+        //console.log("controllerName", $scope.$parent.controllerName);
         if ($scope.$parent.controllerName == 'pcm_customercontroller') {
             l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
         }
@@ -313,17 +325,28 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                         }
                     };
         } else if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
-            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
-            var l_customers = [];
-            angular.forEach(l_orders, function (order, index) {
-                if (order.customer) {
-                    l_customers.push({ id: order.customer.id });
-                }
-            });
-            
+            if ($scope.$parent.$parent.$parent.controllerName == 'pcm_customereditcontroller')  // docked to orders within a client detail (I had to add one extra $parent as there are some empty parrents in the hierarchy...)
+                l_customers = {
+                    customer: {
+                        id: $scope.$parent.$parent.dataCopy.id
+                    }
+                };
+            else if ($scope.$parent.$parent.$parent.controllerName == 'pcm_customercontroller')  // docked to orders within a client list (I had to add one extra $parent as there are some empty parrents in the hierarchy...)
+                l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.$parent.$parent.pcm_customers);
+            else {
+                l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.$parent.pcm_orders);
+                var l_customers = [];
+                angular.forEach(l_orders, function (order, index) {
+                    if (order.customer) {
+                        l_customers.push({ id: order.customer.id });
+                    }
+                });
+            }
         } else{
             l_customers = null;
         }
+
+        //console.log("customers", l_customers);
 
 
         l_result = false;
@@ -934,20 +957,14 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     };
 
     $scope.useremail = "";
-    $scope.displaycustomers = "ALL";
+
     $scope.displaycustomersoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
         { Value: "SELECTED", Text: "Connected to seleted customers" },
         { Value: "NULL", Text: "Not connected to customers" }
-    ];    
+    ];
 
-    if ($scope.$parent.controllerName =="pcm_ordereditcontroller")
-        $scope.displayorders = "SELECTED";
-    else if ($scope.$parent.controllerName == "pcm_ordercontroller")
-        $scope.displayorders = "SELECTED+";
-    else
-        $scope.displayorders = "ALL";
     $scope.displayordersoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "SELECTED+", Text: "Not conntected or connected to seleted orders" },
@@ -955,7 +972,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         { Value: "NULL", Text: "Not connected to orders" }
     ];
 
-    $scope.displaycalevents = "ALL";
     $scope.displaycaleventsoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "CONNECTED", Text: "Connected to any event" },
@@ -964,6 +980,42 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         { Value: "NULL", Text: "Not connected any event" }
     ];
 
+    if (!$scope.$parent.controllerName) {  // top level view
+        $scope.displaycustomers = "ALL";
+        $scope.displayorders = "ALL";
+        $scope.displaycalevents = "ALL";
+    }
+    else if ($scope.$parent.controllerName == "pcm_ordercontroller") {
+//        $scope.hideItem_FilterCustomers = true;
+        $scope.hideItem_ConnectCustomers = true;
+        $scope.hideItem_ListGCalEvent = true;
+        $scope.hideItem_ButtonMergecalvents = true;
+        $scope.displayorders = "SELECTED+";
+        $scope.displaycustomers = "ALL";
+    }
+    else if ($scope.$parent.controllerName == "pcm_ordereditcontroller") {
+//        $scope.hideItem_FilterCustomers = true;
+        $scope.hideItem_ConnectCustomers = true;
+        $scope.hideItem_ListGCalEvent = true;
+        $scope.hideItem_ButtonMergecalvents = true;
+        $scope.displayorders = "SELECTED";
+        $scope.displaycustomers = "ALL";
+    }
+    else if ($scope.$parent.controllerName == "pcm_customereditcontroller") {
+        $scope.hideItem_FilterOrders = true;
+        $scope.displaycustomers = "SELECTED";
+        $scope.displaycalevents = "SELECTED";
+    }
+    else if ($scope.$parent.controllerName == "pcm_customercontroller") {
+        $scope.hideItem_FilterOrders = true;
+        $scope.displaycustomers = "SELECTED+";
+        $scope.displaycalevents = "SELECTED+";
+    }
+    else {  // used on any other screen
+        $scope.displaycustomers = "ALL";
+        $scope.displayorders = "ALL";
+        $scope.displaycalevents = "ALL";
+    }
 
     $scope.selectedpcm_calevent = null;
     $scope.selectedpcm_gcalevent = null;

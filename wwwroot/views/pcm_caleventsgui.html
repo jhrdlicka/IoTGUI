@@ -20,7 +20,7 @@
                 <option ng-repeat="displaycustomersoption in displaycustomersoptions" value="{{displaycustomersoption.Value}}" ng-selected="displaycustomersoption.Value == displaycustomers">{{displaycustomersoption.Text}}</option>
             </select>
         </div>
-        <div class="input-group input-group-sm">
+        <div class="input-group input-group-sm" ng_if="!hideItem_FilterOrders"> 
             <div class="input-group-addon input-sm">Filter by orders:</div>
             <select class="form-control input-sm" id="displayorders" ng-model="displayorders">
                 <option ng-repeat="displayordersoption in displayordersoptions" value="{{displayordersoption.Value}}" ng-selected="displayordersoption.Value == displayorders">{{displayordersoption.Text}}</option>

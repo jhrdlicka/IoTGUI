@@ -19,66 +19,68 @@
 
             </div>
 
-                <div class="col-md-6" style="min-width:1000px">
-                    <p ng-if="!pcm_customers"><em>Loading...</em></p>
+            <div class="col-md-6" style="min-width:1000px">
+                <p ng-if="!pcm_customers"><em>Loading...</em></p>
 
-                    <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{customerlistid}}">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Photo</th>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>e-mail</th>
-                                <th>Phone</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
-                                ng-dblclick="edit()"
-                                ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed);refreshdetail()"
-                                ng-class="{active: isRowSelected(customerlistid, pcm_customer.index)}"
-                                id="tr.{{customerlistid}}:{{pcm_customer.index}}">
-                                <td><input type="checkbox" ng-checked="isRowSelected(customerlistid, pcm_customer.index)"></td>
-                                <td><img ng-src="{{pcm_customer.photodocument.content}}" class="img-rounded" width="60"></td>
-                                <td>{{ pcm_customer.id }}</td>
-                                <td>{{ pcm_customer.name }}</td>
-                                <td>{{ pcm_customer.emailcalendar }}<br>{{ pcm_customer.emailinvoice }}</td>
-                                <td>{{ pcm_customer.phone }}</td>
-                                <td style="width:1%">
-                                    <button class="btn btn-danger btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed); delete()">Delete</button>
-                                </td>
-                                <td style="width:1%">
-                                    <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed);refreshdetail()">Select</button>
-                                </td>
-                                <td style="width:1%">
-                                    <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed); edit()">Edit</button>
-                                </td>
-                            </tr>
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{customerlistid}}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Photo</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>e-mail</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
+                            ng-dblclick="edit()"
+                            ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed);refreshdetail()"
+                            ng-class="{active: isRowSelected(customerlistid, pcm_customer.index)}"
+                            id="tr.{{customerlistid}}:{{pcm_customer.index}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(customerlistid, pcm_customer.index)"></td>
+                            <td><img ng-src="{{pcm_customer.photodocument.content}}" class="img-rounded" width="60"></td>
+                            <td>{{ pcm_customer.id }}</td>
+                            <td>{{ pcm_customer.name }}</td>
+                            <td>{{ pcm_customer.emailcalendar }}<br>{{ pcm_customer.emailinvoice }}</td>
+                            <td>{{ pcm_customer.phone }}</td>
+                            <td style="width:1%">
+                                <button class="btn btn-danger btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed); delete()">Delete</button>
+                            </td>
+                            <td style="width:1%">
+                                <button class="btn btn-primary btn-xs" ng-click="selectRow(customerlistid, $event, pcm_customer.index, multilineallowed); edit()">Edit</button>
+                            </td>
+                        </tr>
 
-                        </tbody>
-                    </table>
-
-                </div>
-            </div>
-
-
-
-            <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6"  style="min-width:1000px"></div>
-
-            <div class="col-md-6" ng-if="selectedpcm_customer">
-                <hr />
-                <h3>Selected Client</h3>
-                <p>
-                    <b>{{selectedpcm_customer.id}}</b> {{selectedpcm_customer.name}}
-                    <br>
-                </p>
-
-                <div id="tester" style="width:600px;height:250px;"></div>
+                    </tbody>
+                </table>
 
             </div>
+        </div>
 
-            <script>
+        <uib-tabset active="active" class="col-md-6">
+            <uib-tab index="0" heading="Events">
+                <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+            <uib-tab index="1" heading="Orders">
+                <div ng-include="'views/pcm_ordersgui.html'" ng-controller="pcm_ordercontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+        </uib-tabset>
+
+        <div class="col-md-6" ng-if="selectedpcm_customer">
+            <hr />
+            <h3>Selected Client</h3>
+            <p>
+                <b>{{selectedpcm_customer.id}}</b> {{selectedpcm_customer.name}}
+                <br>
+            </p>
+
+            <div id="tester" style="width:600px;height:250px;"></div>
+
+        </div>
+
+        <script>
             TESTER = document.getElementById('tester');
             Plotly.newPlot(TESTER, [{
                 x: [1, 2, 3, 4, 5],
@@ -86,9 +88,9 @@
             }], {
                 margin: { t: 0 }
             });
-            </script>
+        </script>
 
-        </div>
+    </div>
 </div>
 
 

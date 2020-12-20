@@ -82,7 +82,11 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
 
     $scope.filterOrders = function (item) {
         var dispcustfield = document.getElementById('displayocustomers');
+        if (!dispcustfield)
+            return true;
+
         $scope.displayocustomers = dispcustfield.value;
+        //console.log("displaycustomers", $scope.displayocustomers);
 
         if ($scope.displayocustomers == 'ALL') {
             return true;
@@ -106,7 +110,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
             if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.pcm_customer.id
+                        id: $scope.$parent.dataCopy.id
                     }
                 };
 
@@ -357,8 +361,12 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         $scope.selectedpcm_order = l_selecteddata[0];
     };
 
-
-    $scope.displayocustomers = "ALL";
+    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+        $scope.displayocustomers = "SELECTED";
+    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+        $scope.displayocustomers = "SELECTED+";
+    else
+        $scope.displayocustomers = "ALL";
     $scope.displayocustomersoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
@@ -366,10 +374,6 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 
-    $scope.hideItem_FilterCustomers = true;
-    $scope.hideItem_ConnectCustomers = true;
-    $scope.hideItem_ListGCalEvent = true;
-    $scope.hideItem_ButtonMergecalvents = true;
 
     $scope.selectedpcm_order = null;
     $scope.loadData();
@@ -407,10 +411,6 @@ app.controller('pcm_ordereditcontroller', function ($scope, $uibModalInstance, c
     };
 
 
-    $scope.hideItem_FilterCustomers = true;
-    $scope.hideItem_ConnectCustomers = true;
-    $scope.hideItem_ListGCalEvent = true;
-    $scope.hideItem_ButtonMergecalvents = true;
     
 });
 

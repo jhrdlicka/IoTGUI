@@ -63,6 +63,15 @@
 
                     <div class="col-md-12">
                         <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon input-sm">Address</div>
+                                <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.postaddr"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
                             <div class="input-group input-group-sm">
                                 <span class="input-group-addon input-sm">Phone</span>
                                 <input class="form-control input-sm" type="tel" ng-model="dataCopy.phone" />
@@ -112,9 +121,19 @@
                         </div>
                     </div>
                 </div>
+
+
             </div>
 
-            <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6"  style="min-width:1000px"></div>
+            <uib-tabset active="active">
+                <uib-tab index="0" heading="Events">
+                    <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6" style="min-width:1000px"></div>
+                </uib-tab>
+                <uib-tab index="1" heading="Orders">
+                    <div ng-if="dataCopy.id" ng-include="'views/pcm_ordersgui.html'" ng-controller="pcm_ordercontroller" class="scoll-tree col-md-6" style="min-width:1000px"></div>
+                </uib-tab>
+            </uib-tabset>
+
 
 
         </div>
