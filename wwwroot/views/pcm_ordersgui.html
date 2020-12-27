@@ -6,7 +6,7 @@
             Orders
 
             <span class="pull-right">
-                <button class="btn btn-sm btn-primary" ng-click="new()" title="New client">new</button>
+                <button class="btn btn-sm btn-primary" ng-click="new()" title="New order">new</button>
                 <button class="btn btn-sm btn-primary" ng-click="pcm_connecttocustomer()" title="Connect orders to customer">connect to customer</button>
                 <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected orders">delete</button>
                 <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
@@ -66,7 +66,15 @@
 
     </div>
 
-    <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
+
+    <uib-tabset active="active" class="col-md-6">
+        <uib-tab index="0" heading="Events">
+            <div ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
+        </uib-tab>
+        <uib-tab index="1" heading="Invoices">
+            <div ng-include="'views/pcm_invoicesgui.html'" ng-controller="pcm_invoicecontroller" class="col-md-6" style="min-width:1000px"></div>
+        </uib-tab>
+    </uib-tabset>
 
     <div ng-if="false">
         <div class="col-md-6" ng-if="selectedpcm_order">

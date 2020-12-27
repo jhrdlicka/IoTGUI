@@ -1,0 +1,97 @@
+﻿<div class="container col-md-12">
+
+    <div class="col-md-6" style="min-width:800px">
+
+        <h1 id="tableLabel">
+            Invoices
+
+            <span class="pull-right">
+                <button class="btn btn-sm btn-primary" ng-click="new()" title="New invoice">new</button>
+                <button class="btn btn-sm btn-primary" ng-click="pcm_connecttoorder()" title="Connect invoices to order">connect to order</button>
+                <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected invoices">delete</button>
+                <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+            </span>
+        </h1>
+        <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+            <div class="input-group-addon input-sm">Search:</div>
+            <input class="input-sm col-md-12" ng-model="searchText">
+        </div>
+        <div class="input-group input-group-sm  col-md-12">
+            <div class="input-group-addon input-sm">Filter by clients:</div>
+            <select class="form-control input-sm" id="displayicustomers" ng-model="displayicustomers">
+                <option ng-repeat="displayicustomersoption in displayicustomersoptions" value="{{displayicustomersoption.Value}}" ng-selected="displayicustomersoption.Value == displayicustomers">{{displayicustomersoption.Text}}</option>
+            </select>
+        </div>
+        <div class="input-group input-group-sm" ng_if="!hideItem_FilterOrders">
+            <div class="input-group-addon input-sm">Filter by orders:</div>
+            <select class="form-control input-sm" id="displayiorders" ng-model="displayiorders">
+                <option ng-repeat="displayiordersoption in displayiordersoptions" value="{{displayiordersoption.Value}}" ng-selected="displayiordersoption.Value == displayiorders">{{displayiordersoption.Text}}</option>
+            </select>
+        </div>
+
+
+
+        <div>
+            <p ng-if="!pcm_invoices"><em>Loading...</em></p>
+
+            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_invoices" id="table.{{invoicelistid}}">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Number</th>
+                        <th>Client</th>
+                        <th>Amount</th>
+                        <th>Event date</th>
+                        <th>Sent</th>
+                        <th>Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="pcm_invoice in pcm_invoices |filter: searchText |filter: filterOrders |filter: filterCustomers"
+                        ng-dblclick="edit()"
+                        ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed);refreshdetail()"
+                        ng-class="{active: isRowSelected(invoicelistid, pcm_invoice.index)}"
+                        id="tr.{{invoicelistid}}:{{pcm_invoice.index}}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(invoicelistid, pcm_invoice.index)"></td>
+                        <td>{{ pcm_invoice.invoicenr }}</td>
+                        <td>{{ pcm_invoice.order.customer.name }}</td>
+                        <td>{{ pcm_invoice.price }} {{ pcm_invoice.currencynm }}</td>
+                        <td>{{ pcm_invoice.eventdatedate | date: dateFormat}}</td>
+                        <td>{{ pcm_invoice.sentdate | date: dateFormat}}</td>
+                        <td>{{ pcm_invoice.paiddate | date: dateFormat}}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); delete()">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); edit()">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <uib-tabset active="active" class="col-md-6">
+        <uib-tab index="0" heading="Payments">
+            <div ng-if="false" ng-include="'views/pcm_paymentsgui.html'" ng-controller="pcm_paymentcontroller" class="col-md-6" style="min-width:1000px"></div>
+        </uib-tab>
+    </uib-tabset>
+
+    <div ng-if="false">
+        <div class="col-md-6" ng-if="selectedpcm_invoice">
+            <hr />
+            <h3>Selected Invoice</h3>
+            <p>
+                <b>{{selectedpcm_invoice.id}}</b> {{selectedpcm_invoice.invoiceText}}
+                <br>
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+

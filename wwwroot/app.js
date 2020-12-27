@@ -8,9 +8,12 @@ app.run(function ($rootScope, $cookies, $http, $window) {
     $rootScope.customerlistid = 3;
     $rootScope.customerselectlistid = 4;
     $rootScope.orderlistid = 5;
+    $rootScope.orderselectlistid = 6;
+    $rootScope.invoicelistid = 7;
+    $rootScope.invoiceselectlistid = 8;
 
     $rootScope.selectedRowsIndexes = [];
-    for (var i = 1; i <= 5; i++) {
+    for (var i = 1; i <= 8; i++) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
 
@@ -22,6 +25,13 @@ app.run(function ($rootScope, $cookies, $http, $window) {
 
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
 
+    $rootScope.dateCheckClick = function (pOldValue) {
+        var lToday = new Date();
+        if (pOldValue)
+            return null;
+        else
+            return lToday;
+    }
 
     // read environment configuration data
     $http({
@@ -41,9 +51,9 @@ app.run(function ($rootScope, $cookies, $http, $window) {
     });
 
 //    $window.document.documentElement.clientWidth = 1800;
-    console.log('Current clientWidth : %s', document.body.clientWidth);
-    console.log('Current width : %s', document.body.width);
-    console.log($window.document.documentElement.clientWidth); // 0
+//    console.log('Current clientWidth : %s', document.body.clientWidth);
+//    console.log('Current width : %s', document.body.width);
+//    console.log($window.document.documentElement.clientWidth); // 0
 
     //using defineProperty
 //    Object.defineProperty(dom.window.HTMLHtmlElement.prototype, 'clientWidth', { value: 1234 });
@@ -62,6 +72,7 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/pcm_customers", { templateUrl: "views/pcm_customersgui.html", controller: "pcm_customercontroller" })
         .when("/pcm_calevents", { templateUrl: "views/pcm_caleventsgui.html", controller: "pcm_caleventcontroller" })
         .when("/pcm_orders", { templateUrl: "views/pcm_ordersgui.html", controller: "pcm_ordercontroller" })
+        .when("/pcm_invoices", { templateUrl: "views/pcm_invoicesgui.html", controller: "pcm_invoicecontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

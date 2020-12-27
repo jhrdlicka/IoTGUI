@@ -85,7 +85,15 @@
                 </div>
             </div>
         </div>
-        <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="scoll-tree col-md-6" style="min-width:1000px"></div>
+
+        <uib-tabset active="active" class="col-md-6">
+            <uib-tab index="0" heading="Events">
+                <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+            <uib-tab index="1" heading="Invoices">
+                <div ng-if="dataCopy.id" ng-include="'views/pcm_invoicesgui.html'" ng-controller="pcm_invoicecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+        </uib-tabset>
 
     </div>
 

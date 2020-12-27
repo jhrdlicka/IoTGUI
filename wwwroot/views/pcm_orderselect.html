@@ -1,0 +1,77 @@
+﻿<div class="modal-header">
+    <h2 class="modal-title">
+        Select Order(s)
+    </h2>
+</div>
+
+<div class="modal-body">
+
+    <div class="container col-md-12">
+
+        <div class="col-md-6" style="min-width:800px">
+
+            <h1 id="tableLabel">
+                Orders
+            </h1>
+            <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+                <div class="input-group-addon input-sm">Search:</div>
+                <input class="input-sm col-md-12" ng-model="searchText">
+            </div>
+            <div class="input-group input-group-sm  col-md-12">
+                <div class="input-group-addon input-sm">Filter by clients:</div>
+                <select class="form-control input-sm" id="displayocustomers" ng-model="displayocustomers">
+                    <option ng-repeat="displayocustomersoption in displayocustomersoptions" value="{{displayocustomersoption.Value}}" ng-selected="displayocustomersoption.Value == displayocustomers">{{displayocustomersoption.Text}}</option>
+                </select>
+            </div>
+
+            <div>
+                <p ng-if="!pcm_orders"><em>Loading...</em></p>
+
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_orders" id="table.{{orderselectlistid}}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>Client</th>
+                            <th>Ordered Sessions</th>
+                            <th>Scheduled</th>
+                            <th>Fully scheduled</th>
+                            <th>Invoiced</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="pcm_order in pcm_orders |filter: searchText |filter: filterOrders"
+                            ng-dblclick="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed);OK()"
+                            ng-click="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed)"
+                            ng-class="{active: isRowSelected(orderselectlistid, pcm_order.index)}"
+                            id="tr.{{orderselectlistid}}:{{pcm_order.index}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(orderselectlistid, pcm_order.index)"></td>
+                            <td>{{ pcm_order.id }}</td>
+                            <td>{{ pcm_order.customer.name }}</td>
+                            <td>{{ pcm_order.sessions }}</td>
+                            <td>{{ pcm_order.ordersessions.length }}</td>
+                            <td><input type="checkbox" ng-checked="pcm_order.xfullyscheduled"></td>
+                            <td><input type="checkbox" ng-checked="pcm_order.xinvoiced"></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="modal-footer">
+    <div class="text-right">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
+
+
+
+
+

@@ -23,7 +23,7 @@
             <div class="col-md-6" style="min-width:1000px">
                 <p ng-if="!pcm_customers"><em>Loading...</em></p>
 
-                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{selectcustomerlistid}}">
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="pcm_customers" id="table.{{customerselectlistid}}">
                     <thead>
                         <tr>
                             <th></th>
@@ -36,6 +36,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
+                            ng-dblclick="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed);OK()"
                             ng-click="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed);refreshdetail()"
                             ng-class="{active: isRowSelected(customerselectlistid, pcm_customer.index)}"
                             id="tr.{{customerselectlistid}}:{{pcm_customer.index}}">

@@ -441,7 +441,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         var item = $scope.pcm_calevents[index];
         $scope.pcm_calevents[index].index = index;
         //console.log("pcm_calevents", $scope.pcm_calevents);
-        if (item.start)
+        if (item.start) 
             $scope.pcm_calevents[index].start = item.start + "Z";
         $scope.pcm_calevents[index].starttime = new Date(item.start);
         $scope.pcm_calevents[index].totime = new Date(item.start);
@@ -828,7 +828,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 i_pcm_connectcaleventstoorder(l_orders);
 
             } else { /* call customer lookup */
-                $rootScope.entitySelect('pcm_orders', false).then(function (l_orders) {
+                $rootScope.entitySelect('pcm_order', false).then(function (l_orders) {
                     i_pcm_connectcaleventstoorders(l_orders);
                 }, function (error) {
                     if (error == "cancel") {

@@ -66,6 +66,9 @@
             <uib-tab index="1" heading="Orders">
                 <div ng-include="'views/pcm_ordersgui.html'" ng-controller="pcm_ordercontroller" class="col-md-6" style="min-width:1000px"></div>
             </uib-tab>
+            <uib-tab index="2" heading="Invoices">
+                <div ng-include="'views/pcm_invoicesgui.html'" ng-controller="pcm_invoicecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
         </uib-tabset>
 
         <div class="col-md-6" ng-if="selectedpcm_customer">

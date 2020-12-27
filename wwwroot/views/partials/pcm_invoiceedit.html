@@ -1,0 +1,194 @@
+﻿
+
+<form name="myForm" ng-submit="ok()">
+
+    <div class="modal-header">
+        <h2 class="modal-title">
+            Invoice
+        </h2>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Customer</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.order.customer.name" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Order</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.order.id" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Invoice nr.</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.invoicenr" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon input-sm">Text on invoice</div>
+                        <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.text"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">e-mail</div>
+                        <input class="form-control input-sm" type="email" ng-model="dataCopy.email" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope" aria-hidden="true"> </span>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon input-sm">Address</div>
+                        <textarea class="form-control input-sm" rows="5" ng-model="dataCopy.postaddr"></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Price</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Price" ng-model="dataCopy.price" />
+                        <span class="input-group-addon input-sm" style="min-width:200px">
+                            <select class="form-control input-sm" ng-model="dataCopy.currencynm">
+                                <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>
+                            </select>
+                        </span>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Event date</span>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.eventdatedate" is-open="popupeventdate.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openeventdate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-click="dataCopy.sentdate=dateCheckClick(dataCopy.sentdate)" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.sentdate"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.sentdate"></span>
+                            Sent
+                        </div>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.sentdate" is-open="popupsent.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="opensent()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-click="dataCopy.accepteddate=dateCheckClick(dataCopy.accepteddate)" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.accepteddate"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.accepteddate"></span>
+                            Accepted
+                        </div>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.accepteddate" is-open="popupaccepted.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openaccepted()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-click="dataCopy.paiddate=dateCheckClick(dataCopy.paiddate)" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.paiddate"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.paiddate"></span>
+                            Fully paid
+                        </div>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.paiddate" is-open="popuppaid.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openpaid()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-click="dataCopy.canceled=dateCheckClick(dataCopy.canceleddate)" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.canceleddate"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.canceleddate"></span>
+                            Canceled
+                        </div>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.canceleddate" is-open="popupcanceled.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="opencanceled()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Reason:</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.canceledreason" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <uib-tabset active="active" class="col-md-6">
+            <uib-tab index="0" heading="Payments">
+                <!--div ng-if="dataCopy.id" ng-include="'views/pcm_paymentsgui.html'" ng-controller="pcm_paymentcontroller" class="col-md-6" style="min-width:1000px"></div-->
+            </uib-tab>
+        </uib-tabset>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" ng-click="ok()">Save</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </div>
+
+
+</form>
+

@@ -172,8 +172,8 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         else
             if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
                 l_customers = [{
-                    id: $scope.$parent.pcm_customer.id,
-                    name: $scope.$parent.pcm_customer.name
+                    id: $scope.$parent.dataCopy.id,
+                    name: $scope.$parent.dataCopy.name
                 }];
                 i_pcm_connecttocustomer(l_customers);
 
@@ -215,10 +215,10 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         else
             if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
                 l_customers = [{
-                    id: $scope.$parent.pcm_customer.id,
-                    name: $scope.$parent.pcm_customer.name, 
-                    name: $scope.$parent.pcm_customer.pricesession, 
-                    name: $scope.$parent.pcm_customer.currencynm
+                    id: $scope.$parent.dataCopy.id,
+                    name: $scope.$parent.dataCopy.name, 
+                    pricesession: $scope.$parent.dataCopy.pricesession, 
+                    currencynm: $scope.$parent.dataCopy.currencynm
                 }];
                 $scope.i_new(l_customers[0]);
             } else { /* call customer lookup */
@@ -418,9 +418,111 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
     $scope.controllerName = 'pcm_orderselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
 
+    $scope.filterOrders = function (item) {
+        var dispcustfield = document.getElementById('displayocustomers');
+        if (!dispcustfield)
+            return true;
+
+        $scope.displayocustomers = dispcustfield.value;
+        //console.log("displaycustomers", $scope.displayocustomers);
+
+        if ($scope.displayocustomers == 'ALL') {
+            return true;
+        }
+        if (!item.customer) {
+            //console.log("customer not found", item.id);
+
+            if ($scope.displayocustomers == 'SELECTED+' || $scope.displayocustomers == 'NULL')
+                return true;
+            else
+                return false;
+        }
+
+        if ($scope.displayocustomers == 'NULL')
+            return false;
+
+        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        }
+        else
+            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+                l_customers = {
+                    customer: {
+                        id: $scope.$parent.dataCopy.id
+                    }
+                };
+
+            } else {
+                l_customers = null;
+            }
+
+
+        l_result = false;
+        angular.forEach(l_customers, function (customer, index) {
+            if (customer.id == item.customer.id) {
+                //                console.log("found", item.id);
+                l_result = true;
+                return true;
+            }
+        }, function () { /* cancel */ });
+
+        //if (!l_result)
+        //  console.log("not found", item.id);
+        //else 
+        //  console.log("found", item.id);
+
+        return l_result;
+    };
+
+    $scope.getcustomer = function (orderindex) {
+        if (!$scope.pcm_orders[orderindex].customerid) {
+            $scope.pcm_orders[orderindex].customer = null;
+            return;
+        }
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_orders[orderindex].customerid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                //                console.log("customerid", $scope.pcm_orders[orderindex].customerid);
+                //                console.log("id", $scope.pcm_orders[orderindex].id);
+                $scope.pcm_orders[orderindex].customer = response.data;
+
+            }, function error(error) {
+                $rootScope.showerror($scope, 'getcustomer', error);
+                $scope.pcm_orders[orderindex].customer = null;
+            });
+    };
+
+    $scope.getordersessions = function (orderindex) {
+        $scope.pcm_orders[orderindex].xfullyscheduled = false;
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession/orderid/" + $scope.pcm_orders[orderindex].id,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                //                console.log("customerid", $scope.pcm_orders[caleventid].customerid);
+                //                console.log("id", $scope.pcm_orders[caleventid].id);                
+                //               console.log("ordersessions", response.data);                
+                $scope.pcm_orders[orderindex].ordersessions = response.data;
+                if ($scope.pcm_orders[orderindex].ordersessions.length >= $scope.pcm_orders[orderindex].sessions)
+                    $scope.pcm_orders[orderindex].xfullyscheduled = true;
+
+            }, function error(error) {
+                $rootScope.showerror($scope, 'getordersessions', error);
+                $scope.pcm_orders[orderindex].ordersessions = null;
+            });
+    };
+
     $scope.loadData = function () {
         $scope.pcm_orders = null;
-        $rootScope.resetSelection($rootScope.customerselectlistid);
+        $rootScope.resetSelection($rootScope.orderselectlistid);
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -431,11 +533,11 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
             .then(function success(response) {
                 $scope.pcm_orders = response.data;
 
-                $rootScope.resetSelection($rootScope.customerselectlistid);
+                $rootScope.resetSelection($rootScope.orderselectlistid);
                 angular.forEach($scope.pcm_orders, function (item, index) {
                     $scope.pcm_orders[index].index = index;
-                    $scope.getphoto(index);
-
+                    $scope.getcustomer(index);
+                    $scope.getordersessions(index);
                 });
 
             }, function error(error) {
@@ -445,13 +547,26 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
     };
 
     $scope.ok = function () {
-        lContainer = $rootScope.getSelectedRows($rootScope.customerselectlistid, $scope.pcm_orders);
+        lContainer = $rootScope.getSelectedRows($rootScope.orderselectlistid, $scope.pcm_orders);
         $uibModalInstance.close(lContainer);
     };
 
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
+
+    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+        $scope.displayocustomers = "SELECTED";
+    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+        $scope.displayocustomers = "SELECTED+";
+    else
+        $scope.displayocustomers = "ALL";
+    $scope.displayocustomersoptions = [
+        { Value: "ALL", Text: "All" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
+        { Value: "SELECTED", Text: "Connected to seleted customers" },
+        { Value: "NULL", Text: "Not connected to customers" }
+    ];
 
     $scope.loadData();
 });

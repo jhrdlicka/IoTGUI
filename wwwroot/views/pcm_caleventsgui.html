@@ -5,9 +5,9 @@
                 Events
 
                 <span class="pull-right">
-                    <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New session">new</button>
-                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstocustomer()" title="Connect calevents to customer" ng_if="!hideItem_ConnectCustomers">connect to customer</button>
-                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstoorder()" title="Connect calevents to order">connect to order</button>
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_caleventedit(true)" title="New calendar event">new</button>
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstocustomer()" title="Connect calendar events to customer" ng_if="!hideItem_ConnectCustomers">connect to customer</button>
+                    <button class="btn btn-sm btn-primary" ng-click="pcm_connectcaleventstoorder()" title="Connect calendar events to order">connect to order</button>
                     <button class="btn btn-sm btn-danger" ng-click="pcm_caleventdelete()">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
                 </span>
@@ -50,10 +50,10 @@
                         ng-class="{active: isRowSelected(caleventlistid, pcm_calevent.index)}"
                         id="tr.{{caleventlistid}}:{{pcm_calevent.index}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(caleventlistid, pcm_calevent.index)"></td>
-                        <td>{{pcm_calevent.starttime | date:'dd.MM.yyyy'}}</td>
-                        <td>{{ pcm_calevent.starttime | date:'HH:mm'}}</td>
-                        <td>{{ pcm_calevent.totime | date:'HH:mm'}}</td>
-                        <td>{{ pcm_calevent.durationtime | date:'HH:mm'}}</td>
+                        <td>{{pcm_calevent.starttime | date: dateFormat}}</td>
+                        <td>{{ pcm_calevent.starttime | date: timeFormat}}</td>
+                        <td>{{ pcm_calevent.totime | date: timeFormat}}</td>
+                        <td>{{ pcm_calevent.durationtime | date: timeFormat}}</td>
                         <td>{{ pcm_calevent.customer.name }}</td>
                         <td>{{ pcm_calevent.title }}</td>
                         <td><input type="checkbox" ng-checked="pcm_calevent.gcalidflag"></td>
@@ -117,10 +117,10 @@
                         ng-class="{active: isRowSelected(gcaleventlistid, pcm_gcalevent.index)}"
                         id="tr.{{gcaleventlistid}}:{{pcm_gcalevent.index}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(gcaleventlistid, pcm_gcalevent.index)"></td>
-                        <td>{{pcm_gcalevent.starttime | date:'dd.MM.yyyy'}}</td>
-                        <td>{{ pcm_gcalevent.starttime | date:'HH:mm'}}</td>
-                        <td>{{ pcm_gcalevent.totime | date:'HH:mm'}}</td>
-                        <td>{{ pcm_gcalevent.durationtime | date:'HH:mm'}}</td>
+                        <td>{{pcm_gcalevent.starttime | date: dateFormat}}</td>
+                        <td>{{ pcm_gcalevent.starttime | date: timeFormat}}</td>
+                        <td>{{ pcm_gcalevent.totime | date: timeFormat}}</td>
+                        <td>{{ pcm_gcalevent.durationtime | date: timeFormat}}</td>
                         <td>
                             <div ng-repeat="participant in pcm_gcalevent.participantlist">
                                 {{ participant.displayname }}<br>
