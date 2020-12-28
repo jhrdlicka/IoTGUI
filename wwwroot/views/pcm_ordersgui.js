@@ -5,6 +5,24 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     $scope.controllerName = 'pcm_ordercontroller';
     $scope.multilineallowed = true;
 
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+    //console.log("controllerName:", $scope.controllerName);
+    //console.log("parentControllerName:", $scope.parentControllerName);
+    //console.log("parent:", $scope.parent.controllerName);
+
 
     $scope.getcustomer = function (orderindex) {
         if (!$scope.pcm_orders[orderindex].customerid) {
@@ -81,7 +99,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     };
 
     $scope.filterOrders = function (item) {
-        var dispcustfield = document.getElementById('displayocustomers');
+        var dispcustfield = document.getElementById('displayocustomers.' + $scope.parentControllerName);
         if (!dispcustfield)
             return true;
 
@@ -103,14 +121,14 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         if ($scope.displayocustomers == 'NULL')
             return false;
 
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.dataCopy.id
+                        id: $scope.parent.dataCopy.id
                     }
                 };
 
@@ -160,8 +178,8 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     $scope.pcm_connecttocustomer = function () {
 
 
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
             if (l_customers.length != 1) {
                 alert('Select exactly one Customer');
                 console.error('error', 'invalid number of records');
@@ -170,10 +188,10 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
             i_pcm_connecttocustomer(l_customers);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = [{
-                    id: $scope.$parent.dataCopy.id,
-                    name: $scope.$parent.dataCopy.name
+                    id: $scope.parent.dataCopy.id,
+                    name: $scope.parent.dataCopy.name
                 }];
                 i_pcm_connecttocustomer(l_customers);
 
@@ -203,8 +221,8 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     $scope.new = function () {
         var l_customers; 
         // get customer id and name to l_customers[0]
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
             if (l_customers.length != 1) {
                 alert('Select exactly one Customer');
                 console.error('error', 'invalid number of records');
@@ -213,12 +231,12 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
             $scope.i_new(l_customers[0]);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = [{
-                    id: $scope.$parent.dataCopy.id,
-                    name: $scope.$parent.dataCopy.name, 
-                    pricesession: $scope.$parent.dataCopy.pricesession, 
-                    currencynm: $scope.$parent.dataCopy.currencynm
+                    id: $scope.parent.dataCopy.id,
+                    name: $scope.parent.dataCopy.name, 
+                    pricesession: $scope.parent.dataCopy.pricesession, 
+                    currencynm: $scope.parent.dataCopy.currencynm
                 }];
                 $scope.i_new(l_customers[0]);
             } else { /* call customer lookup */
@@ -361,9 +379,9 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         $scope.selectedpcm_order = l_selecteddata[0];
     };
 
-    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+    if ($scope.parentControllerName == "pcm_customereditcontroller")
         $scope.displayocustomers = "SELECTED";
-    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+    else if ($scope.parentControllerName == "pcm_customercontroller")
         $scope.displayocustomers = "SELECTED+";
     else
         $scope.displayocustomers = "ALL";
@@ -383,7 +401,22 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
 
 app.controller('pcm_ordereditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
     $scope.controllerName = 'pcm_ordereditcontroller';
-    
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
         { Value: "CZK", Text: "CZK" },
@@ -418,8 +451,27 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
     $scope.controllerName = 'pcm_orderselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
 
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+    //console.log("controllerName:", $scope.controllerName);
+    //console.log("parentControllerName:", $scope.parentControllerName);
+    //console.log("parent:", $scope.parent.controllerName);
+
+
     $scope.filterOrders = function (item) {
-        var dispcustfield = document.getElementById('displayocustomers');
+        var dispcustfield = document.getElementById('displayocustomers.' + $scope.parentControllerName);
         if (!dispcustfield)
             return true;
 
@@ -441,14 +493,14 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
         if ($scope.displayocustomers == 'NULL')
             return false;
 
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.dataCopy.id
+                        id: $scope.parent.dataCopy.id
                     }
                 };
 
@@ -555,9 +607,9 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
         $uibModalInstance.dismiss('cancel');
     };
 
-    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+    if ($scope.parentControllerName == "pcm_customereditcontroller")
         $scope.displayocustomers = "SELECTED";
-    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+    else if ($scope.parentControllerName == "pcm_customercontroller")
         $scope.displayocustomers = "SELECTED+";
     else
         $scope.displayocustomers = "ALL";

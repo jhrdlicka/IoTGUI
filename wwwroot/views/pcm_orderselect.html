@@ -19,7 +19,7 @@
             </div>
             <div class="input-group input-group-sm  col-md-12">
                 <div class="input-group-addon input-sm">Filter by clients:</div>
-                <select class="form-control input-sm" id="displayocustomers" ng-model="displayocustomers">
+                <select class="form-control input-sm" id="displayocustomers.{{parentControllerName}}" ng-model="displayocustomers">
                     <option ng-repeat="displayocustomersoption in displayocustomersoptions" value="{{displayocustomersoption.Value}}" ng-selected="displayocustomersoption.Value == displayocustomers">{{displayocustomersoption.Text}}</option>
                 </select>
             </div>

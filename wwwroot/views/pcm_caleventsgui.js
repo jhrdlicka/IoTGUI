@@ -6,6 +6,23 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     $scope.controllerName = 'pcm_caleventcontroller';
     $scope.multilineallowed = true;
 
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+    //console.log("controllerName:", $scope.controllerName);
+    //console.log("parentControllerName:", $scope.parentControllerName);
+    //console.log("parent:", $scope.parent.controllerName);
 
     $scope.timeDifference = function (start, end) {
         var l_base=new Date("2020-01-01T00:00:00+01:00");
@@ -224,7 +241,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
     $scope.filterCaleventsByOrders = function (item) {
-        var dispordfield = document.getElementById('displayorders');
+        var dispordfield = document.getElementById('displayorders.' + $scope.parentControllerName);
         if (!dispordfield)
             return true;
 
@@ -284,7 +301,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 
     $scope.filterCalevents = function (item) {
-        var dispcustfield = document.getElementById('displaycustomers');
+        var dispcustfield = document.getElementById('displaycustomers.' + $scope.parentControllerName);
         if (!dispcustfield) {
 //            console.log("no calevent filter", item.id);
             return true;
@@ -309,32 +326,32 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             return false;
 
         //console.log("controllerName", $scope.$parent.controllerName);
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
         }
-        else if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+        else if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.dataCopy.id
+                        id: $scope.parent.dataCopy.id
                     }
                 };
-        } else if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+        } else if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
                     l_customers = {
                         customer: {
-                            id: $scope.$parent.dataCopy.customer.id
+                            id: $scope.parent.dataCopy.customer.id
                         }
                     };
-        } else if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
-            if ($scope.$parent.$parent.$parent.controllerName == 'pcm_customereditcontroller')  // docked to orders within a client detail (I had to add one extra $parent as there are some empty parrents in the hierarchy...)
+        } else if ($scope.parentControllerName == 'pcm_ordercontroller') {
+            if ($scope.parent.parentControllerName == 'pcm_customereditcontroller')  // docked to orders within a client detail 
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.$parent.dataCopy.id
+                        id: $scope.parent.parent.dataCopy.id
                     }
                 };
-            else if ($scope.$parent.$parent.$parent.controllerName == 'pcm_customercontroller')  // docked to orders within a client list (I had to add one extra $parent as there are some empty parrents in the hierarchy...)
-                l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.$parent.$parent.pcm_customers);
-            else {
-                l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.$parent.pcm_orders);
+            else if ($scope.parent.parentControllerName == 'pcm_customercontroller')  // docked to orders within a client list
+                l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.parent.pcm_customers);
+            else {                                                                      // docked to top-level order-list
+                l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.parent.pcm_orders);
                 var l_customers = [];
                 angular.forEach(l_orders, function (order, index) {
                     if (order.customer) {
@@ -367,7 +384,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     };
 
     $scope.filterGcalvents = function (item) {
-        var dispcalfield = document.getElementById('displaycalevents');
+        var dispcalfield = document.getElementById('displaycalevents.' + $scope.parentControllerName);
         $scope.displaycalevents = dispcalfield.value;
 //        console.log('type', $scope.displaycalevents);
 
@@ -1029,6 +1046,21 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, uibDateParser) {
     $scope.controllerName = 'pcm_caleventeditcontroller';
 
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
         { Value: "CZK", Text: "CZK" },
@@ -1063,7 +1095,22 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
 });
 
 app.controller('pcm_gcaleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
-    
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+
     $scope.controllerName = 'pcm_gcaleventeditcontroller';
 
     $scope.pcm_gcalevent = container;

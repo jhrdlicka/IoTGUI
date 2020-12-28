@@ -5,6 +5,26 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
     $scope.controllerName = 'pcm_customercontroller';
     $scope.multilineallowed = true;
 
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+  //  console.log("controllerName:", $scope.controllerName);
+  //  console.log("parentControllerName:", $scope.parentControllerName);
+  //  if ($scope.parent)
+  //    console.log("parent:", $scope.parent.controllerName);
+
+
     $scope.getphoto = function (pIndex) {
         if (!$scope.pcm_customers[pIndex].id)  // customer does not exist
             $scope.pcm_customers[pIndex].photodocument = { "content": null, "url": null, "id": null };
@@ -246,6 +266,21 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
     $scope.controllerName = 'pcm_customereditcontroller';
     
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+    
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
         { Value: "CZK", Text: "CZK" },
@@ -297,6 +332,21 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
 app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
     $scope.controllerName = 'pcm_customerselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
 
     $scope.getphoto = function (pIndex) {
         if (!$scope.pcm_customers[pIndex].id)  // customer does not exist
@@ -363,6 +413,21 @@ app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstan
 
 app.controller('pcm_customerpicturecontroller', function ($scope, $uibModalInstance, container) {
     $scope.controllerName = 'pcm_customerpicturecontroller';
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);

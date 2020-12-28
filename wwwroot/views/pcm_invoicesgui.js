@@ -5,6 +5,24 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     $scope.controllerName = 'pcm_invoicecontroller';
     $scope.multilineallowed = true;
 
+    $scope.setparent = function (pLink) {        
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent; 
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+//    console.log("controllerName:", $scope.controllerName);
+//    console.log("parentControllerName:", $scope.parentControllerName);
+//    if ($scope.parent)
+//      console.log("parent:", $scope.parent.controllerName);
 
     $scope.getcustomer = function (invoiceindex) {
         if (!$scope.pcm_invoices[invoiceindex].order) {
@@ -108,6 +126,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     }
 
     $scope.loadData = function () {
+//        console.log("loaddata - pcm:", $scope.parentControllerName)
         $scope.pcm_invoices = null;
         $scope.selectedpcm_invoice = null;
         $rootScope.resetSelection($rootScope.invoicelistid);
@@ -153,7 +172,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
 
     $scope.filterOrders = function (item) {
-        var dispordfield = document.getElementById('displayiorders');
+        var dispordfield = document.getElementById('displayiorders.' + $scope.parentControllerName);
         if (!dispordfield)
             return true;
 
@@ -175,14 +194,14 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         if ($scope.displayiorders == 'NULL')
             return false;
 
-        if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
-            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+        if ($scope.parentControllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.parent.pcm_orders);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
                 l_orders = {
                     order: {
-                        id: $scope.$parent.dataCopy.id
+                        id: $scope.parent.dataCopy.id
                     }
                 };
 
@@ -209,12 +228,14 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     };
 
     $scope.filterCustomers = function (item) {
-        var dispcustfield = document.getElementById('displayicustomers');
+        var dispcustfield = document.getElementById('displayicustomers.' + $scope.parentControllerName);
         if (!dispcustfield)
             return true;
 
         $scope.displayicustomers = dispcustfield.value;
-        //console.log("displaycustomers", $scope.displayicustomers);
+//        console.log("item", item)
+//        console.log("parentControllername", $scope.parentControllerName);
+//        console.log("displaycustomers", $scope.displayicustomers);
 
         if ($scope.displayicustomers == 'ALL') {
             return true;
@@ -231,20 +252,41 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         if ($scope.displayicustomers == 'NULL')
             return false;
 
-        if ($scope.$parent.controllerName == 'pcm_customercontroller') {
-            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
         }
-        else
-            if ($scope.$parent.controllerName == 'pcm_customereditcontroller') {
+        else if ($scope.parentControllerName == 'pcm_customereditcontroller') {
                 l_customers = {
                     customer: {
-                        id: $scope.$parent.dataCopy.id
+                        id: $scope.parent.dataCopy.id
                     }
                 };
-
-            } else {
-                l_customers = null;
+        }
+        else if ($scope.parentControllerName == 'pcm_ordercontroller') {  
+            if ($scope.parent.parentControllerName == 'pcm_customercontroller') { // docked to orders within a client list 
+                l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.parent.pcm_customers);
             }
+            else if ($scope.parent.parentControllerName == 'pcm_customereditcontroller') {  // docked to orders within a client detail
+                l_customers = {
+                    customer: {
+                        id: $scope.parent.parent.dataCopy.id
+                    }
+                };
+            }
+            else                              // docked to top-level order-list
+            {
+                l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.parent.pcm_orders);
+                var l_customers = [];
+                angular.forEach(l_orders, function (order, index) {
+                    if (order.customer) {
+                        l_customers.push({ id: order.customer.id });
+                    }
+                });
+            }
+        }
+        else {
+            l_customers = null;
+        }
 
 
         l_result = false;
@@ -290,8 +332,8 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     $scope.pcm_connecttoorder = function () {
 
 
-        if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
-            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+        if ($scope.parentControllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.parent.pcm_orders);
             if (l_orders.length != 1) {
                 alert('Select exactly one Order');
                 console.error('error', 'invalid number of records');
@@ -300,11 +342,11 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             i_pcm_connecttoorder(l_orders);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
                 l_orders = [{
-                    id: $scope.$parent.dataCopy.id,
-                    customerid: $scope.$parent.dataCopy.customerid,
-                    customer: { id: $scope.$parent.dataCopy.customer.id, name: $scope.$parent.dataCopy.customer.name}
+                    id: $scope.parent.dataCopy.id,
+                    customerid: $scope.parent.dataCopy.customerid,
+                    customer: { id: $scope.parent.dataCopy.customer.id, name: $scope.parent.dataCopy.customer.name}
                 }];
                 i_pcm_connecttoorder(l_orders);
 
@@ -334,8 +376,8 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     $scope.new = function () {
         var l_customers; 
         // get customer id and name to l_customers[0]
-        if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
-            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
+        if ($scope.parentControllerName == 'pcm_ordercontroller') {
+            l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.parent.pcm_orders);
             if (l_orders.length != 1) {
                 alert('Select exactly one Order');
                 console.error('error', 'invalid number of records');
@@ -344,14 +386,14 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             $scope.i_new(l_orders[0]);
         }
         else
-            if ($scope.$parent.controllerName == 'pcm_ordereditcontroller') {
+            if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
                 l_orders = [{
-                    id: $scope.$parent.dataCopy.id,
-                    customerid: $scope.$parent.dataCopy.customerid, 
-                    customer: $scope.$parent.dataCopy.customer, 
-                    invoicetext: $scope.$parent.dataCopy.invoicetext, 
-                    price: $scope.$parent.dataCopy.price, 
-                    currencynm: $scope.$parent.dataCopy.currencynm
+                    id: $scope.parent.dataCopy.id,
+                    customerid: $scope.parent.dataCopy.customerid, 
+                    customer: $scope.parent.dataCopy.customer, 
+                    invoicetext: $scope.parent.dataCopy.invoicetext, 
+                    price: $scope.parent.dataCopy.price, 
+                    currencynm: $scope.parent.dataCopy.currencynm
                 }];
                 $scope.i_new(l_orders[0]);
             } else { /* call customer lookup */
@@ -515,10 +557,18 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         $scope.selectedpcm_invoice = l_selecteddata[0];
     };
 
-    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+    if ($scope.parentControllerName == "pcm_customereditcontroller")
         $scope.displayicustomers = "SELECTED";
-    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+    else if ($scope.parentControllerName == "pcm_customercontroller")
         $scope.displayicustomers = "SELECTED+";
+    else if ($scope.parentControllerName == "pcm_ordereditcontroller")
+        $scope.displayicustomers = "SELECTED";
+    else if ($scope.parentControllerName == "pcm_ordercontroller") {
+        if ($scope.parent.parentControllerName == "pcm_ordercontroller")
+            $scope.displayicustomers = "SELECTED+";
+        else
+            $scope.displayicustomers = "ALL";
+    }
     else
         $scope.displayicustomers = "ALL";
     $scope.displayicustomersoptions = [
@@ -528,9 +578,13 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 
-    if ($scope.$parent.controllerName == "pcm_customereditcontroller")
+    if ($scope.parentControllerName == "pcm_customereditcontroller")
+        $scope.displayiorders = "ALL";
+    else if ($scope.parentControllerName == "pcm_customercontroller")
+        $scope.displayiorders = "ALL";
+    else if ($scope.parentControllerName == "pcm_ordereditcontroller")
         $scope.displayiorders = "SELECTED";
-    else if ($scope.$parent.controllerName == "pcm_customercontroller")
+    else if ($scope.parentControllerName == "pcm_ordercontroller")
         $scope.displayiorders = "SELECTED+";
     else
         $scope.displayiorders = "ALL";
@@ -550,6 +604,20 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
 app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
     $scope.controllerName = 'pcm_invoiceeditcontroller';
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
     
     $scope.currencylist = [
         { Value: null, Text: "--Currency--" },
@@ -604,6 +672,24 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
 app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
     $scope.controllerName = 'pcm_invoiceselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else
+            $scope.parent = pLink.$parent;
+    }
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+    //console.log("controllerName:", $scope.controllerName);
+    //console.log("parentControllerName:", $scope.parentControllerName);
+    //console.log("parent:", $scope.parent.controllerName);
 
     $scope.getcustomer = function (invoiceindex) {
         if (!$scope.pcm_invoices[invoiceindex].order) {
@@ -673,9 +759,45 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
     };
 
 
+    $scope.postimport = function (pIndex) {
+        var item = $scope.pcm_invoices[pIndex];
+        $scope.pcm_invoices[pIndex].index = pIndex;
+        $scope.getorder(pIndex);
+        $scope.getpayments(pIndex);
+
+        if (item.eventdate) {
+            $scope.pcm_invoices[pIndex].eventdate = item.eventdate + "Z";
+            $scope.pcm_invoices[pIndex].eventdatedate = new Date(item.eventdate);
+        } else
+            $scope.pcm_invoices[pIndex].eventdatedate = null;
+
+        if (item.sent) {
+            $scope.pcm_invoices[pIndex].sent = item.sent + "Z";
+            $scope.pcm_invoices[pIndex].sentdate = new Date(item.sent);
+        } else
+            $scope.pcm_invoices[pIndex].sentdate = null;
+        if (item.accepted) {
+            $scope.pcm_invoices[pIndex].accepted = item.accepted + "Z";
+            $scope.pcm_invoices[pIndex].accepteddate = new Date(item.accepted);
+        } else
+            $scope.pcm_invoices[pIndex].accepteddate = null;
+        if (item.paid) {
+            $scope.pcm_invoices[pIndex].paid = item.paid + "Z";
+            $scope.pcm_invoices[pIndex].paiddate = new Date(item.paid);
+        } else
+            $scope.pcm_invoices[pIndex].paiddate = null;
+        if (item.canceled) {
+            $scope.pcm_invoices[pIndex].canceled = item.canceled + "Z";
+            $scope.pcm_invoices[pIndex].canceleddate = new Date(item.canceled);
+        } else
+            $scope.pcm_invoices[pIndex].canceleddate = null;
+    }
+
     $scope.loadData = function () {
+//        console.log("loaddata - pcm:", $scope.parentControllerName)
         $scope.pcm_invoices = null;
-        $rootScope.resetSelection($rootScope.invoiceselectlistid);
+        $scope.selectedpcm_invoice = null;
+        $rootScope.resetSelection($rootScope.invoicelistid);
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -686,12 +808,9 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
             .then(function success(response) {
                 $scope.pcm_invoices = response.data;
 
-                $rootScope.resetSelection($rootScope.invoiceselectlistid);
-                angular.forEach($scope.pcm_invoices, function (item, index) {
-                    $scope.pcm_invoices[index].index = index;
-                    $scope.getorder(index);
-                    $scope.getpayments(index);
-
+                $rootScope.resetSelection($rootScope.invoicelistid);
+                angular.forEach($scope.pcm_invoices, function (item, lIndex) {
+                    $scope.postimport(lIndex);
                 });
 
             }, function error(error) {
@@ -699,6 +818,33 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
             });
 
     };
+
+
+    $scope.filterOrders = function (item) {
+        var dispordfield = document.getElementById('displayiorders.' + $scope.parentControllerName);
+        if (!dispordfield)
+            return true;
+
+        $scope.displayiorders = dispordfield.value;
+        //console.log("displaycustomers", $scope.displayicustomers);
+
+        if ($scope.displayiorders == 'ALL') {
+            return true;
+        }
+        if ($scope.displayiorders == 'ANY') {
+            if (!item.order)
+                return false;
+            else
+                return true;
+        }
+        if ($scope.displayiorders == 'NULL') {
+            if (!item.order)
+                return true;
+            else
+                return false;
+        }
+    };
+
 
     $scope.ok = function () {
         lContainer = $rootScope.getSelectedRows($rootScope.invoiceselectlistid, $scope.pcm_invoices);
@@ -709,6 +855,16 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
         $uibModalInstance.dismiss('cancel');
     };
 
+    $scope.displayiorders = "ALL";
+    $scope.displayiordersoptions = [
+        { Value: "ALL", Text: "All" },
+        { Value: "ANY", Text: "Connected to any order" },
+        { Value: "NULL", Text: "Not connected to orders" }
+    ];
+
     $scope.loadData();
+
+
+
 });
 
