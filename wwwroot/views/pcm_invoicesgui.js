@@ -108,6 +108,11 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             $scope.pcm_invoices[pIndex].sentdate = new Date(item.sent);
         } else
             $scope.pcm_invoices[pIndex].sentdate = null;
+        if (item.due) {
+            $scope.pcm_invoices[pIndex].due = item.due + "Z";
+            $scope.pcm_invoices[pIndex].duedate = new Date(item.due);
+        } else
+            $scope.pcm_invoices[pIndex].duedate = null;
         if (item.accepted) {
             $scope.pcm_invoices[pIndex].accepted = item.accepted + "Z";
             $scope.pcm_invoices[pIndex].accepteddate = new Date(item.accepted);
@@ -435,6 +440,10 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             l_container.sent = l_container.sentdate.toJSON();
         else
             l_container.sent = null;
+        if (l_container.duedate)
+            l_container.due = l_container.duedate.toJSON();
+        else
+            l_container.due = null;
         if (l_container.accepteddate)
             l_container.accepted = l_container.accepteddate.toJSON();
         else
@@ -567,7 +576,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         if ($scope.parent.parentControllerName == "pcm_ordercontroller")
             $scope.displayicustomers = "SELECTED+";
         else
-            $scope.displayicustomers = "ALL";
+            $scope.displayicustomers = "SELECTED+";
     }
     else
         $scope.displayicustomers = "ALL";
@@ -632,6 +641,7 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
     $scope.popupeventdate = { opened: false }; // initialize datapicker for fromdate
     $scope.popupsent = { opened: false }; // initialize datapicker for fromdate
     $scope.popupaccepted = { opened: false }; // initialize datapicker for fromdate
+    $scope.popupdue = { opened: false }; // initialize datapicker for fromdate
     $scope.popuppaid = { opened: false }; // initialize datapicker for fromdate
     $scope.popupcanceled = { opened: false }; // initialize datapicker for fromdate
 
@@ -659,6 +669,9 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
     };
     $scope.openaccepted = function () { // open datapicker for fromdate
         $scope.popupaccepted.opened = true;
+    };
+    $scope.opendue = function () { // open datapicker for fromdate
+        $scope.popupdue.opened = true;
     };
     $scope.openpaid = function () { // open datapicker for fromdate
         $scope.popuppaid.opened = true;
@@ -776,6 +789,11 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
             $scope.pcm_invoices[pIndex].sentdate = new Date(item.sent);
         } else
             $scope.pcm_invoices[pIndex].sentdate = null;
+        if (item.due) {
+            $scope.pcm_invoices[pIndex].due = item.due + "Z";
+            $scope.pcm_invoices[pIndex].duedate = new Date(item.due);
+        } else
+            $scope.pcm_invoices[pIndex].duedate = null;
         if (item.accepted) {
             $scope.pcm_invoices[pIndex].accepted = item.accepted + "Z";
             $scope.pcm_invoices[pIndex].accepteddate = new Date(item.accepted);

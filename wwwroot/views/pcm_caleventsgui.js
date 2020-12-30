@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, $filter, multiline, guialert) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, $filter, multiline, guialert, $q) {
 
     $scope.controllerName = 'pcm_caleventcontroller';
     $scope.multilineallowed = true;
@@ -183,12 +183,45 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     }
 
+    $scope.getorderedsessions = function (caleventindex) {
+        if (!$scope.pcm_calevents[caleventindex].ordersessions || $scope.pcm_calevents[caleventindex].ordersessions.length == 0)  // no attached orders
+            return null;
+        if ($scope.pcm_calevents[caleventindex].ordersessions.length == 1) {
+            if (!$scope.pcm_calevents[caleventindex].ordersessions[0].order)
+                return '???';
+            else
+                return $scope.pcm_calevents[caleventindex].ordersessions[0].xorder + '/' + $scope.pcm_calevents[caleventindex].ordersessions[0].order.sessions;
+        }
+        else { // more orders attached to the calevent
+            console.log('more ordersessions for a calevent', $scope.pcm_calevents[caleventindex])
+            return '***';
+        }
+    }
+
+    $scope.getinvoiced = function (caleventindex) {
+        if (!$scope.pcm_calevents[caleventindex].ordersessions || $scope.pcm_calevents[caleventindex].ordersessions.length == 0)  // no attached orders
+            return false;
+
+        var lResult = true; // let's assume there is everything invoiced 
+        angular.forEach($scope.pcm_calevents[caleventindex].ordersessions, function (calevent, ordersessionindex) {
+            if (!$scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order || !$scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order.invoices) // order or invoices have not been fetched yet from the db
+                lResult = false;
+            else if ($scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order.invoices.length == 0) // any order has not been invoiced yet
+                lResult = false;
+        });
+        return lResult;
+    };
+
+
+
     $scope.getcustomer = function (caleventindex) {
         if (!$scope.pcm_calevents[caleventindex].customerid) {
             $scope.pcm_calevents[caleventindex].customer = null;
             return;
         }
-        
+
+        var lId = $scope.pcm_calevents[caleventindex].id;
+
         $http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_calevents[caleventindex].customerid,
@@ -196,8 +229,11 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             method: 'GET'
         })
             .then(function success(response) {                
-//                console.log("customerid", $scope.pcm_calevents[caleventid].customerid);
-//                console.log("id", $scope.pcm_calevents[caleventid].id);
+                if (!$scope.pcm_calevents || !$scope.pcm_calevents[caleventindex] || $scope.pcm_calevents[caleventindex].id!=lId) {
+//                    console.log("invalid pointer - probably double refresh (1)", caleventindex, lId, $scope.pcm_calevents);
+                    return;
+                }
+
                 $scope.pcm_calevents[caleventindex].customer = response.data;
 
             }, function error(error) {
@@ -210,7 +246,62 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             });
     };
 
+    $scope.getinvoices = function (caleventindex, ordersessionindex) {
+        var lId = $scope.pcm_calevents[caleventindex].id;
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_invoice/orderid/" + $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].orderid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                if (!$scope.pcm_calevents || !$scope.pcm_calevents[caleventindex] || !$scope.pcm_calevents[caleventindex].ordersessions || !$scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex] || !$scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order || $scope.pcm_calevents[caleventindex].id != lId) {
+//                    console.log("invalid pointer - probably double refresh (2)", caleventindex, ordersessionindex, $scope.pcm_calevents);
+                    return;
+                }
+
+                $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order.invoices = response.data;
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+                    //                    alert("Unknown Error!");
+                    console.error('error', error);
+                $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order.invoices = null;
+            });
+
+    };
+
+    $scope.getorder = function (caleventindex, ordersessionindex) {
+        var lId = $scope.pcm_calevents[caleventindex].id;
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_order/" + $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].orderid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                if (!$scope.pcm_calevents || !$scope.pcm_calevents[caleventindex] || !$scope.pcm_calevents[caleventindex].ordersessions || !$scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex] || $scope.pcm_calevents[caleventindex].id != lId) {
+//                    console.log("invalid pointer - probably double refresh (3)", caleventindex, ordersessionindex, $scope.pcm_calevents);
+                    return;
+                }
+                $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order = response.data;  
+                $scope.getinvoices(caleventindex, ordersessionindex); 
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+                    //                    alert("Unknown Error!");
+                    console.error('error', error);
+                    $scope.pcm_calevents[caleventindex].ordersessions[ordersessionindex].order = null;
+            });
+    };
+
     $scope.getordersessions = function (caleventindex) {
+        var lId = $scope.pcm_calevents[caleventindex].id;
+
         $http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/pcm_ordersession/caleventid/" + $scope.pcm_calevents[caleventindex].id,
@@ -218,10 +309,15 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             method: 'GET'
         })
             .then(function success(response) {
-                //                console.log("customerid", $scope.pcm_calevents[caleventid].customerid);
-                //                console.log("id", $scope.pcm_calevents[caleventid].id);                
-                 //               console.log("ordersessions", response.data);                
+                if (!$scope.pcm_calevents || !$scope.pcm_calevents[caleventindex] || $scope.pcm_calevents[caleventindex].id != lId) {
+//                    console.log("invalid pointer - probably double refresh (4)", caleventindex, $scope.pcm_calevents);
+                    return;
+                }
+
                 $scope.pcm_calevents[caleventindex].ordersessions = response.data;
+                angular.forEach($scope.pcm_calevents[caleventindex].ordersessions, function (calevent, ordersessionindex) {
+                    $scope.getorder(caleventindex, ordersessionindex);
+                });
 
             }, function error(error) {
                 if (error.status == 401)
@@ -244,19 +340,14 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         var dispordfield = document.getElementById('displayorders.' + $scope.parentControllerName);
         if (!dispordfield)
             return true;
-
-//        console.log("displayorders", $scope.displayorders );
-
         $scope.displayorders = dispordfield.value;
 
         if ($scope.displayorders == 'ALL') {
             return true;
         }
         if (!item.ordersessions || item.ordersessions.length==0) {
-//            console.log("no order found", item.id);
 
             if ($scope.displayorders == 'SELECTED+' || $scope.displayorders == 'NULL') {
-//                console.log("no order found 1", item.id);
                 return true;
             }
             else
@@ -279,22 +370,13 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
 
         l_result = false;
-        //console.log("calevent", item.id);
         angular.forEach(l_orders, function (order, index) {
-//            console.log("order", order.id);
             l_ordersessions = $filter('filter')(item.ordersessions, { orderid: order.id });
-//            console.log("ordersessions", l_ordersessions);
             if (l_ordersessions.length>0) { 
-//                                console.log("found", order.id);
                 l_result = true;
                 return true;
             }
         });
-
-        //if (!l_result)
-        //  console.log("not found", item.id);
-        //else 
-        //  console.log("found", item.id);
 
         return l_result;
     };
@@ -768,63 +850,78 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     }
 
-    function i_createordersession(calevent, order) {
-        var pcm_ordersession = { orderid: order.id, invoicetext: null, price: null, currencynm: null, caleventid: calevent.id };
-
-        // create a container without "id" field
-        xjson = JSON.stringify(pcm_ordersession);
-
-        //INSERT
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_ordersession",
-            withCredentials: true,
-            method: 'POST',
-            datatype: "json",
-            data: xjson
-        })
-            .then(function success(response) {
-                $scope.getordersessions(calevent.index);
-            }, function error(error) {
-                if (error.status == 401)
-                    alert("Access Denied!!!")
-                else
-                    alert("Unknown Error!");
-                console.error('error', error);
-            });
-    }
-
     function i_pcm_connectcaleventstoorder(pOrders) {
         l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
 
         if (!confirm("Connect " + l_calevents.length + " events to order of " + pOrders[0].customer.name + "?"))
             return;
 
-        angular.forEach(l_calevents, function (calevent, index) {
-            l_exists = false; 
-            if (calevent.ordersessions) {
-                angular.forEach(calevent.ordersessions, function (ordersession, index2) {
-                    if (ordersession.orderid == pOrders[0].id)
-                        l_exists = true;
-                });
-            }
-            if (!l_exists) {
-                if (calevent.ordersessions) {
-                /* the session is connected to another order - confirm creation */
-                    if (!confirm("Event nr. " + calevent.id + " is already connected to another order. Connect to more events?"))
-                        return;
+        var promise1 = function () {
+            var promises = [];
+            angular.forEach(l_calevents, function (calevent, index) {
+                l_exists = false;
+                if (calevent.ordersessions && calevent.ordersessions.length > 0) {
+                    angular.forEach(calevent.ordersessions, function (ordersession, index2) {
+                        if (ordersession.orderid == pOrders[0].id)
+                            l_exists = true;
+                    });
                 }
+                if (!l_exists) {
+                    if (calevent.ordersessions && calevent.ordersessions.length > 0) {
+                        /* the session is connected to another order - confirm creation */
+                        if (!confirm("Event nr. " + calevent.id + " is already connected to another order. Connect to more events?"))
+                            return;
+                    }
 
-                /* create a new ordersession and refresh the calevent */
-                i_createordersession(calevent, pOrders[0]);                
-            }
+                    /* create a new ordersession and refresh the calevent */
+                    var pcm_ordersession = { orderid: pOrders[0].id, invoicetext: null, price: null, currencynm: null, caleventid: calevent.id };
+
+                    // create a container without "id" field
+                    xjson = JSON.stringify(pcm_ordersession);
+//                    console.log("pcm_ordersession", pcm_ordersession);
+
+                    //INSERT
+                    var promise = $http({
+                        headers: { "Content-Type": "application/json" },
+                        url: $rootScope.ApiAddress + "api/pcm_ordersession",
+                        withCredentials: true,
+                        method: 'POST',
+                        datatype: "json",
+                        data: xjson
+                    })
+                        .then(function success(response) {
+                            return response.$promise;
+                        }, function error(error) {
+                            if (error.status == 401)
+                                alert("Access Denied!!!")
+                            else
+                                alert("Unknown Error!");
+                            console.error('error', error);
+                        });
+                    promises.push(promise);
+                }
+                return $q.all(promises);
+            });
+            return $q.all(promises);
+        }
+
+        promise1().then(function (promiseArray) {
+            angular.forEach($scope.pcm_calevents, function (calevent, index) {
+                if (calevent.orderssions || calevent.ordersessions.length>0)
+                    angular.forEach(calevent.ordersessions, function (ordersession, index2) {
+                        if (ordersession.orderid == pOrders[0].id) 
+                            $scope.getordersessions(calevent.index);
+                    });
+            });
+            angular.forEach(l_calevents, function (calevent, index) {
+                $scope.getordersessions(calevent.index);
+            });
         });
+    
 
     }
 
     $scope.pcm_connectcaleventstoorder = function () {
-
-
         if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
             l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
             if (l_orders.length != 1) {
@@ -879,8 +976,6 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
     $scope.pcm_connectcaleventstocustomer = function () {
-
-
         if ($scope.$parent.controllerName == 'pcm_customercontroller') {
             l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.$parent.pcm_customers);
             if (l_customers.length != 1) {
@@ -912,6 +1007,77 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
 
+
+    $scope.i_delete = function (pItem) {
+        // check dependency and delete sub-objects first
+        // check the first sub-condition
+        var promise1 = $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession/caleventid/" + pItem.id,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                lOs = response.data;
+                var promises = [];
+                if (lOs && lOs.length > 0) { // check and delete ordersessions first
+
+                    if (confirm("Event nr. " + pItem.id + " is connected to any order(s). Delete anyway?")) {
+                        angular.forEach(lOs, function (ordersession, osindex) {
+
+                            var promise = $http({
+                                headers: { "Content-Type": "application/json" },
+                                url: $rootScope.ApiAddress + "api/pcm_ordersession/" + ordersession.id,
+                                withCredentials: true,
+                                method: 'DELETE'
+                            })
+                                .then(function success(response) {
+                                    return response.$promise;
+                                }, function error(error) {
+                                    if (error.status == 401)
+                                        alert("Access Denied!!!");
+                                    else
+                                        alert("Unknown Error!");
+                                    console.error('error', error);
+                                });
+
+                            promises.push(promise);
+                        });
+                    }
+                }
+                return $q.all(promises);
+              
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+                    alert("Unknown Error!");
+                console.error('error', error);
+            });
+
+        // if all the conditions are OK
+        var promise3 =
+        promise1.then(function (promiseArray) {
+            var promise2=$http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/pcm_calevent/" + pItem.id,
+                withCredentials: true,
+                method: 'DELETE'
+            })
+                .then(function success(response) {
+                    return response.$promise;
+                }, function error(error) {
+                    if (error.status == 401)
+                        alert("Access Denied!!!");
+                    else
+                        alert("Unknown Error!");
+                    console.error('error', error);
+                });
+            return $q.all([promise2]);
+        });
+        return $q.all([promise3]);
+    }
+
     $scope.pcm_caleventdelete = function () {
         l_items = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
         if (l_items.length == 0) {
@@ -924,30 +1090,23 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
         $rootScope.resetSelection($rootScope.caleventlistid);
 
-        angular.forEach(l_items, function (item, index) {
+        var promise1 = function() {
+            var promises = [];
+            angular.forEach(l_items, function (item, index) {
+                var promise2 = $scope.i_delete(item)
+                    .then(function success(response) {
+                        return response.$promise;
+                    }); 
+                promises.push(promise2);
+            });
+            return $q.all(promises);
+        };
 
-            $http({
-                headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/pcm_calevent/" + item.id,
-                withCredentials: true,
-                method: 'DELETE'
-            })
-                .then(function success(response) {
-                    $scope.pcm_calevents.splice(item.index, 1);
-                    angular.forEach($scope.pcm_calevents, function (calevent, i) {
-                        $scope.pcm_calevents[i].index = i;
-                    });
-
-                    // $scope.loadData(); // refresh whole list if neccessary
-                }, function error(error) {
-                    if (error.status == 401)
-                        alert("Access Denied!!!");
-                    else
-                        alert("Unknown Error!");
-                    console.error('error', error);
-                });
-        });
+        promise1().then(function (promiseArray) {
+            $scope.loadData();
+        });        
     };
+
 
     $scope.pcm_caleventdata = function () {
         $scope.selectedpcm_calevent = null;
@@ -1008,7 +1167,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.hideItem_ListGCalEvent = true;
         $scope.hideItem_ButtonMergecalvents = true;
         $scope.displayorders = "SELECTED+";
-        $scope.displaycustomers = "ALL";
+        $scope.displaycustomers = "SELECTED+";
     }
     else if ($scope.$parent.controllerName == "pcm_ordereditcontroller") {
 //        $scope.hideItem_FilterCustomers = true;
@@ -1016,17 +1175,17 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.hideItem_ListGCalEvent = true;
         $scope.hideItem_ButtonMergecalvents = true;
         $scope.displayorders = "SELECTED";
-        $scope.displaycustomers = "ALL";
+        $scope.displaycustomers = "SELECTED";
     }
     else if ($scope.$parent.controllerName == "pcm_customereditcontroller") {
         $scope.hideItem_FilterOrders = true;
         $scope.displaycustomers = "SELECTED";
-        $scope.displaycalevents = "SELECTED";
+        $scope.displaycalevents = "ALL";
     }
     else if ($scope.$parent.controllerName == "pcm_customercontroller") {
         $scope.hideItem_FilterOrders = true;
         $scope.displaycustomers = "SELECTED+";
-        $scope.displaycalevents = "SELECTED+";
+        $scope.displaycalevents = "ALL";
     }
     else {  // used on any other screen
         $scope.displaycustomers = "ALL";

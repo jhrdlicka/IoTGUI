@@ -40,7 +40,8 @@
                         <th>Duration</th>
                         <th>Client</th>
                         <th>Title</th>
-                        <th>Google</th>
+                        <th>Session</th>
+                        <th>Invoiced</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,7 +57,8 @@
                         <td>{{ pcm_calevent.durationtime | date: timeFormat}}</td>
                         <td>{{ pcm_calevent.customer.name }}</td>
                         <td>{{ pcm_calevent.title }}</td>
-                        <td><input type="checkbox" ng-checked="pcm_calevent.gcalidflag"></td>
+                        <td>{{getorderedsessions(pcm_calevent.index)}}</td>
+                        <td><input type="checkbox" ng-checked="getinvoiced(pcm_calevent.index)"></td>
                         <td style="width:1%">
                             <button class="btn btn-danger btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventdelete()">Delete</button>
                         </td>

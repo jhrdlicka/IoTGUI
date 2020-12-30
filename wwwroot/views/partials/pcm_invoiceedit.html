@@ -135,6 +135,22 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
+                        <div class="input-group-addon" ng-click="dataCopy.duedate=dateCheckClick(dataCopy.duedate)" style="cursor: pointer;">
+                            <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.duedate"></span>
+                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.duedate"></span>
+                            Accepted
+                        </div>
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.duedate" is-open="popupdue.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="opendue()"><i class="glyphicon glyphicon-calendar"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
                         <div class="input-group-addon" ng-click="dataCopy.paiddate=dateCheckClick(dataCopy.paiddate)" style="cursor: pointer;">
                             <span class="glyphicon glyphicon-check" aria-hidden="true" ng-if="dataCopy.paiddate"></span>
                             <span class="glyphicon glyphicon-unchecked" aria-hidden="true" ng-if="!dataCopy.paiddate"></span>

@@ -43,6 +43,7 @@
                         <th>Amount</th>
                         <th>Event date</th>
                         <th>Sent</th>
+                        <th>Due</th>
                         <th>Paid</th>
                     </tr>
                 </thead>
@@ -58,6 +59,7 @@
                         <td>{{ pcm_invoice.price }} {{ pcm_invoice.currencynm }}</td>
                         <td>{{ pcm_invoice.eventdatedate | date: dateFormat}}</td>
                         <td>{{ pcm_invoice.sentdate | date: dateFormat}}</td>
+                        <td>{{ pcm_invoice.duedate | date: dateFormat}}</td>
                         <td>{{ pcm_invoice.paiddate | date: dateFormat}}</td>
                         <td style="width:1%">
                             <button class="btn btn-danger btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); delete()">Delete</button>
