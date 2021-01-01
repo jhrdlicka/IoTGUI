@@ -540,9 +540,11 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         var item = $scope.pcm_calevents[index];
         $scope.pcm_calevents[index].index = index;
         //console.log("pcm_calevents", $scope.pcm_calevents);
-        if (item.start) 
+        if (item.start)
             $scope.pcm_calevents[index].start = item.start + "Z";
-        $scope.pcm_calevents[index].starttime = new Date(item.start);
+        else
+            $scope.pcm_calevents[index].start = null;
+        $scope.pcm_calevents[index].starttime = new Date($scope.pcm_calevents[index].start);             
         $scope.pcm_calevents[index].totime = new Date(item.start);
         $scope.pcm_calevents[index].totime.setSeconds($scope.pcm_calevents[index].totime.getSeconds() + item.duration);
         $scope.pcm_calevents[index].durationtime = new Date();
@@ -733,7 +735,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.pcm_caleventedit = function (createnew) {
         if (createnew) {
-            var pcm_calevent = { id: null, type: null, description: null, starttime: new Date(), durationtime: new Date(), xordered: false};
+            var pcm_calevent = { id: null, type: null, description: null, starttime: new Date(), durationtime: new Date()};
             $scope.pcm_caleventsave(pcm_calevent); // temporary bastl
             return; // temporary bastl
         } 
@@ -819,7 +821,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             return;
 
         angular.forEach(l_items, function (item, index) {
-            var l_container = { type: null, description: null, starttime: new Date(), durationtime: new Date(), xordered: false };
+            var l_container = { type: null, description: null, starttime: new Date(), durationtime: new Date()};
 
             // create a container without "id" field
             xjson = JSON.stringify(l_container);
@@ -874,7 +876,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                     }
 
                     /* create a new ordersession and refresh the calevent */
-                    var pcm_ordersession = { orderid: pOrders[0].id, invoicetext: null, price: null, currencynm: null, caleventid: calevent.id };
+                    var pcm_ordersession = { orderid: pOrders[0].id, invoicetext: null, rate: null, price:null, caleventid: calevent.id };
 
                     // create a container without "id" field
                     xjson = JSON.stringify(pcm_ordersession);
@@ -1175,7 +1177,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.hideItem_ListGCalEvent = true;
         $scope.hideItem_ButtonMergecalvents = true;
         $scope.displayorders = "SELECTED";
-        $scope.displaycustomers = "SELECTED";
+        $scope.displaycustomers = "SELECTED+";
     }
     else if ($scope.$parent.controllerName == "pcm_customereditcontroller") {
         $scope.hideItem_FilterOrders = true;
@@ -1218,14 +1220,6 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
         $scope.parentControllerName = "";
     else
         $scope.parentControllerName = $scope.parent.controllerName;
-
-
-    $scope.currencylist = [
-        { Value: null, Text: "--Currency--" },
-        { Value: "CZK", Text: "CZK" },
-        { Value: "EUR", Text: "EUR" },
-        { Value: "USD", Text: "USD" }
-    ];
 
 
     $scope.pcm_calevent = container;

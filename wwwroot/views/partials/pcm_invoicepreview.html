@@ -1,0 +1,130 @@
+﻿
+<!-- Web Fonts
+======================= -->
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900' type='text/css'>
+
+<!-- Stylesheet
+======================= -->
+<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="vendor/font-awesome/css/all.min.css"/>
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css"/>
+<body>
+<!-- Container -->
+<div class="container-fluid invoice-container">
+  <!-- Header -->
+    <header>
+        <div class="row align-items-center">
+            &nbsp
+            &nbsp
+        </div>
+        <div class="row align-items-center">
+            <div class="col-sm-7 text-left text-sm-left mb-3 mb-sm-0">
+                <img id="logo" src="views/invoicelogo.png" title="invoicelogo" alt="Logo" width="300" />
+            </div>
+            <div class="col-sm-5 text-center text-sm-right">
+                <h4 class="text-9 mb-0">FAKTURA</h4>
+            </div>
+        </div>
+        <hr>
+    </header>
+  
+  <!-- Main Content -->
+  <main>
+  <div class="row">
+      <div class="col-sm-6"><strong>datum:</strong> {{dataCopy.eventdate| date: dateFormat}}</div>
+    <div class="col-sm-6 text-sm-right"> <strong>faktura číslo:&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.invoicenr}}</div>
+	  
+  </div>
+  <hr>
+  <div class="row">
+      <div class="col-sm-6 text-sm-right order-sm-1">
+          <strong>poskytovatel:</strong>
+          <address>
+              Mgr. Barbora Hrdličková<br />
+              Rymaně 840<br />
+              Mníšek pod Brdy<br />
+              (+420) 605 203 934<br />
+              mgr.barborahrdlickova@gmail.com<br />
+              <br />
+              IČ: 06443958, Neplátce DPH<br />
+              Živnostenský rejstřík: Městský úřad Černošice<br />
+          </address>
+      </div>
+      <div class="col-sm-6 text-6 text-sm-right">
+          <strong>datum splatnosti:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.due| date: dateFormat}} <br /><br />
+          <strong>převodem na účet:&nbsp;&nbsp;&nbsp;</strong>2813050004 / 2700<br /><br />
+          <strong>variabilní symbol:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.invoicenr}}<br /><br /><br /><br />
+          <strong>celková suma:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.price | number}} {{dataCopy.currencynm}}<br />
+
+      </div>
+
+  </div>
+
+  <div class="row">
+      <div class="col-sm-6 order-sm-0">
+          <strong>objednatel:</strong>
+          <address>
+              {{dataCopy.order.customer.name}}<br />
+              {{dataCopy.postaddr}}<br />
+              {{dataCopy.email}}
+          </address>
+      </div>
+      <div class="col-sm-6 text-sm-right">
+          &nbsp;
+      </div>
+
+  </div>
+    <div class="card">
+        <div class="card-header px-2 py-0">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <td class="col-3 border-0"><strong>služba</strong></td>
+                        <td class="col-4 border-0"><strong>datum</strong></td>
+                        <td class="col-2 text-center border-0"><strong>sazba</strong></td>
+                        <td class="col-1 text-center border-0"><strong>hodin</strong></td>
+                        <td class="col-2 text-right border-0"><strong>částka</strong></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="ordersession in dataCopy.order.ordersessions">
+                        <td class="col-3 border-0">{{ordersession.invoicetext?ordersession.invoicetext:ordersession.calevent.invoicetext?ordersession.calevent.invoicetext:ordersession.calevent.title?ordersession.calevent.title:"Psychologické poradenství"}}</td>
+                        <td class="col-4 border-0">{{ordersession.calevent.starttime | date: dateFormat}}</td>
+                        <td class="col-2 text-center border-0">{{ordersession.rate?ordersession.rate:dataCopy.order.rate| number}} {{dataCopy.order.currencynm}}</td>
+                        <td class="col-1 text-center border-0">{{ordersession.calevent.units}}</td>
+                        <td class="col-2 text-right border-0">{{ordersession.price?ordersession.price:(ordersession.calevent.units?ordersession.calevent.units:1)*(ordersession.rate?ordersession.rate:dataCopy.order.rate)}} {{dataCopy.order.currencynm}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="bg-light-2 text-right"><strong>součet:</strong></td>
+                        <td class="bg-light-2 text-right">
+                            {{dataCopy.order.xsessionsprice | number }} {{dataCopy.order.currencynm}}
+                        </td>
+                    </tr>
+                    <tr ng-if="dataCopy.order.price">
+                        <td colspan="4" class="bg-light-2 text-right"><strong>korigovaná cena:</strong></td>
+                        <td class="bg-light-2 text-right">
+                            {{dataCopy.order.price | number }} {{dataCopy.order.currencynm}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="bg-light-2 text-right"><strong>sleva: </strong> {{dataCopy.order.discount*100|number:2}}%</td>
+                        <td class="bg-light-2 text-right">{{-(dataCopy.order.discount?dataCopy.order.discount:1)*dataCopy.order.xprice}} {{dataCopy.order.currencynm}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="bg-light-2 text-right"><strong>celkem:</strong></td>
+                        <td class="bg-light-2 text-right">{{dataCopy.order.xfinalprice | number}} {{dataCopy.order.currencynm}}</td>
+                    </tr>
+                </tbody>
+                </table>
+        </div>
+    </div>
+</main>
+  <!-- Footer -->
+  <footer class="text-center mt-4">
+      <p class="text-sm-right"><strong>DĚKUJEME!</strong></p>
+      <p class="text-sm-right"> V případě nejasností nebo dotazů kontaktuje prosím</p>
+      <p class="text-sm-right"> Barbora Hrdličková, (+420) 605 203 934, mgr.barborahrdlickova@gmail.com</p>
+      <p class="text-sm-right"><strong><a hlink="http://www.psychoterapiea.cz">www.psychoterapiea.cz</a></strong></p>
+  </footer>
+</div>
+</body>

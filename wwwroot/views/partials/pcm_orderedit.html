@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Sessions</span>
@@ -31,17 +31,73 @@
             </div>
 
 
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <span class="input-group-addon input-sm">Price</span>
-                        <input class="form-control input-sm" type="number" data-toggle="Price" ng-model="dataCopy.price" />
+                        <span class="input-group-addon input-sm">Currency</span>
                         <span class="input-group-addon input-sm" style="min-width:200px">
                             <select class="form-control input-sm" ng-model="dataCopy.currencynm">
                                 <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>
                             </select>
                         </span>
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Rate</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Rate" ng-model="dataCopy.rate" />
+                        <span class="input-group-addon input-sm"> * {{dataCopy.xunits}} = {{dataCopy.xsessionsprice}} </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Units</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Units" ng-model="dataCopy.xunits" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Calculated price</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Calculated price" ng-model="dataCopy.xsessionsprice" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Adjusted price</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Adjusted Price" ng-model="dataCopy.price" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Discount</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Discount" ng-model="dataCopy.discount" />
+                        <span class="input-group-addon input-sm">* {{dataCopy.xprice}} = {{dataCopy.xprice * dataCopy.discount}}</span>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Final price</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Final price" ng-model="dataCopy.xfinalprice" disabled />
                     </div>
                 </div>
             </div>

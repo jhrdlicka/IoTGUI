@@ -1,6 +1,6 @@
 var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
-app.run(function ($rootScope, $cookies, $http, $window) {
+app.run(function ($rootScope, $cookies, $http, $window, $locale) {
 
     // register multiline lists and initiate multiline structures
     $rootScope.caleventlistid = 1;
@@ -22,6 +22,9 @@ app.run(function ($rootScope, $cookies, $http, $window) {
     $rootScope.timeFormat = 'HH:mm';
     $rootScope.datetimeFormat = 'dd.MM.yyyy HH:mm';
     $rootScope.dateOptions = { startingDay: 1 };
+
+    $locale.NUMBER_FORMATS.GROUP_SEP = " ";
+    $locale.NUMBER_FORMATS.DECIMAL_SEP = ",";
 
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
 

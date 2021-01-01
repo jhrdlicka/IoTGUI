@@ -92,9 +92,8 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <div class="input-group input-group-sm">
-                            <span class="input-group-addon input-sm">Agreed price</span>
-                            <input class="form-control input-sm" type="number" data-toggle="price per session" placeholder="per session" ng-model="dataCopy.pricesession" style="min-width:100px" />
-                            <input class="form-control input-sm" type="number" data-toggle="discounted price per 10 sessions" placeholder="per 10 sessions" ng-model="dataCopy.price10sessions" style="min-width:100px" />
+                            <span class="input-group-addon input-sm">Agreed rate (unit price)</span>
+                            <input class="form-control input-sm" type="number" data-toggle="price per session" placeholder="per session" ng-model="dataCopy.rate" style="min-width:100px" />
                             <span class="input-group-addon" style="min-width:150px">
                                 <select class="form-control input-sm" ng-model="dataCopy.currencynm">
                                     <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>

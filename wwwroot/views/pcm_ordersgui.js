@@ -47,10 +47,63 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
             });
     };
 
-    $scope.getordersessions = function (orderindex) {
-        $scope.pcm_orders[orderindex].xfullyscheduled = false;
+    $scope.getxvalues = function (pIndex) {
+        if (!pIndex)
+            return;
+        $scope.pcm_orders[pIndex].xfullyscheduled = false;
+
+        if (!$scope.pcm_orders[pIndex].ordersessions) {
+            $scope.pcm_orders[pIndex].xunits = null;
+            $scope.pcm_orders[pIndex].xsessionsprice = null;
+        } else {
+            $scope.pcm_orders[pIndex].xunits = 0;
+            $scope.pcm_orders[pIndex].xsessionsprice = 0;
+            angular.forEach($scope.pcm_orders[pIndex].ordersessions, function (item, lIndex) {
+                if (angular.isNumber($scope.pcm_orders[pIndex].xsessionsprice)) {
+                    if (!item.calevent) {
+                        $scope.pcm_orders[pIndex].xsessionsprice = '???';
+                        $scope.pcm_orders[pIndex].xunits = '???';
+                    }
+                    $scope.pcm_orders[pIndex].xunits = $scope.pcm_orders[pIndex].xunits + (item.calevent.units ? item.calevent.units : 1);
+                    $scope.pcm_orders[pIndex].xsessionsprice = $scope.pcm_orders[pIndex].xsessionsprice + (item.price ? item.price : (item.rate ? item.rate : $scope.pcm_orders[pIndex].rate) * (item.calevent.units ? item.calevent.units : 1));
+                }
+            });
+        }
+
+        $scope.pcm_orders[pIndex].xprice = $scope.pcm_orders[pIndex].price ? $scope.pcm_orders[pIndex].price : $scope.pcm_orders[pIndex].xsessionsprice;
+        $scope.pcm_orders[pIndex].xfinalprice = $scope.pcm_orders[pIndex].xprice * (1 - ($scope.pcm_orders[pIndex].discount ? $scope.pcm_orders[pIndex].discount : 0));
+
+        if ($scope.pcm_orders[pIndex].ordersessions.length >= $scope.pcm_orders[pIndex].sessions)
+            $scope.pcm_orders[pIndex].xfullyscheduled = true;
+    }
+
+    $scope.getcalevent = function (pOrderindex, pOrdersessionindex) {
+        $scope.pcm_orders[pOrderindex].xfullyscheduled = false;
 
         $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_calevent/" + $scope.pcm_orders[pOrderindex].ordersessions[pOrdersessionindex].caleventid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                $scope.pcm_orders[orderindex].ordersessions = response.data;
+                angular.forEach($scope.pcm_orders[pIndex].ordersessions, function (item, lIndex) {
+                    $scope.getcalevent(orderindex, lIndex);
+                });
+                // az budou vsechny nactene...
+                $scope.getxvalues(orderindex);
+
+            }, function error(error) {
+                $rootScope.showerror($scope, 'getordersessions', error);
+                $scope.pcm_orders[orderindex].ordersessions = null;
+            });
+    };
+
+
+    $scope.getordersessions = function (orderindex) {
+
+        var promise1=$http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/pcm_ordersession/orderid/" + $scope.pcm_orders[orderindex].id,
             withCredentials: true,
@@ -61,13 +114,34 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
                 //                console.log("id", $scope.pcm_orders[caleventid].id);                
                 //               console.log("ordersessions", response.data);                
                 $scope.pcm_orders[orderindex].ordersessions = response.data;
-                if ($scope.pcm_orders[orderindex].ordersessions.length >= $scope.pcm_orders[orderindex].sessions)
-                    $scope.pcm_orders[orderindex].xfullyscheduled = true;
-
+                var promises = [];
+                angular.forEach($scope.pcm_orders[orderindex].ordersessions, function (item, lIndex) {
+                    $scope.pcm_orders[orderindex].ordersessions[lIndex].calevent = null;
+                    var promise=$http({
+                        headers: { "Content-Type": "application/json" },
+                        url: $rootScope.ApiAddress + "api/pcm_calevent/" + item.caleventid,
+                        withCredentials: true,
+                        method: 'GET'
+                    })
+                        .then(function success(response2) {
+                            $scope.pcm_orders[orderindex].ordersessions[lIndex].calevent = response2.data;
+                            return response2.$promise; 
+                        }, function error(error) {
+                            $rootScope.showerror($scope, 'getordersessions.2', error);
+                            $scope.pcm_orders[orderindex].ordersessions[lIndex].calevent = null;
+                        });
+                    promises.push(promise);
+                });
+                return $q.all(promises);                
             }, function error(error) {
-                $rootScope.showerror($scope, 'getordersessions', error);
+                $rootScope.showerror($scope, 'getordersessions.1', error);
                 $scope.pcm_orders[orderindex].ordersessions = null;
             });
+
+        promise1.then(function (promiseArray) {
+            $scope.getxvalues(orderindex);
+        });  
+
     };
 
 
@@ -212,7 +286,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     $scope.i_new = function (pCustomer){
         // set id to null and other items to defaults
         var lData = {
-            id: null, type: null, customer: { id: pCustomer.id, name: pCustomer.name }, price: pCustomer.pricesession, currencynm: pCustomer.currencynm, xfullyscheduled: false, xinvoiced: false
+            id: null, type: null, customer: { id: pCustomer.id, name: pCustomer.name }, rate: pCustomer.rate, currencynm: pCustomer.currencynm
         };
 
         $scope.detail(lData);
@@ -235,7 +309,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
                 l_customers = [{
                     id: $scope.parent.dataCopy.id,
                     name: $scope.parent.dataCopy.name, 
-                    pricesession: $scope.parent.dataCopy.pricesession, 
+                    rate: $scope.parent.dataCopy.rate, 
                     currencynm: $scope.parent.dataCopy.currencynm
                 }];
                 $scope.i_new(l_customers[0]);

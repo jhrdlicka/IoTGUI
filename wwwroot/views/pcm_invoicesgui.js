@@ -24,6 +24,14 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 //    if ($scope.parent)
 //      console.log("parent:", $scope.parent.controllerName);
 
+    $scope.timeDifference = function (start, end) {
+        var l_base = new Date("2020-01-01T00:00:00+01:00");
+        var l_diff = Math.abs(end - start);
+        l_base.setMilliseconds(l_base.getMilliseconds() + l_diff);
+
+        return l_base;
+    }
+
     $scope.getcustomer = function (invoiceindex) {
         if (!$scope.pcm_invoices[invoiceindex].order) {
             $scope.pcm_invoices[invoiceindex].customer = null;
@@ -41,8 +49,6 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             method: 'GET'
         })
             .then(function success(response) {
-                //                console.log("customerid", $scope.pcm_invoices[invoiceindex].customerid);
-                //                console.log("id", $scope.pcm_invoices[invoiceindex].id);
                 $scope.pcm_invoices[invoiceindex].order.customer = response.data;
 
             }, function error(error) {
@@ -50,6 +56,139 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
                     $scope.pcm_invoices[invoiceindex].order.customer = null;
             });
     };
+
+
+    $scope.getxvalues = function (pIndex) {
+        if (!pIndex || !$scope.pcm_invoices[pIndex].order)
+            return;
+
+        $scope.pcm_invoices[pIndex].order.xfullyscheduled = false;
+
+        if (!$scope.pcm_invoices[pIndex].order.ordersessions) {
+            $scope.pcm_invoices[pIndex].order.xunits = null;
+            $scope.pcm_invoices[pIndex].order.xsessionsprice = null;
+        } else {
+            $scope.pcm_invoices[pIndex].order.xunits = 0;
+            $scope.pcm_invoices[pIndex].order.xsessionsprice = 0;
+            angular.forEach($scope.pcm_invoices[pIndex].order.ordersessions, function (item, lIndex) {
+                if (angular.isNumber($scope.pcm_invoices[pIndex].order.xsessionsprice)) {
+                    if (!item.calevent) {
+                        $scope.pcm_invoices[pIndex].order.xsessionsprice = '???';
+                        $scope.pcm_invoices[pIndex].order.xunits = '???';
+                    }
+                    $scope.pcm_invoices[pIndex].order.xunits = $scope.pcm_invoices[pIndex].order.xunits + (item.calevent.units ? item.calevent.units : 1);
+                    $scope.pcm_invoices[pIndex].order.xsessionsprice = $scope.pcm_invoices[pIndex].order.xsessionsprice + (item.price ? item.price : (item.rate ? item.rate : $scope.pcm_invoices[pIndex].order.rate) * (item.calevent.units ? item.calevent.units : 1));
+                }
+            });
+        }
+
+        $scope.pcm_invoices[pIndex].order.xprice = $scope.pcm_invoices[pIndex].order.price ? $scope.pcm_invoices[pIndex].order.price : $scope.pcm_invoices[pIndex].order.xsessionsprice;
+        $scope.pcm_invoices[pIndex].order.xfinalprice = $scope.pcm_invoices[pIndex].order.xprice * (1 - ($scope.pcm_invoices[pIndex].order.discount ? $scope.pcm_invoices[pIndex].order.discount : 0));
+
+        if ($scope.pcm_invoices[pIndex].order.ordersessions.length >= $scope.pcm_invoices[pIndex].order.sessions)
+            $scope.pcm_invoices[pIndex].order.xfullyscheduled = true;
+    }
+
+    $scope.getcalevent = function (invoiceindex, ordersessionindex) {
+        if (!$scope.pcm_invoices[invoiceindex].orderid)
+            return;
+
+        var lId = $scope.pcm_invoices[invoiceindex].id;
+        var lOrdersessionid = $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].id;
+
+        var promise1 =$http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_calevent/" + $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].caleventid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                lData = response.data;                
+                if (!$scope.pcm_invoices ||
+                    !$scope.pcm_invoices[invoiceindex] ||
+                    !$scope.pcm_invoices[invoiceindex].order ||
+                    !$scope.pcm_invoices[invoiceindex].order.ordersessions ||
+                    !$scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex] ||
+                    $scope.pcm_invoices[invoiceindex].id != lId ||
+                    $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].id != lOrdersessionid) {
+                    //                    console.log("invalid pointer - probably double refresh (4)", caleventindex, $scope.pcm_calevents);
+                    return response.$promise;
+                }
+
+//                console.log('lData', lData)
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent = lData;
+
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.start = lData.start + "Z";           
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.starttime = new Date($scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.start);   
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.totime = new Date(lData.start);
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.totime.setSeconds($scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.totime.getSeconds() + lData.duration);
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.durationtime = new Date();
+                $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.durationtime = $scope.timeDifference($scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.starttime, $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent.totime);                
+                return response.$promise;
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+                    //                    alert("Unknown Error!");
+                    console.error('error', error);
+                    $scope.pcm_invoices[invoiceindex].order.ordersessions[ordersessionindex].calevent = null;
+            });
+        /*
+        promise1().then(function (promiseArray) {
+            return $promise;
+        });
+*/
+
+        return $q.all([promise1]);
+
+    };
+
+    $scope.getordersessions = function (invoiceindex) {
+        if (!$scope.pcm_invoices[invoiceindex].orderid)
+            return; 
+
+        var lId = $scope.pcm_invoices[invoiceindex].id;
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_ordersession/orderid/" + $scope.pcm_invoices[invoiceindex].orderid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                if (!$scope.pcm_invoices || !$scope.pcm_invoices[invoiceindex] || !$scope.pcm_invoices[invoiceindex].order  || $scope.pcm_invoices[invoiceindex].id != lId) {
+                    //                    console.log("invalid pointer - probably double refresh (4)", caleventindex, $scope.pcm_calevents);
+                    return;
+                }
+
+                $scope.pcm_invoices[invoiceindex].order.ordersessions = response.data;
+                var promise1 = function () {
+                    var promises = [];
+
+                    angular.forEach($scope.pcm_invoices[invoiceindex].order.ordersessions, function (ordersession, ordersessionindex) {
+                        var promise = $scope.getcalevent(invoiceindex, ordersessionindex)
+                            .then(function success(response) {
+                            return response.$promise;
+                        }); 
+                        promises.push(promise);
+                    });
+                    return $q.all(promises);
+                }
+
+                promise1().then(function (promiseArray) {
+                    $scope.getxvalues(invoiceindex);
+                });
+
+            }, function error(error) {
+                if (error.status == 401)
+                    alert("Access Denied!!!");
+                else
+                    //                    alert("Unknown Error!");
+                    console.error('error', error);
+                    $scope.pcm_invoices[invoiceindex].order.ordersessions = null;
+            });
+    };
+
 
     $scope.getorder = function (invoiceindex) {
         if (!$scope.pcm_invoices[invoiceindex].orderid) {
@@ -66,6 +205,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             .then(function success(response) {
                 $scope.pcm_invoices[invoiceindex].order = response.data;
                 $scope.getcustomer(invoiceindex);
+                $scope.getordersessions(invoiceindex);
             }, function error(error) {
                 $rootScope.showerror($scope, 'getorder', error);
                 $scope.pcm_invoices[invoiceindex].order = null;
@@ -246,7 +386,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             return true;
         }
         if ((!item.order) || (!item.order.customer)) {
-            //console.log("customer not found", item.id);
+//            console.log("customer not found", item.id);
 
             if ($scope.displayicustomers == 'SELECTED+' || $scope.displayicustomers == 'NULL')
                 return true;
@@ -261,11 +401,18 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
         }
         else if ($scope.parentControllerName == 'pcm_customereditcontroller') {
-                l_customers = {
-                    customer: {
-                        id: $scope.parent.dataCopy.id
-                    }
-                };
+            l_customers = {
+                customer: {
+                    id: $scope.parent.dataCopy.id
+                }
+            };
+        }
+        else if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
+            l_customers = {
+                customer: {
+                    id: $scope.parent.dataCopy.customerid
+                }
+            };
         }
         else if ($scope.parentControllerName == 'pcm_ordercontroller') {  
             if ($scope.parent.parentControllerName == 'pcm_customercontroller') { // docked to orders within a client list 
@@ -294,6 +441,8 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         }
 
 
+//        console.log("customers to find (l_customers):", l_customers);
+
         l_result = false;
         angular.forEach(l_customers, function (customer, index) {
             if (customer.id == item.order.customer.id) {
@@ -303,10 +452,10 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             }
         }, function () { /* cancel */ });
 
-        //if (!l_result)
-        //  console.log("not found", item.id);
-        //else 
-        //  console.log("found", item.id);
+  //      if (!l_result)
+  //        console.log("not found", item.id);
+  //      else 
+  //        console.log("found", item.id);
 
         return l_result;
     };
@@ -424,6 +573,16 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         $scope.detail(lData[0]);
     };
 
+    $scope.preview = function () {
+        lData = $rootScope.getSelectedRows($scope.invoicelistid, $scope.pcm_invoices);
+        if (lData.length != 1) {
+            $rootScope.showalert("error", "Preview", "Select exactly one record!", "OK")
+            return;
+        }
+
+        $scope.detailpreview(lData[0]);
+    };
+
     $scope.save = function (container) {
 
         container.type = parseInt(container.type);
@@ -431,7 +590,12 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             if (container.order) 
                 container.orderid = container.order.id;
             
-        var l_container = angular.copy(container);
+        var l_container = angular.copy(container); 
+        if (l_container.order)
+            delete l_container['order'];
+        if (l_container.customer)
+            delete l_container['customer'];
+
         if (l_container.eventdatedate)
             l_container.eventdate = l_container.eventdatedate.toJSON();
         else
@@ -513,6 +677,26 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_invoiceedit.html',
+            controller: 'pcm_invoiceeditcontroller',
+            size: 'xl',
+            backdrop: 'static',
+            resolve: {
+                container: function () {
+                    return pData;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (container) {
+            /* ok */
+            $scope.save(container)
+        }, function () { /* cancel */ });
+    };
+
+    $scope.detailpreview = function (pData) {
+
+        var modalInstance = $uibModal.open({
+            templateUrl: 'views/partials/pcm_invoicepreview.html',
             controller: 'pcm_invoiceeditcontroller',
             size: 'xl',
             backdrop: 'static',

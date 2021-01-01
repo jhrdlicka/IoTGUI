@@ -25,7 +25,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Date</span>
-                        <input type="text" class="form-control" uib-datepicker-popup="{{datetimeFormat}}" ng-model="dataCopy.starttime" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />                        
+                        <input type="text" class="form-control" uib-datepicker-popup="{{datetimeFormat}}" ng-model="dataCopy.starttime" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
@@ -33,6 +33,14 @@
                 </div>
             </div>
 
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Units</span>
+                        <input class="form-control input-sm" type="number" data-toggle="Units" ng-model="dataCopy.units" />
+                    </div>
+                </div>
+            </div>
 
             <div class="col-md-12">
                 <div class="form-group">
@@ -52,22 +60,6 @@
                 </div>
             </div>
 
-
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <div class="input-group input-group-sm">
-                        <span class="input-group-addon input-sm">Price</span>
-                        <input class="form-control input-sm" type="number" data-toggle="Price" ng-model="dataCopy.price" />
-                        <span class="input-group-addon input-sm" style="min-width:200px">
-                            <select class="form-control input-sm" ng-model="dataCopy.currencynm">
-                                <option ng-repeat="currency in currencylist" value="{{currency.Value}}" ng-selected="currency.Value == dataCopy.currencynm">{{currency.Text}}</option>
-                            </select>
-                        </span>
-
-                    </div>
-                </div>
-            </div>
 
             <div class="col-md-12">
                 <div class="form-group">
