@@ -852,35 +852,44 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     }
 
-    function i_pcm_connectcaleventstoorder(pOrders) {
-        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
-
-        if (!confirm("Connect " + l_calevents.length + " events to order of " + pOrders[0].customer.name + "?"))
-            return;
-
-        var promise1 = function () {
-            var promises = [];
-            angular.forEach(l_calevents, function (calevent, index) {
-                l_exists = false;
-                if (calevent.ordersessions && calevent.ordersessions.length > 0) {
+    function i2_pcm_connectcaleventstoorder(pCalevents, pOrder, pStartindex) {
+        if (pStartindex >= pCalevents.length) {
+            // all ordersessions created -> recalculate 
+            angular.forEach($scope.pcm_calevents, function (calevent, index) {
+                if (calevent.orderssions || calevent.ordersessions.length > 0)
                     angular.forEach(calevent.ordersessions, function (ordersession, index2) {
-                        if (ordersession.orderid == pOrders[0].id)
-                            l_exists = true;
+                        if (ordersession.orderid == pOrder.id)
+                            $scope.getordersessions(calevent.index);
                     });
-                }
-                if (!l_exists) {
-                    if (calevent.ordersessions && calevent.ordersessions.length > 0) {
-                        /* the session is connected to another order - confirm creation */
-                        if (!confirm("Event nr. " + calevent.id + " is already connected to another order. Connect to more events?"))
-                            return;
-                    }
+            });
+            angular.forEach(pCalevents, function (calevent, index) {
+                $scope.getordersessions(calevent.index);
+            });
+        }
+        else {  
+            // create another 
+            l_exists = false;
+            if (pCalevents[pStartindex].ordersessions && pCalevents[pStartindex].ordersessions.length > 0) {
+                angular.forEach(pCalevents[pStartindex].ordersessions, function (ordersession, index2) {
+                    if (ordersession.orderid == pOrder.id)
+                        l_exists = true;
+                });
+            }
+            if (!l_exists) {
 
-                    /* create a new ordersession and refresh the calevent */
-                    var pcm_ordersession = { orderid: pOrders[0].id, invoicetext: null, rate: null, price:null, caleventid: calevent.id };
+                l_skip = false;
+                if (pCalevents[pStartindex].ordersessions && pCalevents[pStartindex].ordersessions.length > 0) {                   // the session is connected to another order - confirm creation 
+                    if (!confirm("Event nr. " + pCalevents[pStartindex].id + " is already connected to another order. Connect to more events?"))
+                        l_skip = true;
+                }
+                if (!l_skip) {
+
+                    // create a new ordersession and refresh the calevent 
+                    var pcm_ordersession = { orderid: pOrder.id, invoicetext: null, rate: null, price: null, caleventid: pCalevents[pStartindex].id };
 
                     // create a container without "id" field
                     xjson = JSON.stringify(pcm_ordersession);
-//                    console.log("pcm_ordersession", pcm_ordersession);
+                    //                    console.log("pcm_ordersession", pcm_ordersession);
 
                     //INSERT
                     var promise = $http({
@@ -892,34 +901,32 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                         data: xjson
                     })
                         .then(function success(response) {
-                            return response.$promise;
+                            i2_pcm_connectcaleventstoorder(pCalevents, pOrder, pStartindex + 1);
                         }, function error(error) {
                             if (error.status == 401)
                                 alert("Access Denied!!!")
                             else
                                 alert("Unknown Error!");
                             console.error('error', error);
+                            i2_pcm_connectcaleventstoorder(pCalevents, pOrder, pStartindex+1)
                         });
-                    promises.push(promise);
-                }
-                return $q.all(promises);
-            });
-            return $q.all(promises);
-        }
 
-        promise1().then(function (promiseArray) {
-            angular.forEach($scope.pcm_calevents, function (calevent, index) {
-                if (calevent.orderssions || calevent.ordersessions.length>0)
-                    angular.forEach(calevent.ordersessions, function (ordersession, index2) {
-                        if (ordersession.orderid == pOrders[0].id) 
-                            $scope.getordersessions(calevent.index);
-                    });
-            });
-            angular.forEach(l_calevents, function (calevent, index) {
-                $scope.getordersessions(calevent.index);
-            });
-        });
-    
+                }
+            }
+        }
+    }
+
+    function i_pcm_connectcaleventstoorder(pOrders) {
+        l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
+        if (!l_calevents || l_calevents.length == 0)
+            return; 
+
+        if (!confirm("Connect " + l_calevents.length + " events to order of " + pOrders[0].customer.name + "?"))
+            return;
+
+        i2_pcm_connectcaleventstoorder(l_calevents, pOrders[0], 0);
+
+     
 
     }
 
