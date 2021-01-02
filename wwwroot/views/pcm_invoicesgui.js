@@ -32,32 +32,6 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         return l_base;
     }
 
-    $scope.getcustomer = function (invoiceindex) {
-        if (!$scope.pcm_invoices[invoiceindex].order) {
-            $scope.pcm_invoices[invoiceindex].customer = null;
-            return;
-        }
-        if (!$scope.pcm_invoices[invoiceindex].order.customerid) {
-            $scope.pcm_invoices[invoiceindex].order.customer = null;
-            return;
-        }
-
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_invoices[invoiceindex].order.customerid,
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                $scope.pcm_invoices[invoiceindex].order.customer = response.data;
-
-            }, function error(error) {
-                    $rootScope.showerror($scope, 'getcustomer', error);
-                    $scope.pcm_invoices[invoiceindex].order.customer = null;
-            });
-    };
-
-
     $scope.getxvalues = function (pIndex) {
         if (!pIndex || !$scope.pcm_invoices[pIndex].order)
             return;
@@ -189,6 +163,30 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             });
     };
 
+    $scope.getcustomer = function (invoiceindex) {
+        if (!$scope.pcm_invoices[invoiceindex].order) {
+            $scope.pcm_invoices[invoiceindex].customer = null;
+            return;
+        }
+        if (!$scope.pcm_invoices[invoiceindex].order.customerid) {
+            $scope.pcm_invoices[invoiceindex].order.customer = null;
+            return;
+        }
+
+        $http({
+            headers: { "Content-Type": "application/json" },
+            url: $rootScope.ApiAddress + "api/pcm_customer/" + $scope.pcm_invoices[invoiceindex].order.customerid,
+            withCredentials: true,
+            method: 'GET'
+        })
+            .then(function success(response) {
+                $scope.pcm_invoices[invoiceindex].order.customer = response.data;
+                $scope.getordersessions(invoiceindex);
+            }, function error(error) {
+                $rootScope.showerror($scope, 'getcustomer', error);
+                $scope.pcm_invoices[invoiceindex].order.customer = null;
+            });
+    };
 
     $scope.getorder = function (invoiceindex) {
         if (!$scope.pcm_invoices[invoiceindex].orderid) {
@@ -204,8 +202,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
         })
             .then(function success(response) {
                 $scope.pcm_invoices[invoiceindex].order = response.data;
-                $scope.getcustomer(invoiceindex);
-                $scope.getordersessions(invoiceindex);
+                $scope.getcustomer(invoiceindex);                
             }, function error(error) {
                 $rootScope.showerror($scope, 'getorder', error);
                 $scope.pcm_invoices[invoiceindex].order = null;
@@ -213,7 +210,6 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     };
 
     $scope.getpayments = function (invoiceindex) {
-
         $http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/pcm_payment/invoiceid/" + $scope.pcm_invoices[invoiceindex].id,
@@ -223,8 +219,11 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
             .then(function success(response) {
                 //                console.log("customerid", $scope.pcm_invoices[caleventid].customerid);
                 //                console.log("id", $scope.pcm_invoices[caleventid].id);                
-                //               console.log("ordersessions", response.data);                
-                $scope.pcm_invoices[invoiceindex].payments = response.data;
+                //               console.log("ordersessions", response.data); 
+                lData = response.data;
+                $scope.pcm_invoices[invoiceindex].payments = lData;
+                $scope.pcm_invoices[invoiceindex].xpaidamount = lData.reduce((acc, current) => acc + current.amount, 0);
+                    
             }, function error(error) {
                 $rootScope.showerror($scope, 'getpayments', error);
                 $scope.pcm_invoices[invoiceindex].payments = null;
@@ -234,8 +233,8 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     $scope.postimport = function (pIndex) {
         var item = $scope.pcm_invoices[pIndex];
         $scope.pcm_invoices[pIndex].index = pIndex;
-        $scope.getorder(pIndex);
         $scope.getpayments(pIndex);
+        $scope.getorder(pIndex);
 
         if (item.eventdate) {
             $scope.pcm_invoices[pIndex].eventdate = item.eventdate + "Z";
@@ -722,21 +721,29 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
         if (!$rootScope.showalert("confirm", "Delete Invoice(s)", "Delete " + lItems.length + " records?"))
             return;
+        var promise1 = function () {
+            var promises = [];
+            angular.forEach(lItems, function (item, index) {
 
-        angular.forEach(lItems, function (item, index) {
-
-            $http({
-                headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/pcm_invoice/" + item.id,
-                withCredentials: true,
-                method: 'DELETE'
-            })
-                .then(function success(response) {
-                    $scope.loadData();
-                }, function error(error) {
+                var promise2 = $http({
+                    headers: { "Content-Type": "application/json" },
+                    url: $rootScope.ApiAddress + "api/pcm_invoice/" + item.id,
+                    withCredentials: true,
+                    method: 'DELETE'
+                })
+                    .then(function success(response) {
+                        return response.$promise
+                    }, function error(error) {
                         $rootScope.showerror($scope, 'delete', error);
-                });
-        });
+                    });
+                promises.push(promise2);
+            });
+            return $q.all(promises);
+        }
+
+        promise1().then(function (promiseArray) {
+            $scope.loadData();
+        });     
     };
 
     $scope.refreshdetail = function () {

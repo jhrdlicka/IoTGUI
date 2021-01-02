@@ -56,7 +56,7 @@
                         <td><input type="checkbox" ng-checked="isRowSelected(invoicelistid, pcm_invoice.index)"></td>
                         <td>{{ pcm_invoice.invoicenr }}</td>
                         <td>{{ pcm_invoice.order.customer.name }}</td>
-                        <td>{{ pcm_invoice.price }} {{ pcm_invoice.currencynm }}</td>
+                        <td align="center">{{ pcm_invoice.price | number}} {{ pcm_invoice.currencynm }}</td>
                         <td>{{ pcm_invoice.eventdatedate | date: dateFormat}}</td>
                         <td>{{ pcm_invoice.sentdate | date: dateFormat}}</td>
                         <td>{{ pcm_invoice.duedate | date: dateFormat}}</td>
