@@ -190,7 +190,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             if (!$scope.pcm_calevents[caleventindex].ordersessions[0].order)
                 return '???';
             else
-                return $scope.pcm_calevents[caleventindex].ordersessions[0].xorder + '/' + $scope.pcm_calevents[caleventindex].ordersessions[0].order.sessions;
+                return $scope.pcm_calevents[caleventindex].ordersessions[0].xord + '/' + $scope.pcm_calevents[caleventindex].ordersessions[0].order.sessions;
         }
         else { // more orders attached to the calevent
             console.log('more ordersessions for a calevent', $scope.pcm_calevents[caleventindex])
