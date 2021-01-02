@@ -1,0 +1,70 @@
+﻿<div class="container col-md-12">
+
+    <div class="col-md-6" style="min-width:800px">
+
+        <h1 id="tableLabel">
+            Reference items
+
+            <span class="pull-right">
+                <button class="btn btn-sm btn-primary" ng-click="new()" title="New item">new</button>
+                <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected items">delete</button>
+                <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+            </span>
+        </h1>
+        <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+            <div class="input-group-addon input-sm">Search:</div>
+            <input class="input-sm col-md-12" ng-model="searchText">
+        </div>
+        <div class="input-group input-group-sm  col-md-12" ng-if="false">
+            <div class="input-group-addon input-sm">Filter by reference table:</div>
+            <select class="form-control input-sm" id="displayreftabs.{{parentControllerName}}" ng-model="displayreftabs">
+                <option ng-repeat="displayreftabssoption in displayreftabsoptions" value="{{displayreftabsoption.Value}}" ng-selected="displayreftabsoption.Value == displayreftabs">{{displayreftabsoption.Text}}</option>
+            </select>
+        </div>
+
+
+
+        <div>
+            <p ng-if="!ker_references"><em>Loading...</em></p>
+
+            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="ker_references" id="table.{{referencelistid}}">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>RebtabNM</th>
+                        <th>Id</th>
+                        <th>NameNM</th>
+                        <th>Name</th>
+                        <th>Desription</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="ker_reference in ker_references |filter: searchText |filter: filterReftabs"
+                        ng-dblclick="edit()"
+                        ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed)"
+                        ng-class="{active: isRowSelected(referencelistid, ker_reference.index)}"
+                        id="tr.{{referencelistid}}:{{ker_reference.index}}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(referencelistid, ker_reference.index)"></td>
+                        <td>{{ ker_reference.reftabnm }}</td>
+                        <td>{{ ker_reference.id }}</td>
+                        <td>{{ ker_reference.namenm }}</td>
+                        <td>{{ ker_reference.name }}</td>
+                        <td>{{ ker_reference.description }}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed); delete()">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed); edit()">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+

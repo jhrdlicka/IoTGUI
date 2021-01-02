@@ -11,9 +11,15 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     $rootScope.orderselectlistid = 6;
     $rootScope.invoicelistid = 7;
     $rootScope.invoiceselectlistid = 8;
+    $rootScope.paymentlistid = 9;
+    $rootScope.paymentselectlistid = 10;
+    $rootScope.reftablistid = 11;
+    $rootScope.reftabselectlistid = 12;
+    $rootScope.referencelistid = 13;
+    $rootScope.referenceselectlistid = 14;
 
     $rootScope.selectedRowsIndexes = [];
-    for (var i = 1; i <= 8; i++) {
+    for (var i = 1; i <= 14; i++) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
 
@@ -76,6 +82,9 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/pcm_calevents", { templateUrl: "views/pcm_caleventsgui.html", controller: "pcm_caleventcontroller" })
         .when("/pcm_orders", { templateUrl: "views/pcm_ordersgui.html", controller: "pcm_ordercontroller" })
         .when("/pcm_invoices", { templateUrl: "views/pcm_invoicesgui.html", controller: "pcm_invoicecontroller" })
+        .when("/pcm_payments", { templateUrl: "views/pcm_paymentsgui.html", controller: "pcm_paymentcontroller" })
+        .when("/ker_reftabs", { templateUrl: "views/ker_reftabsgui.html", controller: "ker_reftabcontroller" })
+        .when("/ker_references", { templateUrl: "views/ker_referencesgui.html", controller: "ker_referencecontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

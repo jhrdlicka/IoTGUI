@@ -1006,7 +1006,7 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
 //        console.log("loaddata - pcm:", $scope.parentControllerName)
         $scope.pcm_invoices = null;
         $scope.selectedpcm_invoice = null;
-        $rootScope.resetSelection($rootScope.invoicelistid);
+        $rootScope.resetSelection($rootScope.invoiceselectlistid);
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -1017,7 +1017,7 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
             .then(function success(response) {
                 $scope.pcm_invoices = response.data;
 
-                $rootScope.resetSelection($rootScope.invoicelistid);
+                $rootScope.resetSelection($rootScope.invoiceselectlistid);
                 angular.forEach($scope.pcm_invoices, function (item, lIndex) {
                     $scope.postimport(lIndex);
                 });

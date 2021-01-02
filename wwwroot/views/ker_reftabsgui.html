@@ -1,0 +1,66 @@
+﻿<div class="container col-md-12">
+
+    <div class="col-md-6" style="min-width:800px">
+
+        <h1 id="tableLabel">
+            Reference Tables
+
+            <span class="pull-right">
+                <button class="btn btn-sm btn-primary" ng-click="new()" title="New reference table">new</button>
+                <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected tables">delete</button>
+                <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
+            </span>
+        </h1>
+        <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+            <div class="input-group-addon input-sm">Search:</div>
+            <input class="input-sm col-md-12" ng-model="searchText">
+        </div>
+
+        <div>
+            <p ng-if="!ker_reftabs"><em>Loading...</em></p>
+
+            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="ker_reftabs" id="table.{{reftablistid}}">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Id</th>
+                        <th>RetabNM</th>
+                        <th>Description</th>
+                        <th>Items</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="ker_reftab in ker_reftabs |filter: searchText "
+                        ng-dblclick="edit()"
+                        ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed)"
+                        ng-class="{active: isRowSelected(reftablistid, ker_reftab.index)}"
+                        id="tr.{{reftablistid}}:{{ker_reftab.index}}">
+                        <td><input type="checkbox" ng-checked="isRowSelected(reftablistid, ker_reftab.index)"></td>
+                        <td>{{ ker_reftab.id }}</td>
+                        <td>{{ ker_reftab.reftabnm }}</td>
+                        <td>{{ ker_reftab.description }}</td>
+                        <td>{{ ker_reftab.references.length}}</td>
+                        <td style="width:1%">
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed); delete()">Delete</button>
+                        </td>
+                        <td style="width:1%">
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed); edit()">Edit</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+    <uib-tabset active="active" class="col-md-6" ng-if="true">
+        <uib-tab index="0" heading="Reference">
+            <div ng-include="'views/ker_referencesgui.html'" ng-controller="ker_referencecontroller" class="col-md-6" style="min-width:1000px"></div>
+        </uib-tab>
+    </uib-tabset>
+
+</div>
+
+

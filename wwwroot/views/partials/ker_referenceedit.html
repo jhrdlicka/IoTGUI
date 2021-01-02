@@ -1,0 +1,73 @@
+﻿
+
+<form name="myForm" ng-submit="ok()">
+
+    <div class="modal-header">
+        <h2 class="modal-title">
+            Reference table
+        </h2>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+
+            <div class="col-md-12" ng-if="dataCopy.reftabnm">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Reference table (ReftabNM)</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.reftabnm" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12" ng-if="dataCopy.id">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Id</span>
+                        <input class="form-control input-sm" type="number" ng-model="dataCopy.id" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Internal name (NameNM)</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.namenm" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Name</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.name" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Description</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.description" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" ng-click="ok()">Save</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </div>
+
+
+</form>
+
