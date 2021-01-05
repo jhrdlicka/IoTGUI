@@ -1,7 +1,7 @@
 /**
  * pcm_invoice list
  */
-app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert) {
+app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference) {
     $scope.controllerName = 'pcm_invoicecontroller';
     $scope.multilineallowed = true;
 
@@ -798,11 +798,10 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
     $scope.selectedpcm_invoice = null;
     $scope.loadData();
-
-
+    $rootScope.kerReftabInit();
 });
 
-app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, $rootScope, ker_reference) {
     $scope.controllerName = 'pcm_invoiceeditcontroller';
 
     $scope.setparent = function (pLink) {
@@ -818,13 +817,12 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
         $scope.parentControllerName = "";
     else
         $scope.parentControllerName = $scope.parent.controllerName;
-    
-    $scope.currencylist = [
-        { Value: null, Text: "--Currency--" },
-        { Value: "CZK", Text: "CZK" },
-        { Value: "EUR", Text: "EUR" },
-        { Value: "USD", Text: "USD" }
-    ];
+
+    $rootScope.kerReftabGetList('CURRENCY')
+        .then(function (result) {
+            $scope.currencylist = result[0];
+            console.log("currencylist", $scope.currencylist);
+        });
 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);
@@ -873,7 +871,7 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
     
 });
 
-app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
+app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed, ker_reference) {   
     $scope.controllerName = 'pcm_invoiceselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
 
@@ -1072,8 +1070,6 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
     ];
 
     $scope.loadData();
-
-
-
+    $rootScope.kerReftabInit();
 });
 

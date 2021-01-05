@@ -1,7 +1,7 @@
 /**
  * pcm_calevent list
  */
-app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, $filter, multiline, guialert, $q) {
+app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $cookies, $window, $rootScope, $filter, multiline, guialert, $q, ker_reference) {
 
     $scope.controllerName = 'pcm_caleventcontroller';
     $scope.multilineallowed = true;
@@ -1207,6 +1207,8 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 
     $scope.loadData();
+    $rootScope.kerReftabInit();
+
 
 
 });

@@ -54,7 +54,7 @@
           <strong>datum splatnosti:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.due| date: dateFormat}} <br /><br />
           <strong>převodem na účet:&nbsp;&nbsp;&nbsp;</strong>2813050004 / 2700<br /><br />
           <strong>variabilní symbol:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.invoicenr}}<br /><br /><br /><br />
-          <strong>celková suma:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.price | number}} {{dataCopy.currencynm}}<br />
+          <strong>celková suma:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>{{dataCopy.price | number}} {{kerReftabGetNameByNM('CURRENCY', dataCopy.currencynm)}}<br />
 
       </div>
 
@@ -90,29 +90,29 @@
                     <tr ng-repeat="ordersession in dataCopy.order.ordersessions">
                         <td class="col-3 border-0">{{ordersession.invoicetext?ordersession.invoicetext:ordersession.calevent.invoicetext?ordersession.calevent.invoicetext:ordersession.calevent.title?ordersession.calevent.title:"Psychologické poradenství"}}</td>
                         <td class="col-4 border-0">{{ordersession.calevent.starttime | date: dateFormat}}</td>
-                        <td class="col-2 text-center border-0">{{ordersession.rate?ordersession.rate:dataCopy.order.rate| number}} {{dataCopy.order.currencynm}}</td>
+                        <td class="col-2 text-center border-0">{{ordersession.rate?ordersession.rate:dataCopy.order.rate| number}} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}</td>
                         <td class="col-1 text-center border-0">{{ordersession.calevent.units}}</td>
-                        <td class="col-2 text-right border-0">{{ordersession.price?ordersession.price:(ordersession.calevent.units?ordersession.calevent.units:1)*(ordersession.rate?ordersession.rate:dataCopy.order.rate)}} {{dataCopy.order.currencynm}}</td>
+                        <td class="col-2 text-right border-0">{{ordersession.price?ordersession.price:(ordersession.calevent.units?ordersession.calevent.units:1)*(ordersession.rate?ordersession.rate:dataCopy.order.rate)}} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="bg-light-2 text-right"><strong>součet:</strong></td>
                         <td class="bg-light-2 text-right">
-                            {{dataCopy.order.xsessionsprice | number }} {{dataCopy.order.currencynm}}
+                            {{dataCopy.order.xsessionsprice | number }} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}
                         </td>
                     </tr>
                     <tr ng-if="dataCopy.order.price">
                         <td colspan="4" class="bg-light-2 text-right"><strong>korigovaná cena:</strong></td>
                         <td class="bg-light-2 text-right">
-                            {{dataCopy.order.price | number }} {{dataCopy.order.currencynm}}
+                            {{dataCopy.order.price | number }} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}
                         </td>
                     </tr>
                     <tr>
                         <td colspan="4" class="bg-light-2 text-right"><strong>sleva: </strong> {{dataCopy.order.discount*100|number:2}}%</td>
-                        <td class="bg-light-2 text-right">{{-(dataCopy.order.discount?dataCopy.order.discount:1)*dataCopy.order.xprice}} {{dataCopy.order.currencynm}}</td>
+                        <td class="bg-light-2 text-right">{{-(dataCopy.order.discount?dataCopy.order.discount:1)*dataCopy.order.xprice}} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}</td>
                     </tr>
                     <tr>
                         <td colspan="4" class="bg-light-2 text-right"><strong>celkem:</strong></td>
-                        <td class="bg-light-2 text-right">{{dataCopy.order.xfinalprice | number}} {{dataCopy.order.currencynm}}</td>
+                        <td class="bg-light-2 text-right">{{dataCopy.order.xfinalprice | number}} {{kerReftabGetNameByNM('CURRENCY', dataCopy.order.currencynm)}}</td>
                     </tr>
                 </tbody>
                 </table>

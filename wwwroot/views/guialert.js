@@ -11,7 +11,8 @@ app.service('guialert', function ($rootScope, $q, $uibModal) {
             alert("Access Denied!!!")
         else
             alert("Unknown Error");
-        console.error('Controller:' + callscope.controllerName + ' Module: ' + modulenm + ' error', error);
+        console.error('Module:' + callscope.controllerName ? callscope.controllerName : callscope.packageName + ' Module: ' + modulenm + ' error', error);
+
     }
 
     $rootScope.showalert = function (type, title, text, button1, button2, button3) {

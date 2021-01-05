@@ -1,7 +1,7 @@
 /**
  * ker_reference list
  */
-app.controller('ker_referencecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert) {
+app.controller('ker_referencecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference) {
     $scope.controllerName = 'ker_referencecontroller';
     $scope.multilineallowed = true;
 

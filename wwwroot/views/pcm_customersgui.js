@@ -1,7 +1,7 @@
 /**
  * pcm_customer list
  */
-app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert) {
+app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference) {
     $scope.controllerName = 'pcm_customercontroller';
     $scope.multilineallowed = true;
 
@@ -259,11 +259,11 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
     $scope.selectedpcm_customer = null;
     $scope.loadData();
-
+    $rootScope.kerReftabInit();
 
 });
 
-app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container, $uibModal) {
+app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance, container, $uibModal, $rootScope, ker_reference) {
     $scope.controllerName = 'pcm_customereditcontroller';
     
     $scope.setparent = function (pLink) {
@@ -281,12 +281,12 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
         $scope.parentControllerName = $scope.parent.controllerName;
 
     
-    $scope.currencylist = [
-        { Value: null, Text: "--Currency--" },
-        { Value: "CZK", Text: "CZK" },
-        { Value: "EUR", Text: "EUR" },
-        { Value: "USD", Text: "USD" }
-    ];
+    $rootScope.kerReftabGetList('CURRENCY')
+        .then(function (result) {
+            $scope.currencylist = result[0];
+            console.log("currencylist", $scope.currencylist);
+        });
+
 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);
@@ -329,7 +329,7 @@ app.controller('pcm_customereditcontroller', function ($scope, $uibModalInstance
     };
 });
 
-app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed) {   
+app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed, ker_reference) {   
     $scope.controllerName = 'pcm_customerselectcontroller';
     $scope.mulitilineallowed = multilineallowed;
 
@@ -408,6 +408,7 @@ app.controller('pcm_customerselectcontroller', function ($scope, $uibModalInstan
     };
 
     $scope.loadData();
+    $rootScope.kerReftabInit();
 });
 
 
