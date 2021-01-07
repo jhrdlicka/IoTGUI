@@ -365,7 +365,21 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             };
         } else if ($scope.$parent.controllerName == 'pcm_ordercontroller') {
             l_orders = $rootScope.getSelectedRows($rootScope.orderlistid, $scope.$parent.pcm_orders);
-        } else {
+        } else if ($scope.$parent.controllerName == 'pcm_invoicecontroller') {
+            l_invoices = $rootScope.getSelectedRows($rootScope.invoicelistid, $scope.parent.pcm_invoices);
+            var l_orders = [];
+            angular.forEach(l_invoices, function (invoice, index) {
+                if (invoice.orderid) {
+                    l_orders.push({ id: invoice.orderid });
+                }
+            });
+        } else if ($scope.$parent.controllerName == 'pcm_invoiceeditcontroller') {
+            l_orders = {
+                order: {
+                    id: $scope.$parent.dataCopy.orderid
+                }
+            };
+        }else {
             l_orders = null;
         }
 
@@ -422,7 +436,21 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                         customer: {
                             id: $scope.parent.dataCopy.customer.id
                         }
-                    };
+            };
+        } else if ($scope.parentControllerName == 'pcm_invoiceeditcontroller') {
+            l_customers = {
+                customer: {
+                    id: $scope.parent.dataCopy.order.customerid
+                }
+            };
+        } else if ($scope.parentControllerName == 'pcm_invoicecontroller') {
+            l_invoices = $rootScope.getSelectedRows($rootScope.invoicelistid, $scope.parent.pcm_invoices);
+            var l_customers = [];
+            angular.forEach(l_invoices, function (invoice, index) {
+                if (invoice.order && invoice.order.customerid) {
+                    l_customers.push({ id: invoice.order.customerid });
+                }
+            });
         } else if ($scope.parentControllerName == 'pcm_ordercontroller') {
             if ($scope.parent.parentControllerName == 'pcm_customereditcontroller')  // docked to orders within a client detail 
                 l_customers = {
@@ -1270,6 +1298,24 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.hideItem_ButtonMergecalvents = true;
         $scope.displayorders = "SELECTED";
         $scope.displaycustomers = "SELECTED+";
+    }
+    else if ($scope.$parent.controllerName == "pcm_invoiceeditcontroller") {
+        $scope.hideItem_FilterCustomers = true;
+        $scope.displayorders = "SELECTED";
+        $scope.displaycustomers = "ALL";
+        $scope.displaycalevents = "ALL";
+        $scope.hideItem_ButtonMergecalvents = true;
+        $scope.hideItem_ConnectCustomers = true;
+        $scope.hideItem_ListGCalEvent = true;
+    }
+    else if ($scope.$parent.controllerName == "pcm_invoicecontroller") {
+//        $scope.hideItem_FilterCustomers = true;
+        $scope.displayorders = "SELECTED";
+        $scope.displaycustomers = "ALL";
+        $scope.displaycalevents = "ALL";
+        $scope.hideItem_ButtonMergecalvents = true;
+        $scope.hideItem_ConnectCustomers = true;
+        $scope.hideItem_ListGCalEvent = true;
     }
     else if ($scope.$parent.controllerName == "pcm_customereditcontroller") {
         $scope.hideItem_FilterOrders = true;

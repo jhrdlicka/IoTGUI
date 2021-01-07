@@ -215,11 +215,14 @@
 
         </div>
 
-            <uib-tabset active="active" class="col-md-6">
-                <uib-tab index="0" heading="Payments">
-                    <!--div ng-if="dataCopy.id" ng-include="'views/pcm_paymentsgui.html'" ng-controller="pcm_paymentcontroller" class="col-md-6" style="min-width:1000px"></div-->
-                </uib-tab>
-            </uib-tabset>
+        <uib-tabset active="active" class="col-md-6" ng-if="dataCopy.id">
+            <uib-tab index="0" heading="Events">
+                <div ng-if="dataCopy.id" ng-include="'views/pcm_caleventsgui.html'" ng-controller="pcm_caleventcontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+            <uib-tab index="1" heading="Payments">
+                <!--div ng-if="dataCopy.id" ng-include="'views/pcm_paymentsgui.html'" ng-controller="pcm_paymentcontroller" class="col-md-6" style="min-width:1000px"></div-->
+            </uib-tab>
+        </uib-tabset>
 
         </div>
 
