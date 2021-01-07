@@ -664,11 +664,108 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             });
     }
 
-    $scope.pcm_caleventsave = function (container) {
+    $scope.pcm_gcaleventedit = function () {
+       
+            l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
+            if (l_gcalevents.length > 10) {
+                console.error('error', 'invalid number of records');
+                return;
+            }
+
+        angular.forEach(l_gcalevents, function (item, index) {
+            window.open(item.htmlLink);
+        }, function () { /* cancel */ });
+    };
+
+    $scope.pcm_caleventedit = function (createnew) {
+    };
+
+
+    $scope.i_new = function (pCustomer) {
+
+        // set id to null and other items to defaults
+        var lData = {
+            id: null, type: null, description: null, starttime: new Date(), customer: { id: pCustomer.id, name: pCustomer.name}, durationtime: new Date()
+        };
+        lData.units= $scope.calcUnits(lData.units, lData.durationtime);
+        $scope.detail(lData);
+    }
+
+    $scope.new = function () {
+        var l_customers;
+        // get customer id and name to l_customers[0]
+        if ($scope.parentControllerName == 'pcm_customercontroller') {
+            l_customers = $rootScope.getSelectedRows($rootScope.customerlistid, $scope.parent.pcm_customers);
+            if (l_customers.length != 1) {
+                alert('Select exactly one Customer');
+                console.error('error', 'invalid number of records');
+                return;
+            }
+            $scope.i_new(l_customers[0]);
+        }
+        else
+            if ($scope.parentControllerName == 'pcm_customereditcontroller') {
+                l_customers = [{
+                    id: $scope.parent.dataCopy.id,
+                    name: $scope.parent.name 
+                }];
+                $scope.i_new(l_customers[0]);
+            } else { /* call customer lookup */
+                /*
+                $rootScope.entitySelect('pcm_customer', false).then(function (l_customers) {
+                    $scope.i_new(l_customers[0]);
+                }, function (error) {
+                    if (error == "cancel") {
+                        //   $rootScope.showalert("error", "New Invoice", "No customer selected", "OK");
+                    }
+                    else
+                        $rootScope.showerror($scope, 'new', error);
+                });
+                */
+
+                // create a new calevent without a customer
+                l_customers = [{
+                    id: null,
+                    name: null
+                }];
+                $scope.i_new(l_customers[0]);
+            };
+    }
+
+    $scope.edit = function () {
+        lData = $rootScope.getSelectedRows($scope.caleventlistid, $scope.pcm_calevents);
+        if (lData.length != 1) {
+            $rootScope.showalert("error", "Edit", "Select exactly one record!", "OK")
+            return;
+        }
+
+        lData[0].startdate = lData[0].starttime;
+
+        $scope.detail(lData[0]);
+    };
+
+    $scope.save = function (container) {
+
         container.type = parseInt(container.type);
-        var l_container = angular.copy(container); 
-        l_container.start = l_container.starttime.toJSON();
-        l_container.duration = l_container.durationtime.getHours() * 60 * 60 + l_container.durationtime.getMinutes() * 60 + l_container.durationtime.getSeconds();
+        if (!container.customerid)
+            if (container.customer)
+                container.customerid = container.customer.id;
+
+        var l_container = angular.copy(container);
+
+        if (l_container.customer)
+            delete l_container['customer'];
+
+        if (l_container.starttime)
+            l_container.start = l_container.starttime.toJSON();
+        else
+            l_container.start = null;
+
+        if (l_container.durationtime)
+            l_container.duration = l_container.durationtime.getHours() * 60 * 60 + l_container.durationtime.getMinutes() * 60 + l_container.durationtime.getSeconds();
+        else
+            l_container.duration = null;
+        l_container.units = $scope.calcUnits(l_container.units, l_container.durationtime);
         l_json = JSON.stringify(l_container);
 
         if (container.id) {
@@ -720,33 +817,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         }
     }
 
-    $scope.pcm_gcaleventedit = function () {
-       
-            l_gcalevents = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
-            if (l_gcalevents.length > 10) {
-                console.error('error', 'invalid number of records');
-                return;
-            }
-
-        angular.forEach(l_gcalevents, function (item, index) {
-            window.open(item.htmlLink);
-        }, function () { /* cancel */ });
-    };
-
-    $scope.pcm_caleventedit = function (createnew) {
-        if (createnew) {
-            var pcm_calevent = { id: null, type: null, description: null, starttime: new Date(), durationtime: new Date()};
-            $scope.pcm_caleventsave(pcm_calevent); // temporary bastl
-            return; // temporary bastl
-        } 
-        else {
-            l_calevents = $rootScope.getSelectedRows($rootScope.caleventlistid, $scope.pcm_calevents);
-            if (l_calevents.length != 1) {
-                console.error('error', 'invalid number of records');
-                return;
-            }
-            pcm_calevent = l_calevents[0];
-        }
+    $scope.detail = function (pData) {
 
         var modalInstance = $uibModal.open({
             templateUrl: 'views/partials/pcm_caleventedit.html',
@@ -755,19 +826,20 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             backdrop: 'static',
             resolve: {
                 container: function () {
-                    return pcm_calevent;
+                    return pData;
                 }
             }
         });
 
         modalInstance.result.then(function (container) {
             /* ok */
-            $scope.pcm_caleventsave(container);
+            $scope.save(container);
 
         }, function () { /* cancel */ });
+
     };
 
-    $scope.i_pcm_caleventmerge = function (caleventindex, gcaleventindex, forceupdate) {
+    $scope.i_pcm_gcaleventmerge = function (caleventindex, gcaleventindex, forceupdate) {
 
         $scope.pcm_calevents[caleventindex].gcaljson = $scope.pcm_gcalevents[gcaleventindex].gcaljson;
         $scope.pcm_calevents[caleventindex].gcalid = $scope.pcm_gcalevents[gcaleventindex].id;
@@ -782,11 +854,14 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         if (forceupdate || !$scope.pcm_calevents[caleventindex].durationtime) {
             $scope.pcm_calevents[caleventindex].durationtime = $scope.pcm_gcalevents[gcaleventindex].durationtime;
         }
+        if (forceupdate || !$scope.pcm_calevents[caleventindex].units) {
+            $scope.pcm_calevents[caleventindex].units = $scope.calcUnits($scope.pcm_calevents[caleventindex].units, $scope.pcm_calevents[caleventindex].durationtime);
+        }
         if (forceupdate || !$scope.pcm_calevents[caleventindex].title) {
             $scope.pcm_calevents[caleventindex].title = $scope.pcm_gcalevents[gcaleventindex].summary;
         }
 
-        $scope.pcm_caleventsave($scope.pcm_calevents[caleventindex]);
+        $scope.save($scope.pcm_calevents[caleventindex]);
     }
 
 
@@ -810,6 +885,16 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
         $scope.i_pcm_gcaleventmerge(caleventindex, gcaleventindex, forceupdate);
     }
 
+    $scope.calcUnits = function (pUnits, pDurationTime) {
+        if (pUnits && pUnits >= 0)
+            return pUnits;
+        if (pDurationTime) {
+            var lDurationNum = parseInt($filter('date')(pDurationTime, 'HHmm Z'));
+            if (lDurationNum >= 40 && lDurationNum <= 130)
+                return 1;
+        }
+        return null;
+    }
     $scope.pcm_caleventgenerate = function () {
         l_items = $rootScope.getSelectedRows($rootScope.gcaleventlistid, $scope.pcm_gcalevents);
         if (l_items.length == 0) {
@@ -821,7 +906,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             return;
 
         angular.forEach(l_items, function (item, index) {
-            var l_container = { type: null, description: null, starttime: new Date(), durationtime: new Date()};
+            var l_container = { type: null, description: null, starttime: new Date(), durationtime: new Date() };
 
             // create a container without "id" field
             xjson = JSON.stringify(l_container);
@@ -839,7 +924,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                     var caleventindex = $scope.pcm_calevents.length;
                     $scope.pcm_calevents[caleventindex] = response.data;
                     $scope.pcm_calevents[caleventindex].index = caleventindex;
-                    $scope.i_pcm_caleventmerge(caleventindex, item.index, true);
+                    $scope.i_pcm_gcaleventmerge(caleventindex, item.index, true);
                 }, function error(error) {
                     if (error.status == 401)
                         alert("Access Denied!!!")
@@ -952,7 +1037,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
             } else { /* call customer lookup */
                 $rootScope.entitySelect('pcm_order', false).then(function (l_orders) {
-                    i_pcm_connectcaleventstoorders(l_orders);
+                    i_pcm_connectcaleventstoorder(l_orders);
                 }, function (error) {
                     if (error == "cancel") {
                         //   $rootScope.showalert("error", "Connect Calevents to Orders", "No order selected", "OK");
@@ -979,7 +1064,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
             }
 
             calevent.customerid = pCustomers[0].id;
-            $scope.pcm_caleventsave(calevent);
+            $scope.save(calevent);
         });
 
     }
@@ -1213,7 +1298,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 });
 
-app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, uibDateParser) {
+app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, uibDateParser, $filter) {
     $scope.controllerName = 'pcm_caleventeditcontroller';
 
     $scope.setparent = function (pLink) {
@@ -1235,10 +1320,24 @@ app.controller('pcm_caleventeditcontroller', function ($scope, $uibModalInstance
     $scope.dataCopy = angular.copy($scope.pcm_calevent);
     $scope.popup1 = { opened: false }; // initialize datapicker for fromdate
 
+    $scope.durationChanged = function () {
+        if ($scope.dataCopy.units && $scope.dataCopy.units >= 0)
+            return;
+        if ($scope.dataCopy.durationtime) {
+            var lDurationNum = parseInt($filter('date')($scope.dataCopy.durationtime, 'HHmm Z'));
+            if (lDurationNum >= 40 && lDurationNum <= 130)
+                $scope.dataCopy.units = 1;
+        }
+    }
+
     $scope.ok = function () {
         angular.forEach($scope.dataCopy, function (value, key) {
             $scope.pcm_calevent[key] = value;
         });
+
+        $scope.pcm_calevent.starttime.setFullYear($scope.pcm_calevent.startdate.getFullYear());
+        $scope.pcm_calevent.starttime.setMonth($scope.pcm_calevent.startdate.getMonth());
+        $scope.pcm_calevent.starttime.setDate($scope.pcm_calevent.startdate.getDate());
 
         $uibModalInstance.close($scope.pcm_calevent);
     };

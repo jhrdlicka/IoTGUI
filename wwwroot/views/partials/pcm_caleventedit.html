@@ -11,6 +11,14 @@
     <div class="modal-body">
 
         <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Customer</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.customer.name" / disabled>
+                    </div>
+                </div>
+            </div>
 
             <div class="col-md-12">
                 <div class="form-group">
@@ -21,11 +29,11 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Date</span>
-                        <input type="text" class="form-control" uib-datepicker-popup="{{datetimeFormat}}" ng-model="dataCopy.starttime" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                        <input type="text" class="form-control" uib-datepicker-popup="{{dateFormat}}" ng-model="dataCopy.startdate" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
                         </span>
@@ -33,7 +41,27 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Start</span>
+                        <div uib-timepicker ng-model="dataCopy.starttime" hour-step="1" minute-step="5" show-meridian="false" show-seconds="false" show-spinners="false"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Duration</span>
+                        <div uib-timepicker ng-model="dataCopy.durationtime" hour-step="1" minute-step="5" show-meridian="false" show-seconds="false" show-spinners="false" ng-change="durationChanged()"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <span class="input-group-addon input-sm">Units</span>
