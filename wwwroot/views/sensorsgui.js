@@ -1,7 +1,7 @@
 /**
  * Sensor list
  */
-app.controller('sensorController', function ($scope, $http, $uibModal, $rootScope) {
+app.controller('sensorController', function ($scope, $http, $uibModal, $rootScope, ker_reference) {
 
      $scope.loadData = function () {
         $scope.sensors = null;
@@ -9,7 +9,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
 
         $http({
              headers: { "Content-Type": "application/json" },
-             url: $rootScope.ApiAddress + "api/Sensors",
+             url: $rootScope.ApiAddress + "api/iot_device",
              withCredentials: true,
              method: 'GET'
         })
@@ -51,7 +51,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
                 //UPDATE
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $rootScope.ApiAddress + "api/Sensors/" + container.id,
+                    url: $rootScope.ApiAddress + "api/iot_device/" + container.id,
                     withCredentials: true,
                     method: 'PUT',
                     datatype: "json",
@@ -73,7 +73,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
                 //INSERT
                 $http({
                     headers: { "Content-Type": "application/json" },
-                    url: $rootScope.ApiAddress + "api/Sensors",
+                    url: $rootScope.ApiAddress + "api/iot_device",
                     withCredentials: true,
                     method: 'POST',
                     datatype: "json",
@@ -92,12 +92,12 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
     };
 
     $scope.sensorDelete = function (sensor) {
-        if (!confirm("Delete sensor '" + sensor.description + "'. Are you sure?"))
+        if (!confirm("Delete sensor '" + sensor.code + "'. Are you sure?"))
             return;
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $rootScope.ApiAddress + "api/iot_device/" + sensor.id,
             withCredentials: true,
             method: 'DELETE'
         })
@@ -120,7 +120,7 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
         $http({
             headers: { "Content-Type": "application/json" },
 //            url: "https://cors-anywhere.herokuapp.com/http://hrdlicky.eu/currentweather/api/Sensors/" + sensor.id,
-            url: $rootScope.ApiAddress + "api/Sensors/" + sensor.id,
+            url: $rootScope.ApiAddress + "api/iot_device/" + sensor.id,
             withCredentials: true,
             method: 'GET'
         })
@@ -136,15 +136,28 @@ app.controller('sensorController', function ($scope, $http, $uibModal, $rootScop
 
 });
 
-app.controller('sensorEditController', function ($scope, $uibModalInstance, container) {
+app.controller('sensorEditController', function ($scope, $uibModalInstance, container, $rootScope, ker_reference) {
 
-    $scope.types = [
-        { Value: null, Text: "--Please choose a sensortype--" },
-        { Value: 0, Text: "WEATHER" },
-        { Value: 1, Text: "WEATHERFORECAST" },
-        { Value: 2, Text: "WATERLEVEL" },
-        { Value: 3, Text: "DISTANCE" }
-    ];
+
+    $rootScope.kerReftabGetList('DEVICECATEGORY')
+        .then(function (result) {
+            $scope.devicecategorylist = result[0];
+        });
+
+    $rootScope.kerReftabGetList('DEVICETYPE')
+        .then(function (result) {
+            $scope.devicetypelist = result[0];
+        });
+
+    $rootScope.kerReftabGetList('UNIT')
+        .then(function (result) {
+            $scope.unitlist = result[0];
+        });
+
+    $rootScope.kerReftabGetList('LOCATION')
+        .then(function (result) {
+            $scope.locationlist = result[0];
+        });
 
     $scope.sensor = container;
     //console.log($scope.sensor);

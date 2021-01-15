@@ -1,6 +1,6 @@
 ﻿<div class="modal-header">
     <h2 class="modal-title">
-        Sensor
+        Device
     </h2>
 </div>
 
@@ -8,19 +8,44 @@
     <div class="modal-body">
 
         <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Code</div>
+                        <input class="form-control input-sm" type="text" ng-model="sensor.code" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Name</div>
+                        <input class="form-control input-sm" type="text" ng-model="sensor.name" />
+
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12 col-sm-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
-                        <div class="input-group-addon input-sm">Type</div>
-                        <select class="form-control input-sm" ng-model="sensor.type">
-                            <option ng-repeat="type in types" value="{{type.Value}}" ng-selected="type.Value == sensor.type">{{type.Text}}</option>
+                        <div class="input-group-addon input-sm">Category</div>
+                        <select class="form-control input-sm" ng-model="sensor.devicecategorynm">
+                            <option ng-repeat="devicecategory in devicecategorylist" value="{{devicecategory.Value}}" ng-selected="devicecategory.Value == sensor.devicecategorynm">{{devicecategory.Text}}</option>
                         </select>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Type</div>
+                        <select class="form-control input-sm" ng-model="sensor.devicetypenm">
+                            <option ng-repeat="devicetype in devicetypelist" value="{{devicetype.Value}}" ng-selected="devicetype.Value == sensor.devicetypenm">{{devicetype.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <div class="input-group input-group-sm">
@@ -30,6 +55,27 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Unit</div>
+                        <select class="form-control input-sm" ng-model="sensor.unitnm">
+                            <option ng-repeat="unit in unitlist" value="{{unit.Value}}" ng-selected="unit.Value == sensor.unitnm">{{unit.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Location</div>
+                        <select class="form-control input-sm" ng-model="sensor.locationnm">
+                            <option ng-repeat="location in locationlist" value="{{location.Value}}" ng-selected="location.Value == sensor.locationnm">{{location.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
