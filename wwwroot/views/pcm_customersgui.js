@@ -65,9 +65,7 @@ app.controller('pcm_customercontroller', function ($scope, $http, $uibModal, $ro
 
                  $rootScope.resetSelection($rootScope.customerlistid);
                  angular.forEach($scope.pcm_customers, function (item, lIndex) {
-                     $scope.pcm_customers[lIndex].index = lIndex;
-                     $scope.getphoto(lIndex);
-
+                     item.index = lIndex;
                  });
 
              }, function error(error) {

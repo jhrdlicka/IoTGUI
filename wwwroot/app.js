@@ -3,6 +3,9 @@ var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 app.run(function ($rootScope, $cookies, $http, $window, $locale) {
 
     // register multiline lists and initiate multiline structures
+    $rootScope.lastlistid = 0;
+    $rootScope.selectedRowsIndexes = [];
+
     $rootScope.caleventlistid = 1;
     $rootScope.gcaleventlistid = 2;
     $rootScope.customerlistid = 3;
@@ -18,7 +21,6 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     $rootScope.referencelistid = 13;
     $rootScope.referenceselectlistid = 14;
 
-    $rootScope.selectedRowsIndexes = [];
     for (var i = 1; i <= 14; i++) {
         $rootScope.selectedRowsIndexes[i] = [];
     }
@@ -85,6 +87,7 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/pcm_payments", { templateUrl: "views/pcm_paymentsgui.html", controller: "pcm_paymentcontroller" })
         .when("/ker_reftabs", { templateUrl: "views/ker_reftabsgui.html", controller: "ker_reftabcontroller" })
         .when("/ker_references", { templateUrl: "views/ker_referencesgui.html", controller: "ker_referencecontroller" })
+        .when("/iot_devices", { templateUrl: "views/iot_devicesgui.html", controller: "iot_devicecontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

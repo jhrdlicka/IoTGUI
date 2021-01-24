@@ -3,6 +3,7 @@
  */
 app.controller('sensorController', function ($scope, $http, $uibModal, $rootScope, ker_reference, $q, multiline, guialert) {
 
+
     $scope.controllerName = 'sensorcontroller';
     $scope.multilineallowed = true;
 

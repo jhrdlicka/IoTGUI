@@ -12,6 +12,7 @@ app.service('multiline', function ($rootScope) {
             $rootScope.selectedRowsIndexes[listid] = [rowIndex];
         }
         
+//        console.log("listid:", listid);
 //        console.log($rootScope.selectedRowsIndexes[listid]);
     };
 
