@@ -2,7 +2,7 @@
  * iot_device list
  */
 
-app.service('model_iot_device', function ($rootScope, $http, model_iot_sample) {
+app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, serverUpdateHub) {
     $rootScope.model_iot_device = { packageName: 'model_iot_device' };
     var myscope = $rootScope.model_iot_device;
 
@@ -53,6 +53,21 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample) {
         $rootScope.model_iot_device.loading = true;
 
         $rootScope.iot_devices = null;
+
+        // initialize SignalR incremental updates
+        $rootScope.serverUpdateHub.init();
+        $rootScope.serverUpdateHub.connection.on("iot_device", function (pMessage) {
+            console.log("received SignalR message (iot_device): ", pMessage);
+            var lMsg = JSON.parse(pMessage);
+//            var lObj = { id: lMsg.id };
+
+            if (lMsg.operationtxt == "insert") {                
+                var lIndex = $rootScope.iot_devices.push({ id: lMsg.id });
+                lIndex--;
+                $rootScope.iot_devices[lIndex].index = lIndex;
+                $rootScope.model_iot_device.loadRecord(lIndex);
+            };
+        });
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -611,6 +626,13 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 //        console.log("parent.listid", $scope.parent.listid);
 
         $scope.selectediot_device = l_selecteddata[0];
+
+        /*
+         
+        $rootScope.connection.invoke("Send", "test user", "test message").catch(function (err) {    // call method "Send" of "ServerUpdateHub" with parameters "test user" and "test message"
+            return console.error(err.toString());
+        });
+        */
     };
 
     if ($scope.parentControllerName == "iot_deviceeditcontroller")
