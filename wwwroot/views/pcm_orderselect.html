@@ -41,10 +41,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="pcm_order in pcm_orders |filter: searchText |filter: filterOrders"
-                            ng-dblclick="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed);OK()"
-                            ng-click="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed)"
+                            ng-dblclick="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed, pcm_order.id);OK()"
+                            ng-click="selectRow(orderselectlistid, $event, pcm_order.index, multilineallowed, pcm_order.id)"
                             ng-class="{active: isRowSelected(orderselectlistid, pcm_order.index)}"
-                            id="tr.{{orderselectlistid}}:{{pcm_order.index}}">
+                            id="tr.{{orderselectlistid}}:{{pcm_order.index}}"
+                            objectid="{{pcm_order.id}}">
                             <td><input type="checkbox" ng-checked="isRowSelected(orderselectlistid, pcm_order.index)"></td>
                             <td>{{ pcm_order.id }}</td>
                             <td>{{ pcm_order.customer.name }}</td>

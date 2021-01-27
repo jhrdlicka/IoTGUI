@@ -36,10 +36,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="ker_reftab in ker_reftabs |filter: searchText "
-                            ng-dblclick="selectRow(reftabselectlistid, $event, ker_reftab.index, multilineallowed); ok()"
-                            ng-click="selectRow(reftabselectlistid, $event, ker_reftab.index, multilineallowed)"
+                            ng-dblclick="selectRow(reftabselectlistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); ok()"
+                            ng-click="selectRow(reftabselectlistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id)"
                             ng-class="{active: isRowSelected(reftabselectlistid, ker_reftab.index)}"
-                            id="tr.{{reftabselectlistid}}:{{ker_reftab.index}}">
+                            id="tr.{{reftabselectlistid}}:{{ker_reftab.index}}"
+                            objectid="{{ker_reftab.id}}">
                             <td><input type="checkbox" ng-checked="isRowSelected(reftabselectlistid, ker_reftab.index)"></td>
                             <td>{{ ker_reftab.id }}</td>
                             <td>{{ ker_reftab.reftabnm }}</td>

@@ -36,10 +36,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="pcm_customer in pcm_customers |filter:searchText"
-                            ng-dblclick="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed);OK()"
-                            ng-click="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed);refreshdetail()"
+                            ng-dblclick="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed, pcm_customer.id);OK()"
+                            ng-click="selectRow(customerselectlistid, $event, pcm_customer.index, mulitilineallowed, pcm_customer.id);refreshdetail()"
                             ng-class="{active: isRowSelected(customerselectlistid, pcm_customer.index)}"
-                            id="tr.{{customerselectlistid}}:{{pcm_customer.index}}">
+                            id="tr.{{customerselectlistid}}:{{pcm_customer.index}}"
+                            objectid="{{pcm_customer.id}}">
                             <td><input type="checkbox" ng-checked="isRowSelected(customerselectlistid, pcm_customer.index)"></td>
                             <td><img ng-src="{{pcm_customer.photodocument.content}}" class="img-rounded" width="60"></td>
                             <td>{{ pcm_customer.id }}</td>

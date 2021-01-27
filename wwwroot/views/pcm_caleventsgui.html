@@ -46,10 +46,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_calevent in pcm_calevents | filter:filterCalevents | filter:filterCaleventsByOrders"
-                        ng-dblclick="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); edit()"
-                        ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed);pcm_caleventdata()"
+                        ng-dblclick="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed, pcm_calevent.id); edit()"
+                        ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed, pcm_calevent.id);pcm_caleventdata()"
                         ng-class="{active: isRowSelected(caleventlistid, pcm_calevent.index)}"
-                        id="tr.{{caleventlistid}}:{{pcm_calevent.index}}">
+                        id="tr.{{caleventlistid}}:{{pcm_calevent.index}}"
+                        objectid="{{pcm_calevent.id}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(caleventlistid, pcm_calevent.index)"></td>
                         <td>{{pcm_calevent.starttime | date: dateFormat}}</td>
                         <td>{{ pcm_calevent.starttime | date: timeFormat}}</td>
@@ -60,13 +61,13 @@
                         <td>{{getorderedsessions(pcm_calevent.index)}}</td>
                         <td><input type="checkbox" ng-checked="getinvoiced(pcm_calevent.index)"></td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventdelete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed, pcm_calevent.id); pcm_caleventdelete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed, pcm_calevent.id); edit()">Edit</button>
                         </td>
                         <td style="width:1%" ng-if="!hideItem_ButtonMergecalvents">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed); pcm_caleventmerge(true)">Merge</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(caleventlistid, $event, pcm_calevent.index, multilineallowed, pcm_calevent.id); pcm_caleventmerge(true)">Merge</button>
                         </td>
                     </tr>
 
@@ -114,10 +115,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_gcalevent in pcm_gcalevents| filter:filterGcalvents"
-                        ng-dblclick="selectRow(gcaleventlistid, $event, pcm_gcalevent.index, multilineallowed);pcm_gcaleventedit()"
-                        ng-click="selectRow(gcaleventlistid, $event, pcm_gcalevent.index, multilineallowed);pcm_gcaleventdata()"
+                        ng-dblclick="selectRow(gcaleventlistid, $event, pcm_gcalevent.index, multilineallowed, pcm_gcalevent.index);pcm_gcaleventedit()"
+                        ng-click="selectRow(gcaleventlistid, $event, pcm_gcalevent.index, multilineallowed, pcm_gcalevent.index);pcm_gcaleventdata()"
                         ng-class="{active: isRowSelected(gcaleventlistid, pcm_gcalevent.index)}"
-                        id="tr.{{gcaleventlistid}}:{{pcm_gcalevent.index}}">
+                        id="tr.{{gcaleventlistid}}:{{pcm_gcalevent.index}}"
+                        objectid="{{pcm_gcalevent.index}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(gcaleventlistid, pcm_gcalevent.index)"></td>
                         <td>{{pcm_gcalevent.starttime | date: dateFormat}}</td>
                         <td>{{ pcm_gcalevent.starttime | date: timeFormat}}</td>
@@ -130,10 +132,10 @@
                         </td>
                         <td>{{ pcm_gcalevent.summary}}</td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, pcm_gcalevent.index, multilineallowed); pcm_gcaleventedit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, pcm_gcalevent.index, multilineallowed, pcm_gcalevent.index); pcm_gcaleventedit()">Edit</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, pcm_gcalevent.index, multilineallowed); pcm_caleventgenerate()">Generate</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(galeventlistid, $event, pcm_gcalevent.index, multilineallowed, pcm_gcalevent.index); pcm_caleventgenerate()">Generate</button>
                         </td>
 
                     </tr>

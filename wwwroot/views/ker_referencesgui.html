@@ -43,9 +43,10 @@
                 <tbody>
                     <tr ng-repeat="ker_reference in ker_references |filter: searchText |filter: filterReftabs"
                         ng-dblclick="edit()"
-                        ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed)"
+                        ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed, ker_reference.id)"
                         ng-class="{active: isRowSelected(referencelistid, ker_reference.index)}"
-                        id="tr.{{referencelistid}}:{{ker_reference.index}}">
+                        id="tr.{{referencelistid}}:{{ker_reference.index}}"
+                        objectid="{{ker_reference.id}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(referencelistid, ker_reference.index)"></td>
                         <td>{{ ker_reference.reftabnm }}</td>
                         <td>{{ ker_reference.id }}</td>
@@ -54,10 +55,10 @@
                         <td>{{ ker_reference.name }}</td>
                         <td>{{ ker_reference.description }}</td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed); delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed, ker_reference.id); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(referencelistid, $event, ker_reference.index, multilineallowed, ker_reference.id); edit()">Edit</button>
                         </td>
                     </tr>
 

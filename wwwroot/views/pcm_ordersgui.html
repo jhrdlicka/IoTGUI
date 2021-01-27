@@ -40,10 +40,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_order in pcm_orders |filter: searchText |filter: filterOrders"
-                        ng-dblclick="edit()"
-                        ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed);refreshdetail()"
+                        ng-dblclick="selectRow(orderlistid, $event, pcm_order.index, multilineallowed, pcm_order.id);edit()"
+                        ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed, pcm_order.id);refreshdetail()"
                         ng-class="{active: isRowSelected(orderlistid, pcm_order.index)}"
-                        id="tr.{{orderlistid}}:{{pcm_order.index}}">
+                        id="tr.{{orderlistid}}:{{pcm_order.index}}"
+                        objectid="{{pcm_order.id}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(orderlistid, pcm_order.index)"></td>
                         <td>{{ pcm_order.id }}</td>
                         <td>{{ pcm_order.customer.name }}</td>
@@ -52,10 +53,10 @@
                         <td><input type="checkbox" ng-checked="pcm_order.xfullyscheduled"></td>
                         <td><input type="checkbox" ng-checked="pcm_order.xinvoiced"></td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed); delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed, pcm_order.id); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(orderlistid, $event, pcm_order.index, multilineallowed, pcm_order.id); edit()">Edit</button>
                         </td>
                     </tr>
 

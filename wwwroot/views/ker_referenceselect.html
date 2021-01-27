@@ -46,10 +46,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="ker_reference in ker_references |filter: searchText |filter: filterReftabs"
-                            ng-dblclick="selectRow(referenceselectlistid, $event, ker_reference.index, multilineallowed);ok()"
-                            ng-click="selectRow(referenceselectlistid, $event, ker_reference.index, multilineallowed)"
+                            ng-dblclick="selectRow(referenceselectlistid, $event, ker_reference.index, multilineallowed, ker_reference.id);ok()"
+                            ng-click="selectRow(referenceselectlistid, $event, ker_reference.index, multilineallowed, ker_reference.id)"
                             ng-class="{active: isRowSelected(referenceselectlistid, ker_reference.index)}"
-                            id="tr.{{referenceselectlistid}}:{{ker_reference.index}}">
+                            id="tr.{{referenceselectlistid}}:{{ker_reference.index}}"
+                            objectid="{{ker_reference.id}}">
                             <td><input type="checkbox" ng-checked="isRowSelected(referenceselectlistid, ker_reference.index)"></td>
                             <td>{{ ker_reference.reftabnm }}</td>
                             <td>{{ ker_reference.id }}</td>

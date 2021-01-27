@@ -61,12 +61,53 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
             var lMsg = JSON.parse(pMessage);
 //            var lObj = { id: lMsg.id };
 
+            var lIndex; 
+            var lItem;
+
             if (lMsg.operationtxt == "insert") {                
-                var lIndex = $rootScope.iot_devices.push({ id: lMsg.id });
-                lIndex--;
+                lIndex = $rootScope.iot_devices.push({ id: lMsg.id })-1;
                 $rootScope.iot_devices[lIndex].index = lIndex;
                 $rootScope.model_iot_device.loadRecord(lIndex);
             };
+
+            if (lMsg.operationtxt == "update") {
+                lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
+                if (lItem === undefined) {
+                    $rootScope.showerror(myscope, 'model_iot_device.loadData.UpdatedRecordNotFound', lMsg);
+                    lIndex = $rootScope.iot_devices.push({ id: lMsg.id }) - 1;
+                    $rootScope.iot_devices[lIndex].index = lIndex;
+                }
+                else
+                    lIndex = lItem.index;
+                $rootScope.model_iot_device.loadRecord(lIndex);
+            };
+
+            if (lMsg.operationtxt == "delete") {
+                lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
+                if (lItem === undefined) {
+                    $rootScope.showerror(myscope, 'model_iot_device.loadData.DeletedRecordNotFound', lMsg);
+                    return;
+                }
+
+                if (
+                    (lItem.xsubdevices && lItem.xsubdevices.length > 0) ||
+                    (lItem.xsamples && lItem.xsamples.length > 0)
+                ) {
+                    $rootScope.showerror(myscope, 'model_iot_device.loadData.DeletedRecordContainsSubrecords', lItem);
+                    return;
+                }
+
+                $rootScope.iot_devices.splice(lItem.index, 1);           
+                for (lIndex = lItem.index; lIndex < $rootScope.iot_devices.length; lIndex++)
+                    $rootScope.iot_devices[lIndex].index = lIndex;
+                if ($rootScope.iot_devices.length > 0)
+                    $rootScope.model_iot_device.loadRecord(0);
+                else
+                    $rootScope.iot_devices = null;
+
+            };
+
+
         });
 
         $http({
@@ -98,6 +139,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
     $rootScope.model_iot_device.loadRecord = function (pIndex) {
         var lItem = $rootScope.iot_devices[pIndex];
         var lId = lItem.id;
+
         if (lItem.xmasterdevice)    
             // remove the record from list of subdevices
             angular.forEach(lItem.xmasterdevice.xsubdevices, function (subdevice, subdeviceindex) {   
@@ -105,9 +147,6 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
                     lItem.xmasterdevice.xsubdevices.splice(subdeviceindex, 1); // remove subdevice from array
                 }
             });
-
-        $rootScope.iot_devices[pIndex] = null;
-        
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -259,7 +298,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     $scope.listid = $rootScope.lastlistid++;
     $rootScope.selectedRowsIndexes[$scope.listid] = [];
 
-    console.log("controllerName", $scope.controllerName);
+    //console.log("controllerName", $scope.controllerName);
 
     $scope.setparent = function (pLink) {        
         if (!pLink.$parent)  // if there is no parent then set parent to null
@@ -269,11 +308,11 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         else {
             $scope.parent = pLink.$parent;
             if (!pLink.$parent.id || pLink.$parent.id!=pLink.$parent.$id) {  // if controllerName is derived 
-                console.log("!!!");
+                //console.log("!!!");
                 $scope.setparent(pLink.$parent);
             }
             if ($scope.parent && ($scope.parent.$$watchers.length == 0)) {   // if controller is empty
-                console.log("!!!2");
+                //console.log("!!!2");
                 $scope.setparent(pLink.$parent);
             }
         }
@@ -284,12 +323,12 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     else
         $scope.parentControllerName = $scope.parent.controllerName;
 
-
+    /*
     console.log("parent", $scope.parent);
     console.log("parentControllerName", $scope.parentControllerName);
     console.log("listid", $scope.listid);
     console.log("parent watchers", $scope.parent ? $scope.parent.$$watchers.length : 0)
-
+    */
 
 
     $scope.loadData = function (pForce) {
@@ -297,6 +336,10 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         $rootScope.model_iot_device.loadData(pForce); 
     };
 
+
+    $rootScope.$watchCollection("iot_devices", function () {
+        console.log("*** data changed ***");
+    }, true);
 
     $scope.filterMasterdevices= function (item) {
         var dispfield = document.getElementById('displaymasterdevices.' + $scope.parentControllerName);
@@ -523,8 +566,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
                 data: JSON.stringify(l_containerupdate)
             })
                 .then(function success(response) {
-                    $rootScope.model_iot_device.loadRecord(container.index);                    // replace with update / insert / delete all updated records
-                    //                        $scope.loadData();  // refresh data if necessary (data could be changed by API) 
+                    //
                 }, function error(error) {
                     $rootScope.showerror($scope, 'save.update', error);
                 });
@@ -552,7 +594,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
                 data: xjson
             })
                 .then(function success(response) {
-                    $scope.loadData(true);  // replace with insert all created records
+                    //
                 }, function error(error) {
                     $rootScope.showerror($scope, 'save.insert', error);
                 });
@@ -589,29 +631,24 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
         if (!$rootScope.showalert("confirm", "Delete Device(s)", "Delete " + lItems.length + " records?"))
             return;
-        var promise1 = function () {
-            var promises = [];
-            angular.forEach(lItems, function (item, index) {
 
-                var promise2 = $http({
-                    headers: { "Content-Type": "application/json" },
-                    url: $rootScope.ApiAddress + "api/iot_device/" + item.id,
-                    withCredentials: true,
-                    method: 'DELETE'
-                })
-                    .then(function success(response) {
-                        return response.$promise
-                    }, function error(error) {
-                        $rootScope.showerror($scope, 'delete', error);
-                    });
-                promises.push(promise2);
-            });
-            return $q.all(promises);
-        }
+        $rootScope.resetSelection($scope.listid);
 
-        promise1().then(function (promiseArray) {
-            $scope.loadData(true);
-        });     
+        angular.forEach(lItems, function (item, index) {
+
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_device/" + item.id,
+                withCredentials: true,
+                method: 'DELETE'
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror($scope, 'delete', error);
+                });
+        });
+
     };
 
     $scope.refreshdetail = function () {
@@ -649,7 +686,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     ];
 
     $scope.selectediot_device = null;
-    $scope.loadData();
+    $scope.loadData(false);
     $rootScope.kerReftabInit();
 });
 

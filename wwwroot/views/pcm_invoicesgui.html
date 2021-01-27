@@ -49,10 +49,11 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="pcm_invoice in pcm_invoices |filter: searchText |filter: filterOrders |filter: filterCustomers"
-                        ng-dblclick="edit()"
-                        ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed);refreshdetail()"
+                        ng-dblclick="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed, pcm_invoice.id);edit()"
+                        ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed, pcm_invoice.id);refreshdetail()"
                         ng-class="{active: isRowSelected(invoicelistid, pcm_invoice.index)}"
-                        id="tr.{{invoicelistid}}:{{pcm_invoice.index}}">
+                        id="tr.{{invoicelistid}}:{{pcm_invoice.index}}"
+                        objectid="{{pcm_invoice.id}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(invoicelistid, pcm_invoice.index)"></td>
                         <td>{{ pcm_invoice.invoicenr }}</td>
                         <td>{{ pcm_invoice.order.customer.name }}</td>
@@ -62,13 +63,13 @@
                         <td>{{ pcm_invoice.duedate | date: dateFormat}}</td>
                         <td>{{ pcm_invoice.paiddate | date: dateFormat}}</td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed, pcm_invoice.id); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed, pcm_invoice.id); edit()">Edit</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed); preview()">Preview</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(invoicelistid, $event, pcm_invoice.index, multilineallowed, pcm_invoice.id); preview()">Preview</button>
                         </td>
                     </tr>
 

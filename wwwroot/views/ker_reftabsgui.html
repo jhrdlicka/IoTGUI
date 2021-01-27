@@ -32,19 +32,20 @@
                 <tbody>
                     <tr ng-repeat="ker_reftab in ker_reftabs |filter: searchText "
                         ng-dblclick="edit()"
-                        ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed)"
+                        ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id)"
                         ng-class="{active: isRowSelected(reftablistid, ker_reftab.index)}"
-                        id="tr.{{reftablistid}}:{{ker_reftab.index}}">
+                        id="tr.{{reftablistid}}:{{ker_reftab.index}}"
+                        objectid="{{ker_reftab.id}}">
                         <td><input type="checkbox" ng-checked="isRowSelected(reftablistid, ker_reftab.index)"></td>
                         <td>{{ ker_reftab.id }}</td>
                         <td>{{ ker_reftab.reftabnm }}</td>
                         <td>{{ ker_reftab.description }}</td>
                         <td>{{ ker_reftab.references.length}}</td>
                         <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed); delete()">Delete</button>
+                            <button class="btn btn-danger btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); delete()">Delete</button>
                         </td>
                         <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed); edit()">Edit</button>
+                            <button class="btn btn-primary btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); edit()">Edit</button>
                         </td>
                     </tr>
 
