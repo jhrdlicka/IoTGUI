@@ -43,7 +43,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
             if (!pForce)  // avoid double-loading
                 return;
             else {
-                // delete all relations to the entity from the model - data are fe-fetched from the database;             
+                // delete all relations to the entity from the model - data are fe-fetched from the database;  
             }
         };
         if ($rootScope.model_iot_device.loading) {
@@ -214,6 +214,9 @@ app.service('model_iot_sample', function ($rootScope, $http) {
                 angular.forEach($rootScope.iot_devices, function (lItem, lIndex) {
                     lItem.xsamples = [];
                 });
+                angular.forEach($rootScope.iot_calendardays, function (lItem, lIndex) {
+                    lItem.xsamples = [];
+                });
             }
         };
         if ($rootScope.model_iot_sample.loading) {
@@ -339,6 +342,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
     $rootScope.$watchCollection("iot_devices", function () {
         console.log("*** data changed ***");
+        $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_devices);
     }, true);
 
     $scope.filterMasterdevices= function (item) {

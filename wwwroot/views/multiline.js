@@ -33,6 +33,24 @@ app.service('multiline', function ($rootScope) {
         return selectedRows;
     }
 
+    $rootScope.checkSelectedRows = function (listid, list) {
+        angular.forEach($rootScope.selectedRowsIndexes[listid], function (rowIndex, lIndex) {
+            if (!list[rowIndex.index] || (rowIndex.id != list[rowIndex.index].id)) {
+                lListItem = list.find(l => l.id == rowIndex.id);
+                if (lListItem === undefined) {
+                    unselect(listid, rowIndex.index);
+                    console.log("item deleted - removed from multiline", rowIndex.id);
+                }
+                else {
+                    console.log("item shifted in multiline", rowIndex.id, rowIndex.index, lListItem.index);
+                    $rootScope.selectedRowsIndexes[listid][lIndex].index = lListItem.index;
+                }
+
+            }
+        }); 
+        console.log("multiline", listid, $rootScope.selectedRowsIndexes[listid]);
+    }
+
     $rootScope.getFirstSelectedRow = function(listid, list) {
         var firstSelectedRowIndex = $rootScope.selectedRowsIndexes[listid][0];
         return list[firstSelectedRowIndex.index];
@@ -76,7 +94,8 @@ app.service('multiline', function ($rootScope) {
     }
 
     function unselect(listid, rowIndex) {
-        var rowIndexInSelectedRowsList = $rootScope.selectedRowsIndexes[listid].find(i => i.index == rowIndex);
+        var lItem = $rootScope.selectedRowsIndexes[listid].find(i => i.index == rowIndex);
+        var rowIndexInSelectedRowsList = $rootScope.selectedRowsIndexes[listid].indexOf(lItem);
         var unselectOnlyOneRow = 1;
         $rootScope.selectedRowsIndexes[listid].splice(rowIndexInSelectedRowsList, unselectOnlyOneRow);
     }
