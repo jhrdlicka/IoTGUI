@@ -434,7 +434,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
             l_orders = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
             if (l_orders.length != 1) {
                 alert('Select exactly one Order');
-                console.error('error', 'invalid number of records');
+                rootScope.showerror($scope, 'pcm_connectstoorder.1', 'invalid number of records');
                 return;
             }
             i_pcm_connecttoorder(l_orders);
@@ -478,7 +478,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
             l_orders = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
             if (l_orders.length != 1) {
                 alert('Select exactly one Order');
-                console.error('error', 'invalid number of records');
+                rootScope.showerror($scope, 'new.1', 'invalid number of records');
                 return;
             }
             $scope.i_new(l_orders[0]);
@@ -666,8 +666,9 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 //        console.log("refreshdetail", l_selecteddata);
 //        console.log("parent.listid", $scope.parent.listid);
 
-        $scope.selectediot_device = l_selecteddata[0];
+        $scope.selectediot_device = l_selecteddata[0];      
 
+        $rootScope.showtoast("info", "this is a text", "toast header");
         /*
          
         $rootScope.connection.invoke("Send", "test user", "test message").catch(function (err) {    // call method "Send" of "ServerUpdateHub" with parameters "test user" and "test message"
