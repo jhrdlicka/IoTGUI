@@ -8,11 +8,11 @@ app.service('guialert', function ($rootScope, $q, $uibModal) {
             error = { status: 0 };
 
         if (error.status == 401)
-            alert("Access Denied!!!")
+            $rootScope.showtoast("error", "Access Denied!!!", callscope.packageName + "." + modulenm + " error"); 
         else
-            alert("Unknown Error");
+            $rootScope.showtoast("error", error.status+ " " + error.statusText, callscope.packageName + "." + modulenm + " error"); 
+            
         console.error({ module: callscope.controllerName ? callscope.controllerName : callscope.packageName, function: modulenm, error: error })
-        $rootScope.showtoast("error", error, callscope.packageName+"."+modulenm+" error"); 
     }
 
     $rootScope.showalert = function (type, title, text, button1, button2, button3) {
@@ -27,13 +27,14 @@ app.service('guialert', function ($rootScope, $q, $uibModal) {
         }
     }
 
-    $rootScope.log = function (callscope, modulenm, text, param) {
-        console.log(text, param);
-        $rootScope.showtoast("info", text, callscope.packageName + "." + modulenm + " info");
+    $rootScope.log = function (callscope, modulenm, text, param, detailmsg, toasttype) {
+        console.log(text, param, detailmsg);
+        if (toasttype!=null)
+          $rootScope.showtoast(toasttype, text, callscope.packageName + "." + modulenm + " info", detailmsg);
     }
 
 
-    $rootScope.showtoast = function (pType, pMessage, pTitle) {
+    $rootScope.showtoast = function (pType, pMessage, pTitle, pDetailMsg) {
         toastr.options = {
             "closeButton": true,
             "debug": true,

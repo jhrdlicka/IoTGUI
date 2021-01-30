@@ -3,6 +3,8 @@
 var app = angular.module('myApp', ['ngRoute', 'ngCookies', 'ui.bootstrap']);
 
 app.run(function ($rootScope, $cookies, $http, $window, $locale) {
+    $rootScope.run = { packageName: 'run' };
+    var myscope = $rootScope.run;
 
     // register multiline lists and initiate multiline structures
     $rootScope.lastlistid = 0;
@@ -54,7 +56,7 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
         // this callback will be called asynchronously
         // when the response is available
         $rootScope.ApiAddress = response.data.ApiAddress;
-        console.log("ApiAddress", $rootScope.ApiAddress);
+        console.log("ApiAddress", $rootScope.ApiAddress);     
         $rootScope.CLIENT_ID = response.data.CLIENT_ID;
         $rootScope.API_KEY = response.data.API_KEY;
 
@@ -132,18 +134,18 @@ app.controller('commonController', function ($scope, $http, $filter) {
 
 app.service('serverUpdateHub', function ($rootScope){
     $rootScope.serverUpdateHub = { packageName: 'serverUpdateHub' };
-    var myscope = $rootScope.model_iot_device;
+    var myscope = $rootScope.serverUpdateHub;
 
     $rootScope.serverUpdateHub.init = function () {
         $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl($rootScope.ApiAddress + "ServerUpdateHub").build();
 
         async function start() {
             try {
-                console.log("SignalR Connecting...");
+                $rootScope.log(myscope, 'init', "SignalR Connecting...", null, null, "info");     
                 await $rootScope.serverUpdateHub.connection.start();
-                console.log("SignalR Connected.");
+                $rootScope.log(myscope, 'init', "SignalR Connected...", null, null, "success");     
             } catch (err) {
-                console.log(err);
+                $rootScope.showerror(myscope, 'serverUpdateHub.init (1)', err);
                 setTimeout(start, 5000);
             }
         };
@@ -151,11 +153,11 @@ app.service('serverUpdateHub', function ($rootScope){
         $rootScope.serverUpdateHub.connection.onclose(start);
 
         $rootScope.serverUpdateHub.connection.on("broadcastMessage", function (user, message) {
-            console.log("received SignalR message: ", message);
+            $rootScope.log(myscope, 'init', message, "SignalR message received", null, "info");     
         });
 
         start().then(function () {
-            console.log("SignalR connection establisthed");
+            $rootScope.log(myscope, 'init', "SignalR Connection Established", null, null, "success");     
         }).catch(function (error) {
             $rootScope.showerror(myscope, 'serverUpdateHub.init', error);
             return console.error(error.toString());

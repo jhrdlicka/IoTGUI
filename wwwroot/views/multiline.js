@@ -2,6 +2,8 @@
  * handling of seletion in lists
  */
 app.service('multiline', function ($rootScope) {
+    $rootScope.multiline = { packageName: 'mutliline' };
+    var myscope = $rootScope.multiline;
 
     $rootScope.selectRow = function (listid, event, rowIndex, multilineallowed, objectID) {
         if (event.ctrlKey && multilineallowed) {
@@ -39,16 +41,16 @@ app.service('multiline', function ($rootScope) {
                 lListItem = list.find(l => l.id == rowIndex.id);
                 if (lListItem === undefined) {
                     unselect(listid, rowIndex.index);
-                    console.log("item deleted - removed from multiline", rowIndex.id);
+                    $rootScope.log(myscope, 'checkSelectedRows', "item deleted - removed from multiline", "id: "+rowIndex.id, null, "warning");     
                 }
                 else {
-                    console.log("item shifted in multiline", rowIndex.id, rowIndex.index, lListItem.index);
+                    $rootScope.log(myscope, 'checkSelectedRows', "item shifted in multiline", "id: " + rowIndex.id, rowIndex.index+" -> "+lListItem.index, "warning");     
                     $rootScope.selectedRowsIndexes[listid][lIndex].index = lListItem.index;
                 }
 
             }
         }); 
-        console.log("multiline", listid, $rootScope.selectedRowsIndexes[listid]);
+//        console.log("multiline", listid, $rootScope.selectedRowsIndexes[listid]);
     }
 
     $rootScope.getFirstSelectedRow = function(listid, list) {

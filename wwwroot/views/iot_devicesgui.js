@@ -57,23 +57,26 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
         // initialize SignalR incremental updates
         $rootScope.serverUpdateHub.init();
         $rootScope.serverUpdateHub.connection.on("iot_device", function (pMessage) {
-            console.log("received SignalR message (iot_device): ", pMessage);
+            $rootScope.log(myscope, 'loadData', "received SignalR message: ", pMessage, null, null);
+//            $rootScope.showtoast("info", pMessage, "received SignalR message: ");
             var lMsg = JSON.parse(pMessage);
-//            var lObj = { id: lMsg.id };
 
             var lIndex; 
             var lItem;
 
             if (lMsg.operationtxt == "insert") {                
+                $rootScope.log(myscope, 'SignalR', "A new item created", null, null, "info");
                 lIndex = $rootScope.iot_devices.push({ id: lMsg.id })-1;
                 $rootScope.iot_devices[lIndex].index = lIndex;
                 $rootScope.model_iot_device.loadRecord(lIndex);
             };
 
             if (lMsg.operationtxt == "update") {
+                $rootScope.log(myscope, 'SignalR', "An item updated", null, null, "info");
                 lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
                 if (lItem === undefined) {
-                    $rootScope.showerror(myscope, 'model_iot_device.loadData.UpdatedRecordNotFound', lMsg);
+                    $rootScope.showerror(myscope, 'loadData', {
+                        status: 500, statusText: 'UpdatedRecordNotFound: '+ lMsg.id });
                     lIndex = $rootScope.iot_devices.push({ id: lMsg.id }) - 1;
                     $rootScope.iot_devices[lIndex].index = lIndex;
                 }
@@ -83,9 +86,11 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
             };
 
             if (lMsg.operationtxt == "delete") {
+                $rootScope.log(myscope, 'SignalR', "An item deleted", null, null, "info");
                 lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
                 if (lItem === undefined) {
-                    $rootScope.showerror(myscope, 'model_iot_device.loadData.DeletedRecordNotFound', lMsg);
+                    $rootScope.showerror(myscope, 'loadData', {
+                        status: 500, statusText: 'DeletedRecordNotFound: '+ lMsg.id });
                     return;
                 }
 
@@ -93,7 +98,8 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
                     (lItem.xsubdevices && lItem.xsubdevices.length > 0) ||
                     (lItem.xsamples && lItem.xsamples.length > 0)
                 ) {
-                    $rootScope.showerror(myscope, 'model_iot_device.loadData.DeletedRecordContainsSubrecords', lItem);
+                    $rootScope.showerror(myscope, 'loadData', {
+                        status: 500, statusText: "DeletedRecordContainsSubrecords: " + lItem.id });
                     return;
                 }
 
@@ -132,7 +138,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
                 $rootScope.model_iot_sample.loadData();
 
             }, function error(error) {
-                    $rootScope.showerror(myscope, 'model_iot_device.loadData', error);
+                    $rootScope.showerror(myscope, 'loadData', error);
             });
     };
 
@@ -158,7 +164,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
                 $rootScope.iot_devices[pIndex] = response.data;
                 $rootScope.model_iot_device.postImport(pIndex);
             }, function error(error) {
-                    $rootScope.showerror(myscope, 'model_iot_device.loadRecord', error);
+                    $rootScope.showerror(myscope, 'loadRecord', error);
             });
     };
 
@@ -227,6 +233,7 @@ app.service('model_iot_sample', function ($rootScope, $http) {
 
         $rootScope.iot_samples = null;
 
+        $rootScope.log(myscope, 'loadData', "start loading samples", null, null, "info");
         $http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/iot_sample",
@@ -235,28 +242,29 @@ app.service('model_iot_sample', function ($rootScope, $http) {
         })
             .then(function success(response) {
                 $rootScope.iot_samples = response.data;
-//                console.log("start indexing samples");
+                $rootScope.log(myscope, 'loadData', "start indexing samples", null, null, "info");
                 angular.forEach($rootScope.iot_samples, function (item, lIndex) {
                     $rootScope.model_iot_sample.postImport(lIndex);
                 });
 
                 // load master table(s) and create relations
                 if ($rootScope.model_iot_device.loaded) {
-                    console.log('model_iot_device.has already been loaded');
+                    $rootScope.log(myscope, 'loadData', "model_iot_device.has already been loaded", null, null, "info");
                     indexDevices();
                 }
                 else
                     $rootScope.$on('model_iot_device.loaded', function () {
-                        console.log('model_iot_device.loaded');
+                        $rootScope.log(myscope, 'loadData', "model_iot_device.loaded", null, null, "success");                        
                         indexDevices();
                     });
 
                 $rootScope.model_iot_sample.loaded = true;
                 $rootScope.model_iot_sample.loading = false;
                 $rootScope.$broadcast('model_iot_sample.loaded');
+                $rootScope.log(myscope, 'loadData', "samples loaded and indexed", null, null, "success");
 
             }, function error(error) {
-                $rootScope.showerror(myscope, 'model_iot_sample.loadData', error);
+                $rootScope.showerror(myscope, 'loadData', error);
                 $rootScope.model_iot_sample.loading = false;
             });
     };
@@ -285,7 +293,7 @@ app.service('model_iot_sample', function ($rootScope, $http) {
                 $rootScope.model_iot_sample.postImport(pIndex);
                 indexDevice($rootScope.iot_samples[pIndex]);
             }, function error(error) {
-                $rootScope.showerror(myscope, 'model_iot_sample.loadRecord', error);
+                $rootScope.showerror(myscope, 'loadRecord', error);
             });
     };
 
@@ -294,6 +302,7 @@ app.service('model_iot_sample', function ($rootScope, $http) {
 app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference, model_iot_device) {
     $scope.controllerName = 'iot_devicecontroller';
     $scope.packageName = $scope.controllerName;
+    var myscope = $scope;
     $scope.multilineallowed = true;
     $scope.id = $scope.$id; // to identify inherited values
 
@@ -301,7 +310,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     $scope.listid = $rootScope.lastlistid++;
     $rootScope.selectedRowsIndexes[$scope.listid] = [];
 
-    //console.log("controllerName", $scope.controllerName);
+    $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, "info");                    
+
 
     $scope.setparent = function (pLink) {        
         if (!pLink.$parent)  // if there is no parent then set parent to null
@@ -341,7 +351,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
 
     $rootScope.$watchCollection("iot_devices", function () {
-        console.log("*** data changed ***");
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
         $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_devices);
     }, true);
 
@@ -663,15 +673,19 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
             return;
         }
 
-//        console.log("refreshdetail", l_selecteddata);
-//        console.log("parent.listid", $scope.parent.listid);
-
         $scope.selectediot_device = l_selecteddata[0];      
 
-        $rootScope.showtoast("info", "this is a text", "toast header");
         /*
+
+        // test of toasts
+        $rootScope.log(myscope, 'refreshdetail', "detail displayed (0)", null, null, null);
+        $rootScope.log(myscope, 'refreshdetail', "detail displayed (1)", null, null, "info");
+        $rootScope.log(myscope, 'refreshdetail', "detail displayed (2)", null, null, "success");
+        $rootScope.log(myscope, 'refreshdetail', "detail displayed (3)", null, null, "warning");
+        $rootScope.log(myscope, 'refreshdetail', "detail displayed (4)", null, null, "error");
          
-        $rootScope.connection.invoke("Send", "test user", "test message").catch(function (err) {    // call method "Send" of "ServerUpdateHub" with parameters "test user" and "test message"
+        // test of SignalR messaging
+        $rootScope.serverUpdateHub.connection.invoke("Send", "test user", "test message").catch(function (err) {    // call method "Send" of "ServerUpdateHub" with parameters "test user" and "test message"
             return console.error(err.toString());
         });
         */
@@ -716,7 +730,7 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     $rootScope.kerReftabGetList('CURRENCY')
         .then(function (result) {
             $scope.currencylist = result[0];
-            console.log("currencylist", $scope.currencylist);
+            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.currencylist, "info");                                
         });
 
     $scope.objectData = container;
