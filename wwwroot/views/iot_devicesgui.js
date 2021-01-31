@@ -763,7 +763,7 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     $rootScope.kerReftabGetList('DEVICECATEGORY')
         .then(function (result) {
             $scope.devicecategorylist = result[0];
-            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.devicecategorylist, "info");                                
+            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.devicecategorylist, null, "info");                                
         });
 
     $rootScope.kerReftabGetList('DEVICETYPE')
@@ -791,6 +791,26 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
 */
 
     $scope.ok = function () {
+        
+        // validate fields
+        var elements = document.getElementById("myForm").elements;
+        var lErr = false;
+        for (var i = 0, element; element = elements[i++];) {
+            if (element.required && /*element.type === "text" &&*/ element.value === "") {
+                //$rootScope.log(myscope, 'ok', "Madatory filed", element.name, element, null);
+                $rootScope.showtoast("error", "Madatory filed :" + element.name, null, element);
+                lErr = true;
+            }
+        }
+        if (lErr)
+            return; 
+
+        // !!!
+        // vyzkouset tady zavolat
+        //$rootScope.model_iot_device.save(container)
+        // misto v listcontroleru - detail
+        // a podle vysledku zavrit detail, nebo se vratit k editovani
+            
         angular.forEach($rootScope.dataCopy, function (value, key) {
             $scope.objectData[key] = value;
         });

@@ -1,5 +1,5 @@
 ﻿
-<form name="myForm" ng-submit="ok()">
+<form name="myForm" id="myForm" ng-submit="ok()">
 
     <div class="modal-header">
         <h2 class="modal-title">
@@ -23,8 +23,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Code</div>
-                        <input class="form-control input-sm" type="text" ng-model="dataCopy.code" />
-
+                        <input class="form-control input-sm" name="Code" type="text" ng-model="dataCopy.code" required />
                     </div>
                 </div>
             </div>
@@ -33,7 +32,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Name</div>
-                        <input class="form-control input-sm" type="text" ng-model="dataCopy.name" />
+                        <input class="form-control input-sm" name="Name" type="text" ng-model="dataCopy.name" required />
 
                     </div>
                 </div>
@@ -42,7 +41,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Category</div>
-                        <select class="form-control input-sm" ng-model="dataCopy.devicecategorynm">
+                        <select class="form-control input-sm" name="Category" ng-model="dataCopy.devicecategorynm" required>
                             <option ng-repeat="devicecategory in devicecategorylist" value="{{devicecategory.Value}}" ng-selected="devicecategory.Value == dataCopy.devicecategorynm">{{devicecategory.Text}}</option>
                         </select>
                     </div>
@@ -52,7 +51,7 @@
                 <div class="form-group">
                     <div class="input-group input-group-sm">
                         <div class="input-group-addon input-sm">Type</div>
-                        <select class="form-control input-sm" ng-model="dataCopy.devicetypenm">
+                        <select class="form-control input-sm" name="Type" ng-model="dataCopy.devicetypenm" required>
                             <option ng-repeat="devicetype in devicetypelist" value="{{devicetype.Value}}" ng-selected="devicetype.Value == dataCopy.devicetypenm">{{devicetype.Text}}</option>
                         </select>
                     </div>
