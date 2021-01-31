@@ -1,0 +1,103 @@
+﻿
+<form name="myForm" ng-submit="ok()">
+
+    <div class="modal-header">
+        <h2 class="modal-title">
+            Device
+        </h2>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm">Master device</span>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.xmasterdevice.code" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Code</div>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.code" />
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Name</div>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.name" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Category</div>
+                        <select class="form-control input-sm" ng-model="dataCopy.devicecategorynm">
+                            <option ng-repeat="devicecategory in devicecategorylist" value="{{devicecategory.Value}}" ng-selected="devicecategory.Value == dataCopy.devicecategorynm">{{devicecategory.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Type</div>
+                        <select class="form-control input-sm" ng-model="dataCopy.devicetypenm">
+                            <option ng-repeat="devicetype in devicetypelist" value="{{devicetype.Value}}" ng-selected="devicetype.Value == dataCopy.devicetypenm">{{devicetype.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Description</div>
+                        <input class="form-control input-sm" type="text" ng-model="dataCopy.description" />
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Unit</div>
+                        <select class="form-control input-sm" ng-model="dataCopy.unitnm">
+                            <option ng-repeat="unit in unitlist" value="{{unit.Value}}" ng-selected="unit.Value == dataCopy.unitnm">{{unit.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 col-sm-12">
+                <div class="form-group">
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-addon input-sm">Location</div>
+                        <select class="form-control input-sm" ng-model="dataCopy.locationnm">
+                            <option ng-repeat="location in locationlist" value="{{location.Value}}" ng-selected="location.Value == dataCopy.locationnm">{{location.Text}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        </div>
+
+    <div class="modal-footer">
+        <div class="text-right">
+            <button class="btn btn-primary" ng-click="ok()">Save</button>
+            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+        </div>
+    </div>
+
+</form>
+

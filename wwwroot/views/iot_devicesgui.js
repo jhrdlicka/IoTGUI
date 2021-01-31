@@ -31,6 +31,67 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
         pItem.xmasterdevice.xsubdevices.push(pItem);
     }
 
+
+    $rootScope.model_iot_device.serverUpdateHubMsgResolve = function(pMessage) {
+        $rootScope.log(myscope, 'loadData', "received SignalR message: ", pMessage, null, null);
+        //            $rootScope.showtoast("info", pMessage, "received SignalR message: ");
+        var lMsg = JSON.parse(pMessage);
+
+        var lIndex;
+        var lItem;
+
+        if ((lMsg.operationtxt == "insert") || (lMsg.operationtxt == "update")) {
+            if (lMsg.operationtxt == "insert")
+                $rootScope.log(myscope, 'SignalR', "A new item created", null, pMessage, "info");
+            else if (lMsg.operationtxt == "update")
+                $rootScope.log(myscope, 'SignalR', "An item updated", null, pMessage, "info");
+
+            lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
+            if (lItem === undefined) {
+                if (lMsg.operationtxt == "update") {
+                    $rootScope.showerror(myscope, 'loadData', {
+                        status: 500, statusText: 'UpdatedRecordNotFound: ' + lMsg.id
+                    });
+                }
+                lIndex = $rootScope.iot_devices.push({ id: lMsg.id }) - 1;
+                $rootScope.iot_devices[lIndex].index = lIndex;
+            }
+            else
+                lIndex = lItem.index;
+            $rootScope.model_iot_device.loadRecord(lIndex);
+        };
+
+        if (lMsg.operationtxt == "delete") {
+            $rootScope.log(myscope, 'SignalR', "An item deleted", null, pMessage, "info");
+            lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
+            if (lItem === undefined) {
+                $rootScope.showerror(myscope, 'loadData', {
+                    status: 500, statusText: 'DeletedRecordNotFound: ' + lMsg.id
+                });
+                return;
+            }
+
+            if (
+                (lItem.xsubdevices && lItem.xsubdevices.length > 0) ||
+                (lItem.xsamples && lItem.xsamples.length > 0) ||
+                (lItem.xtasks && lItem.xtasks.length > 0) 
+            ) {
+                $rootScope.showerror(myscope, 'loadData', {
+                    status: 500, statusText: "DeletedRecordContainsSubrecords: " + lItem.id
+                });
+                return;
+            }
+
+            $rootScope.iot_devices.splice(lItem.index, 1);
+            for (lIndex = lItem.index; lIndex < $rootScope.iot_devices.length; lIndex++)
+                $rootScope.iot_devices[lIndex].index = lIndex;
+            if ($rootScope.iot_devices.length > 0)
+                $rootScope.model_iot_device.loadRecord(0);
+            else
+                $rootScope.iot_devices = null;
+        };
+    }
+
     $rootScope.model_iot_device.postImport = function (pIndex) {
         var lItem = $rootScope.iot_devices[pIndex];
         lItem.index = pIndex;        
@@ -56,65 +117,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
 
         // initialize SignalR incremental updates
         $rootScope.serverUpdateHub.init();
-        $rootScope.serverUpdateHub.connection.on("iot_device", function (pMessage) {
-            $rootScope.log(myscope, 'loadData', "received SignalR message: ", pMessage, null, null);
-//            $rootScope.showtoast("info", pMessage, "received SignalR message: ");
-            var lMsg = JSON.parse(pMessage);
-
-            var lIndex; 
-            var lItem;
-
-            if (lMsg.operationtxt == "insert") {                
-                $rootScope.log(myscope, 'SignalR', "A new item created", null, null, "info");
-                lIndex = $rootScope.iot_devices.push({ id: lMsg.id })-1;
-                $rootScope.iot_devices[lIndex].index = lIndex;
-                $rootScope.model_iot_device.loadRecord(lIndex);
-            };
-
-            if (lMsg.operationtxt == "update") {
-                $rootScope.log(myscope, 'SignalR', "An item updated", null, null, "info");
-                lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
-                if (lItem === undefined) {
-                    $rootScope.showerror(myscope, 'loadData', {
-                        status: 500, statusText: 'UpdatedRecordNotFound: '+ lMsg.id });
-                    lIndex = $rootScope.iot_devices.push({ id: lMsg.id }) - 1;
-                    $rootScope.iot_devices[lIndex].index = lIndex;
-                }
-                else
-                    lIndex = lItem.index;
-                $rootScope.model_iot_device.loadRecord(lIndex);
-            };
-
-            if (lMsg.operationtxt == "delete") {
-                $rootScope.log(myscope, 'SignalR', "An item deleted", null, null, "info");
-                lItem = $rootScope.iot_devices.find(dev => dev.id == lMsg.id);
-                if (lItem === undefined) {
-                    $rootScope.showerror(myscope, 'loadData', {
-                        status: 500, statusText: 'DeletedRecordNotFound: '+ lMsg.id });
-                    return;
-                }
-
-                if (
-                    (lItem.xsubdevices && lItem.xsubdevices.length > 0) ||
-                    (lItem.xsamples && lItem.xsamples.length > 0)
-                ) {
-                    $rootScope.showerror(myscope, 'loadData', {
-                        status: 500, statusText: "DeletedRecordContainsSubrecords: " + lItem.id });
-                    return;
-                }
-
-                $rootScope.iot_devices.splice(lItem.index, 1);           
-                for (lIndex = lItem.index; lIndex < $rootScope.iot_devices.length; lIndex++)
-                    $rootScope.iot_devices[lIndex].index = lIndex;
-                if ($rootScope.iot_devices.length > 0)
-                    $rootScope.model_iot_device.loadRecord(0);
-                else
-                    $rootScope.iot_devices = null;
-
-            };
-
-
-        });
+        $rootScope.serverUpdateHub.connection.on("iot_device", function (pMessage) { $rootScope.model_iot_device.serverUpdateHubMsgResolve(pMessage) });
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -166,6 +169,98 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
             }, function error(error) {
                     $rootScope.showerror(myscope, 'loadRecord', error);
             });
+    };
+
+
+    $rootScope.model_iot_device.save = function (container) {
+
+        var l_container = angular.copy(container);
+
+        l_container.type = parseInt(l_container.type);
+
+        if (!l_container.masterdeviceid)
+            if (l_container.xmasterdevice)
+                l_container.masterdeviceid = l_container.xmasterdevice.id;
+
+        // delete fields not fitting to main object entity
+        if (l_container.xmasterdevice)
+            delete l_container['xmasterdevice'];
+        if (l_container.xsubdevices)
+            delete l_container['xsubdevices'];
+        if (l_container.xtasks)
+            delete l_container['xtasks'];
+        if (l_container.xsamples)
+            delete l_container['xsamples'];
+
+        /*
+                if (l_container.accepteddate)
+                    l_container.accepted = l_container.accepteddate.toJSON();
+                else
+                    l_container.accepted = null;
+
+                if (l_container.duedate)
+                    l_container.due = l_container.duedate.toJSON();
+                else
+                    l_container.due = null;
+
+                    */
+
+        if (l_container.id) {
+            //UPDATE
+
+            // update main entity
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_device/" + l_container.id,
+                withCredentials: true,
+                method: 'PUT',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'save.update', error);
+                });
+
+
+        }
+        else {
+            delete l_container['id'];
+
+            //INSERT
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_device",
+                withCredentials: true,
+                method: 'POST',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'save.insert', error);
+                });
+        }
+    }
+
+
+    $rootScope.model_iot_device.delete = function (pItems) {
+
+        angular.forEach(pItems, function (item, index) {
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_device/" + item.id,
+                withCredentials: true,
+                method: 'DELETE'
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'delete', error);
+                });
+        });
     };
 
 });
@@ -310,7 +405,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     $scope.listid = $rootScope.lastlistid++;
     $rootScope.selectedRowsIndexes[$scope.listid] = [];
 
-    $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, "info");                    
+    $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, null);                    
 
 
     $scope.setparent = function (pLink) {        
@@ -321,11 +416,9 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         else {
             $scope.parent = pLink.$parent;
             if (!pLink.$parent.id || pLink.$parent.id!=pLink.$parent.$id) {  // if controllerName is derived 
-                //console.log("!!!");
                 $scope.setparent(pLink.$parent);
             }
             if ($scope.parent && ($scope.parent.$$watchers.length == 0)) {   // if controller is empty
-                //console.log("!!!2");
                 $scope.setparent(pLink.$parent);
             }
         }
@@ -415,106 +508,116 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
 
 
-    function i_connecttomasterdevice(pOrders) {
-        l_masterdevices = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
+    function i_connecttomasterdevice(pMasterdevices) {
+        l_devices = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
 
-        if (!confirm("Connect " + l_invoices.length + " invoices to order of " + pOrders[0].customer.name + "?"))
+        if (!confirm("Connect " + l_devices.length + " devices to masterdevice " + pMasterdevices[0].code + "?"))
             return;
 
-        angular.forEach(l_orders, function (order, index) {
-            if (order.customerid) {
-                if (order.customerid == pCustomers[0].id)
+        angular.forEach(l_devices, function (device, index) {
+            if (device.masterdeviceid) {
+                if (device.masterdeviceid == pMasterdevices[0].id)
                     return;
-                if (!confirm("Invoice nr. " + invoice.id + " is already connected to order of " + invoice.order.customer.name + ". Reconnect to " + pOrders[0].customer.name + "?"))
+                if (!confirm("Device " + device.code + " is already connected to masterdevice " + device.xmasterdevice.code + ". Reconnect to " + pMasterdevices[0].code + "?"))
                     return;
             }
 
-            invoice.orderid = pOrders[0].id;
+            device.masterdeviceid = pMasterdevices[0].id;
+/*
             invoice.order = {
                 id: pOrders[0].id, customerid: pOrders[0].customer.id , customer: { id: pOrders[0].customer.id , name: pOrders[0].customer.name }};
-            $scope.save(invoice);
+                */
+            $rootScope.model_iot_device.save(device);
         });
 
     }
 
     $scope.connecttomasterdevice = function () {
-
+        var l_masterdevices; 
 
         if ($scope.parentControllerName == 'iot_devicecontroller') {
-            l_orders = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
-            if (l_orders.length != 1) {
-                alert('Select exactly one Order');
-                rootScope.showerror($scope, 'pcm_connectstoorder.1', 'invalid number of records');
+            l_masterdevices = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
+            if (l_masterdevices.length != 1) {
+                alert('Select exactly one Master device');
+                $rootScope.showerror($scope, 'connecttomasterdevice.1', 'invalid number of records');
                 return;
             }
-            i_pcm_connecttoorder(l_orders);
+            i_connecttomasterdevice(l_masterdevices);
         }
         else
-            if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
-                l_orders = [{
+            if ($scope.parentControllerName == 'iot_deviceeditcontroller') {
+                l_masterdevices = [{
                     id: $scope.parent.dataCopy.id,
-                    customerid: $scope.parent.dataCopy.customerid,
-                    customer: { id: $scope.parent.dataCopy.customer.id, name: $scope.parent.dataCopy.customer.name}
+                    code: $scope.parent.dataCopy.code
                 }];
-                i_pcm_connecttoorder(l_orders);
+                i_connecttomasterdevice(l_masterdevices);
 
             } else { /* call customer lookup */
-                $rootScope.entitySelect('pcm_order', false).then(function (l_orders) {
-                    i_pcm_connecttoorder(l_orders);
+                $rootScope.entitySelect('iot_device', false).then(function (l_masterdevices) {
+                    i_connecttomasterdevice(l_masterdevices);
                 }, function (error) {
                     if (error == "cancel") {
                         //   $rootScope.showalert("error", "Connect Invoices to Order", "No order selected", "OK");
                     }
                     else
-                        $rootScope.showerror($scope, 'pcm_connectstoorder', error);
+                        $rootScope.showerror($scope, 'connecttomasterdevice', error);
                 });
             }
     }
 
 
-    $scope.i_new = function (pOrder){
+    $scope.i_new = function (pMasterdevice){
         // set id to null and other items to defaults
         var lData = {
-            id: null, type: null, order: { id: pOrder.id, customerid: pOrder.customerid, customer: pOrder.customer }, price: pOrder.price, currencynm: pOrder.currencynm, invoicetext: pOrder.invoicetext
+            id: null, type: null, xmasterdevice: pMasterdevice
         };
 
         $scope.detail(lData);
     }
 
-    $scope.new = function () {
-        var l_customers; 
-        // get customer id and name to l_customers[0]
-        if ($scope.parentControllerName == 'pcm_ordercontroller') {
-            l_orders = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
-            if (l_orders.length != 1) {
-                alert('Select exactly one Order');
-                rootScope.showerror($scope, 'new.1', 'invalid number of records');
+    $scope.new = function (pMasterdevice) {
+        var l_masterdevices; 
+        
+        // get masterdevice id and code to l_masterdevices[0]
+        if (pMasterdevice) {
+            l_masterdevices = [{
+                id: pMasterdevice.id,
+                code: pMasterdevice.code
+            }];
+            $scope.i_new(l_masterdevices[0]);
+        }
+        else if ($scope.parentControllerName == 'iot_devicecontroller') {
+            l_masterdevices = $rootScope.getSelectedRows($scope.parent.listid, $rootScope.iot_devices);
+            if (l_masterdevices.length != 1) {
+                alert('Select exactly one Master device');
+                $rootScope.showerror($scope, 'new.1', 'invalid number of records');
                 return;
             }
-            $scope.i_new(l_orders[0]);
+            $scope.i_new(l_masterdevices[0]);
         }
         else
-            if ($scope.parentControllerName == 'pcm_ordereditcontroller') {
-                l_orders = [{
+            if ($scope.parentControllerName == 'iot_deviceeditcontroller') {
+                l_masterdevices = [{
                     id: $scope.parent.dataCopy.id,
-                    customerid: $scope.parent.dataCopy.customerid, 
-                    customer: $scope.parent.dataCopy.customer, 
-                    invoicetext: $scope.parent.dataCopy.invoicetext, 
-                    price: $scope.parent.dataCopy.price, 
-                    currencynm: $scope.parent.dataCopy.currencynm
+                    code: $scope.parent.dataCopy.code
                 }];
-                $scope.i_new(l_orders[0]);
+                $scope.i_new(l_masterdevices[0]);
+
             } else { /* call customer lookup */
-                $rootScope.entitySelect('pcm_order', false).then(function (l_orders) {
-                    $scope.i_new(l_orders[0]);
+                /*
+                // use only if the masterdeviceid is mandatory
+                $rootScope.entitySelect('iot_device', false).then(function (l_masterdevices) {
+                    $scope.i_new(l_masterdevices[0]);
                 }, function (error) {
                     if (error == "cancel") {
-                        //   $rootScope.showalert("error", "New Invoice", "No order selected", "OK");
+                        //   $rootScope.showalert("error", "New sub-device", "No master device selected", "OK");
                     }
-                    else
+                    else 
                         $rootScope.showerror($scope, 'new', error);
-                });
-            };
+                        
+                    });*/
+                $scope.i_new(null);
+            }
     }
 
     $scope.edit = function () {
@@ -526,95 +629,6 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
         $scope.detail(lData[0]);
     };
-
-    $scope.save = function (container) {
-
-        container.type = parseInt(container.type);
-        if (!container.orderid)
-            if (container.order) 
-                container.orderid = container.order.id;
-            
-        var l_container = angular.copy(container); 
-        if (l_container.order)
-            delete l_container['order'];
-        if (l_container.customer)
-            delete l_container['customer'];
-
-        if (l_container.eventdatedate)
-            l_container.eventdate = l_container.eventdatedate.toJSON();
-        else
-            l_container.eventdate = null;
-        if (l_container.sentdate)
-            l_container.sent = l_container.sentdate.toJSON();
-        else
-            l_container.sent = null;
-        if (l_container.duedate)
-            l_container.due = l_container.duedate.toJSON();
-        else
-            l_container.due = null;
-        if (l_container.accepteddate)
-            l_container.accepted = l_container.accepteddate.toJSON();
-        else
-            l_container.accepted = null;
-        if (l_container.paiddate)
-            l_container.paid = l_container.paiddate.toJSON();
-        else
-            l_container.paid = null;
-        if (l_container.canceleddate)
-            l_container.canceled = l_container.canceleddate.toJSON();
-        else
-            l_container.canceled = null;
-
-        if (container.id) {
-            //UPDATE
-
-            // update main entity
-            var l_containerupdate = angular.copy(l_container);
-            // delete l_containerupdate['photodocument'];   // delete fields not fitting to main object entity
-            $http({
-                headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/iot_device/" + l_containerupdate.id,
-                withCredentials: true,
-                method: 'PUT',
-                datatype: "json",
-                data: JSON.stringify(l_containerupdate)
-            })
-                .then(function success(response) {
-                    //
-                }, function error(error) {
-                    $rootScope.showerror($scope, 'save.update', error);
-                });
-
-
-        }
-        else {
-            // create a container without "id" field
-            delete l_container['id'];
-            if (l_container.customer)
-                delete l_container['customer'];
-
-            if (l_container.order)
-               delete l_container['order'];
-
-            var xjson = JSON.stringify(l_container);
-
-            //INSERT
-            $http({
-                headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/iot_device",
-                withCredentials: true,
-                method: 'POST',
-                datatype: "json",
-                data: xjson
-            })
-                .then(function success(response) {
-                    //
-                }, function error(error) {
-                    $rootScope.showerror($scope, 'save.insert', error);
-                });
-        }
-
-    }
 
     $scope.detail = function (pData) {
 
@@ -631,8 +645,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         });
 
         modalInstance.result.then(function (container) {
-            /* ok */
-            $scope.save(container)
+        /* ok */
+            $rootScope.model_iot_device.save(container)
         }, function () { /* cancel */ });
     };
 
@@ -646,23 +660,9 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         if (!$rootScope.showalert("confirm", "Delete Device(s)", "Delete " + lItems.length + " records?"))
             return;
 
-        $rootScope.resetSelection($scope.listid);
+//        $rootScope.resetSelection($scope.listid);
 
-        angular.forEach(lItems, function (item, index) {
-
-            $http({
-                headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/iot_device/" + item.id,
-                withCredentials: true,
-                method: 'DELETE'
-            })
-                .then(function success(response) {
-                    //
-                }, function error(error) {
-                    $rootScope.showerror($scope, 'delete', error);
-                });
-        });
-
+        $rootScope.model_iot_device.delete(lItems);
     };
 
     $scope.refreshdetail = function () {
@@ -712,14 +712,31 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, $rootScope, ker_reference) {
     $scope.controllerName = 'iot_deviceeditcontroller';
     $scope.packageName = $scope.controllerName;
+    var myscope = $scope;
+    $scope.multilineallowed = true;
+    $scope.id = $scope.$id; // to identify inherited values
+
+    // register multiline lists and initiate multiline structures
+    $scope.listid = $rootScope.lastlistid++;
+    $rootScope.selectedRowsIndexes[$scope.listid] = [];
+
+    $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, "info");
+
 
     $scope.setparent = function (pLink) {
         if (!pLink.$parent)  // if there is no parent then set parent to null
             $scope.parent = null;
         else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
             $scope.setparent(pLink.$parent);
-        else
+        else {
             $scope.parent = pLink.$parent;
+            if (!pLink.$parent.id || pLink.$parent.id != pLink.$parent.$id) {  // if controllerName is derived 
+                $scope.setparent(pLink.$parent);
+            }
+            if ($scope.parent && ($scope.parent.$$watchers.length == 0)) {   // if controller is empty
+                $scope.setparent(pLink.$parent);
+            }
+        }
     }
     $scope.setparent($scope);
     if (!$scope.parent)
@@ -727,24 +744,38 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     else
         $scope.parentControllerName = $scope.parent.controllerName;
 
-    $rootScope.kerReftabGetList('CURRENCY')
+    $rootScope.kerReftabGetList('DEVICECATEGORY')
         .then(function (result) {
-            $scope.currencylist = result[0];
-            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.currencylist, "info");                                
+            $scope.devicecategorylist = result[0];
+            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.devicecategorylist, "info");                                
+        });
+
+    $rootScope.kerReftabGetList('DEVICETYPE')
+        .then(function (result) {
+            $scope.devicetypelist = result[0];
+        });
+
+    $rootScope.kerReftabGetList('UNIT')
+        .then(function (result) {
+            $scope.unitlist = result[0];
+        });
+
+    $rootScope.kerReftabGetList('LOCATION')
+        .then(function (result) {
+            $scope.locationlist = result[0];
         });
 
     $scope.objectData = container;
-    $rootScope.iot_devicesCopy = angular.copy($scope.objectData);
+    $rootScope.dataCopy = angular.copy($scope.objectData);
 
-    $scope.popupeventdate = { opened: false }; // initialize datapicker for fromdate
-    $scope.popupsent = { opened: false }; // initialize datapicker for fromdate
+    /*
+     // initialize datapickers for dates
     $scope.popupaccepted = { opened: false }; // initialize datapicker for fromdate
     $scope.popupdue = { opened: false }; // initialize datapicker for fromdate
-    $scope.popuppaid = { opened: false }; // initialize datapicker for fromdate
-    $scope.popupcanceled = { opened: false }; // initialize datapicker for fromdate
+*/
 
     $scope.ok = function () {
-        angular.forEach($rootScope.iot_devicesCopy, function (value, key) {
+        angular.forEach($rootScope.dataCopy, function (value, key) {
             $scope.objectData[key] = value;
         });
 
@@ -753,31 +784,22 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
 
     $scope.cancel = function () {        
         angular.forEach($scope.objectData, function (value, key) {
-            $rootScope.iot_devicesCopy[key] = value;
+            $rootScope.dataCopy[key] = value;
         });
 
         $uibModalInstance.dismiss('cancel');
     };
 
-    $scope.openeventdate = function () { // open datapicker for fromdate
-        $scope.popupeventdate.opened = true;
-    };
-    $scope.opensent = function () { // open datapicker for fromdate
-        $scope.popupsent.opened = true;
-    };
+    /*
+    // open datapickers for dates
     $scope.openaccepted = function () { // open datapicker for fromdate
         $scope.popupaccepted.opened = true;
     };
     $scope.opendue = function () { // open datapicker for fromdate
         $scope.popupdue.opened = true;
     };
-    $scope.openpaid = function () { // open datapicker for fromdate
-        $scope.popuppaid.opened = true;
-    };
-    $scope.opencanceled = function () { // open datapicker for fromdate
-        $scope.popupcanceled.opened = true;
-    };
-    
+    */
+
 });
 
 app.controller('iot_deviceselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed, ker_reference) {   
@@ -804,112 +826,6 @@ app.controller('iot_deviceselectcontroller', function ($scope, $uibModalInstance
     //console.log("parentControllerName:", $scope.parentControllerName);
     //console.log("parent:", $scope.parent.controllerName);
 
-    $scope.getcustomer = function (deviceindex) {
-        if (!$rootScope.iot_devices[deviceindex].order) {
-            $rootScope.iot_devices[deviceindex].customer = null;
-            return;
-        }
-        if (!$rootScope.iot_devices[deviceindex].order.customerid) {
-            $rootScope.iot_devices[deviceindex].order.customer = null;
-            return;
-        }
-
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_customer/" + $rootScope.iot_devices[deviceindex].order.customerid,
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                //                console.log("customerid", $rootScope.iot_devices[deviceindex].customerid);
-                //                console.log("id", $rootScope.iot_devices[deviceindex].id);
-                $rootScope.iot_devices[deviceindex].order.customer = response.data;
-
-            }, function error(error) {
-                $rootScope.showerror($scope, 'getcustomer', error);
-                $rootScope.iot_devices[deviceindex].order.customer = null;
-            });
-    };
-
-    $scope.getorder = function (deviceindex) {
-        if (!$rootScope.iot_devices[deviceindex].orderid) {
-            $rootScope.iot_devices[deviceindex].order = null;
-            return;
-        }
-
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_order/" + $rootScope.iot_devices[deviceindex].orderid,
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                $rootScope.iot_devices[deviceindex].order = response.data;
-                $scope.getcustomer(deviceindex);
-            }, function error(error) {
-                $rootScope.showerror($scope, 'getorder', error);
-                $rootScope.iot_devices[deviceindex].order = null;
-            });
-    };
-
-    $scope.getpayments = function (deviceindex) {
-
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/pcm_payment/invoiceid/" + $rootScope.iot_devices[deviceindex].id,
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                //                console.log("customerid", $rootScope.iot_devices[caleventid].customerid);
-                //                console.log("id", $rootScope.iot_devices[caleventid].id);                
-                //               console.log("ordersessions", response.data);                
-                $rootScope.iot_devices[deviceindex].payments = response.data;
-            }, function error(error) {
-                $rootScope.showerror($scope, 'getpayments', error);
-                $rootScope.iot_devices[deviceindex].payments = null;
-            });
-    };
-
-
-    $scope.postimport = function (pIndex) {
-        var item = $rootScope.iot_devices[pIndex];
-        $rootScope.iot_devices[pIndex].index = pIndex;
-        $scope.getorder(pIndex);
-        $scope.getpayments(pIndex);
-
-        if (item.eventdate) {
-            $rootScope.iot_devices[pIndex].eventdate = item.eventdate + "Z";
-            $rootScope.iot_devices[pIndex].eventdatedate = new Date(item.eventdate);
-        } else
-            $rootScope.iot_devices[pIndex].eventdatedate = null;
-
-        if (item.sent) {
-            $rootScope.iot_devices[pIndex].sent = item.sent + "Z";
-            $rootScope.iot_devices[pIndex].sentdate = new Date(item.sent);
-        } else
-            $rootScope.iot_devices[pIndex].sentdate = null;
-        if (item.due) {
-            $rootScope.iot_devices[pIndex].due = item.due + "Z";
-            $rootScope.iot_devices[pIndex].duedate = new Date(item.due);
-        } else
-            $rootScope.iot_devices[pIndex].duedate = null;
-        if (item.accepted) {
-            $rootScope.iot_devices[pIndex].accepted = item.accepted + "Z";
-            $rootScope.iot_devices[pIndex].accepteddate = new Date(item.accepted);
-        } else
-            $rootScope.iot_devices[pIndex].accepteddate = null;
-        if (item.paid) {
-            $rootScope.iot_devices[pIndex].paid = item.paid + "Z";
-            $rootScope.iot_devices[pIndex].paiddate = new Date(item.paid);
-        } else
-            $rootScope.iot_devices[pIndex].paiddate = null;
-        if (item.canceled) {
-            $rootScope.iot_devices[pIndex].canceled = item.canceled + "Z";
-            $rootScope.iot_devices[pIndex].canceleddate = new Date(item.canceled);
-        } else
-            $rootScope.iot_devices[pIndex].canceleddate = null;
-    }
 
     $scope.loadData = function () {
 //        console.log("loaddata - pcm:", $scope.parentControllerName)
