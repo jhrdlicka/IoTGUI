@@ -118,7 +118,7 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/pcm_payments", { templateUrl: "views/pcm_paymentsgui.html", controller: "pcm_paymentcontroller" })
         .when("/ker_reftabs", { templateUrl: "views/ker_reftabsgui.html", controller: "ker_reftabcontroller" })
         .when("/ker_references", { templateUrl: "views/ker_referencesgui.html", controller: "ker_referencecontroller" })
-        .when("/iot_devices", { templateUrl: "views/iot_devicesgui.html", controller: "iot_devicecontroller" })
+        .when("/iot_devices", { mode:"list", templateUrl: "views/iot_devicesgui.html", controller: "iot_devicecontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

@@ -394,11 +394,24 @@ app.service('model_iot_sample', function ($rootScope, $http) {
 
 });
 
-app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference, model_iot_device) {
+app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference, model_iot_device, /*$uibModalInstance, */$route) {
     $scope.controllerName = 'iot_devicecontroller';
     $scope.packageName = $scope.controllerName;
     var myscope = $scope;
-    $scope.multilineallowed = true;
+
+    if ($scope.$resolve && $scope.$resolve.mode)  // take mode from calling of the modal
+        $scope.mode = $scope.$resolve.mode;
+    else 
+        $scope.mode = ($route.current.mode ? $route.current.mode : "list");   // take mode from route or use default
+
+    if ($scope.mode == "select") {
+        $scope.multilineallowed = $scope.$resolve.multilineallowed;
+        $scope.instance = $scope.$resolve.instance;
+    }
+    else {
+        $scope.multilineallowed = ($route.current.multilineallowed ? $route.current.multilineallowed : true);  // take multilineallowed from route or use default
+    }
+
     $scope.id = $scope.$id; // to identify inherited values
 
     // register multiline lists and initiate multiline structures
@@ -406,7 +419,9 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     $rootScope.selectedRowsIndexes[$scope.listid] = [];
 
     $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, null);                    
-
+    $rootScope.log(myscope, 'init', "mode", $scope.mode, null, null);                    
+    $rootScope.log(myscope, 'init', "multilineallowed", $scope.multilineallowed, null, null);                    
+    $rootScope.log(myscope, 'init', "instance", $scope.instance, null, null);                    
 
     $scope.setparent = function (pLink) {        
         if (!pLink.$parent)  // if there is no parent then set parent to null
@@ -691,6 +706,15 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         */
     };
 
+    $scope.ok = function () {
+        var lContainer = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
+        $rootScope.modalInstance[$scope.instance].close(lContainer);
+    };
+
+    $scope.cancel = function () {
+        $rootScope.modalInstance[$scope.instance].dismiss('cancel');
+    };
+
     if ($scope.parentControllerName == "iot_deviceeditcontroller")
         $scope.displaymasterdevices = "SELECTED";
     else if ($scope.parentControllerName == "iot_devicecontroller")
@@ -713,15 +737,7 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     $scope.controllerName = 'iot_deviceeditcontroller';
     $scope.packageName = $scope.controllerName;
     var myscope = $scope;
-    $scope.multilineallowed = true;
     $scope.id = $scope.$id; // to identify inherited values
-
-    // register multiline lists and initiate multiline structures
-    $scope.listid = $rootScope.lastlistid++;
-    $rootScope.selectedRowsIndexes[$scope.listid] = [];
-
-    $rootScope.log(myscope, 'init', "New controller", $scope.controllerName + ": " + $scope.id, null, "info");
-
 
     $scope.setparent = function (pLink) {
         if (!pLink.$parent)  // if there is no parent then set parent to null
@@ -801,102 +817,3 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     */
 
 });
-
-app.controller('iot_deviceselectcontroller', function ($scope, $uibModalInstance, $rootScope, $http, guialert, multiline, multilineallowed, ker_reference) {   
-    $scope.controllerName = 'iot_deviceselectcontroller';
-    $scope.packageName = $scope.controllerName;
-
-    $scope.mulitilineallowed = multilineallowed;
-
-    $scope.setparent = function (pLink) {
-        if (!pLink.$parent)  // if there is no parent then set parent to null
-            $scope.parent = null;
-        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
-            $scope.setparent(pLink.$parent);
-        else
-            $scope.parent = pLink.$parent;
-    }
-    $scope.setparent($scope);
-    if (!$scope.parent)
-        $scope.parentControllerName = "";
-    else
-        $scope.parentControllerName = $scope.parent.controllerName;
-
-    //console.log("controllerName:", $scope.controllerName);
-    //console.log("parentControllerName:", $scope.parentControllerName);
-    //console.log("parent:", $scope.parent.controllerName);
-
-
-    $scope.loadData = function () {
-//        console.log("loaddata - pcm:", $scope.parentControllerName)
-        $rootScope.iot_devices = null;
-        $scope.selectediot_device = null;
-        $rootScope.resetSelection($scope.listid);
-
-        $http({
-            headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/iot_device",
-            withCredentials: true,
-            method: 'GET'
-        })
-            .then(function success(response) {
-                $rootScope.iot_devices = response.data;
-
-                $rootScope.resetSelection($scope.listid);
-                angular.forEach($rootScope.iot_devices, function (item, lIndex) {
-                    $rootScope.model_iot_device.postImport(pIndex);
-                });
-
-            }, function error(error) {
-                $rootScope.showerror($scope, 'loadData', error);
-            });
-
-    };
-
-
-    $scope.filterOrders = function (item) {
-        var dispfield = document.getElementById('displaymasterdevices.' + $scope.parentControllerName);
-        if (!dispfield)
-            return true;
-
-        $scope.displaymasterdevices = dispfield.value;
-        //console.log("displaycustomers", $scope.displayicustomers);
-
-        if ($scope.displaymasterdevices == 'ALL') {
-            return true;
-        }
-        if ($scope.displaymasterdevices == 'ANY') {
-            if (!item.order)
-                return false;
-            else
-                return true;
-        }
-        if ($scope.displaymasterdevices == 'NULL') {
-            if (!item.order)
-                return true;
-            else
-                return false;
-        }
-    };
-
-
-    $scope.ok = function () {
-        lContainer = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
-        $uibModalInstance.close(lContainer);
-    };
-
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-    };
-
-    $scope.displaymasterdevices = "ALL";
-    $scope.displaymasterdevicesoptions = [
-        { Value: "ALL", Text: "All" },
-        { Value: "ANY", Text: "Connected to any order" },
-        { Value: "NULL", Text: "Not connected to orders" }
-    ];
-
-    $scope.loadData();
-    $rootScope.kerReftabInit();
-});
-

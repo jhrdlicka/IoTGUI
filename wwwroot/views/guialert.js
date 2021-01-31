@@ -2,6 +2,8 @@
  * handling of seletion in lists
  */
 app.service('guialert', function ($rootScope, $q, $uibModal) {
+    $rootScope.lastModalInstance = 0;
+    $rootScope.modalInstance = [];
 
     $rootScope.showerror = function (callscope, modulenm, error) {
         if (!error)
@@ -59,19 +61,27 @@ app.service('guialert', function ($rootScope, $q, $uibModal) {
 
     $rootScope.entitySelect = function (entity, multilineallowed) {
         var defer = $q.defer();
-        var modalInstance = $uibModal.open({
-            templateUrl: 'views/' + entity + 'select.html',
-            controller: entity + 'selectcontroller',
+        var lInstance = $rootScope.lastModalInstance++;
+
+        $rootScope.modalInstance[lInstance] = $uibModal.open({
+            templateUrl: 'views/' + entity + 'sgui.html',
+            controller: entity + 'controller',
             size: 'xl',
             backdrop: 'static',
             resolve: {
                 multilineallowed: function () {
                     return multilineallowed;
+                },
+                mode: function () {
+                    return "select";
+                },
+                instance: function () {
+                    return lInstance;
                 }
             }
         });
 
-        modalInstance.result.then(function (container) {
+        $rootScope.modalInstance[lInstance].result.then(function (container) {
             /* ok */
             defer.resolve(container);
         }, function (error) {

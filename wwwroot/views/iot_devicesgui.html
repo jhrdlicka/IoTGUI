@@ -1,87 +1,103 @@
-﻿<div class="container col-md-12">
+﻿<div class="modal-header" ng-if="mode=='select'">
+    <h2 class="modal-title">
+        Select Device(s)
+    </h2>
+</div>
 
-    <div class="col-md-6" style="min-width:800px">
+<div class="modal-body">
 
-        <h1 id="tableLabel">
-            Devices
+    <div class="container col-md-12">
 
-            <span class="pull-right">
-                <button class="btn btn-sm btn-primary" ng-click="new()" title="New device">new</button>
-                <button class="btn btn-sm btn-primary" ng-click="connecttomasterdevice()" title="Connect devices to master">connect to master</button>
-                <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected devices">delete</button>
-                <button class="btn btn-sm btn-default" ng-click="loadData(true)">refresh</button>
-            </span>
-        </h1>
-        <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
-            <div class="input-group-addon input-sm">Search:</div>
-            <input class="input-sm col-md-12" ng-model="searchText">
+        <div class="col-md-6" style="min-width:800px">
+
+            <h1 id="tableLabel" ng-if="mode=='list'">
+                Devices
+
+                <span class="pull-right">
+                    <button class="btn btn-sm btn-primary" ng-click="new()" title="New device">new</button>
+                    <button class="btn btn-sm btn-primary" ng-click="connecttomasterdevice()" title="Connect devices to master">connect to master</button>
+                    <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected devices">delete</button>
+                    <button class="btn btn-sm btn-default" ng-click="loadData(true)">refresh</button>
+                </span>
+            </h1>
+            <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+                <div class="input-group-addon input-sm">Search:</div>
+                <input class="input-sm col-md-12" ng-model="searchText">
+            </div>
+            <div class="input-group input-group-sm  col-md-12">
+                <div class="input-group-addon input-sm">Filter by masters:</div>
+                <select class="form-control input-sm" id="displaymasterdevices.{{parentControllerName}}" ng-model="displaymasterdevices">
+                    <option ng-repeat="displaymasterdevicesoption in displaymasterdevicesoptions" value="{{displaymasterdevicesoption.Value}}" ng-selected="displaymasterdevicesoption.Value == displaymasterdevices">{{displaymasterdevicesoption.Text}}</option>
+                </select>
+            </div>
+
+            <div>
+                <p ng-if="!iot_devices"><em>Loading...</em></p>
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="iot_devices" id="table.{{listid}}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Descpription</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="iot_device in iot_devices |filter: searchText |filter: filterMasterdevices"
+                            ng-dblclick="edit()"
+                            ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id);refreshdetail()"
+                            ng-class="{active: isRowSelected(listid, iot_device.index)}"
+                            id="tr.{{listid}}:{{iot_device.index}}"
+                            objectid="{{iot_device.id}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(listid, iot_device.index)"></td>
+                            <td>{{ iot_device.id }}</td>
+                            <td>{{ iot_device.code }}</td>
+                            <td>{{ iot_device.name }}</td>
+                            <td>{{ iot_device.description }}</td>
+                            <td style="width:1%">
+                                <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); delete()">Delete</button>
+                            </td>
+                            <td style="width:1%">
+                                <button class="btn btn-primary btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); edit()">Edit</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
         </div>
-        <div class="input-group input-group-sm  col-md-12">
-            <div class="input-group-addon input-sm">Filter by masters:</div>
-            <select class="form-control input-sm" id="displaymasterdevices.{{parentControllerName}}" ng-model="displaymasterdevices">
-                <option ng-repeat="displaymasterdevicesoption in displaymasterdevicesoptions" value="{{displaymasterdevicesoption.Value}}" ng-selected="displaymasterdevicesoption.Value == displaymasterdevices">{{displaymasterdevicesoption.Text}}</option>
-            </select>
-        </div>
 
-        <div>
-            <p ng-if="!iot_devices"><em>Loading...</em></p>
-            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="iot_devices" id="table.{{listid}}">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>ID</th>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Descpription</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="iot_device in iot_devices |filter: searchText |filter: filterMasterdevices"
-                        ng-dblclick="edit()"
-                        ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id);refreshdetail()"
-                        ng-class="{active: isRowSelected(listid, iot_device.index)}"
-                        id="tr.{{listid}}:{{iot_device.index}}"
-                        objectid="{{iot_device.id}}">
-                        <td><input type="checkbox" ng-checked="isRowSelected(listid, iot_device.index)"></td>
-                        <td>{{ iot_device.id }}</td>
-                        <td>{{ iot_device.code }}</td>
-                        <td>{{ iot_device.name }}</td>
-                        <td>{{ iot_device.description }}</td>
-                        <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); delete()">Delete</button>
-                        </td>
-                        <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); edit()">Edit</button>
-                        </td>
-                    </tr>
 
-                </tbody>
-            </table>
-        </div>
+        <uib-tabset active="active" class="col-md-6" ng-if="mode=='list'">
+            <uib-tab index="0" heading="Samples - graph">
+                <div class="col-md-6" ng-if="selectediot_device">
+                    <hr />
+                    <h3>Selected Device</h3>
+                    <p>
+                        <b>{{selectediot_device.id}}</b> {{selectediot_device.code}} {{selectediot_device.name}}
+                        <br>Index: {{selectediot_device.index}}
+                        <br>Samples: {{selectediot_device.xsamples.length}}
+                        <br>Subdevices: {{selectediot_device.xsubdevices.length}}
+                        <br>Brotherdevices(1): {{selectediot_device.xmasterdevice.xsubdevices.length}}
+                        <br>Masterdevice index: {{selectediot_device.xmasterdevice.index}}
+                        <br>Brotherdevices(2): {{iot_devices[selectediot_device.xmasterdevice.index].xsubdevices.length}}
+                    </p>
+                    <div id="tester" style="width:1800px;height:600px;"></div>
+                </div>
+            </uib-tab>
+            <uib-tab index="1" heading="Subdevices" ng-if="!(parentControllerName=='iot_devicecontroller')">
+                <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_devicegui.html'" ng-controller="iot_devicecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+        </uib-tabset>
 
     </div>
+</div>
 
-
-    <uib-tabset active="active" class="col-md-6">
-        <uib-tab index="0" heading="Samples - graph">
-            <div class="col-md-6" ng-if="selectediot_device">
-                <hr />
-                <h3>Selected Device</h3>
-                <p>
-                    <b>{{selectediot_device.id}}</b> {{selectediot_device.code}} {{selectediot_device.name}}
-                    <br>Index: {{selectediot_device.index}}
-                    <br>Samples: {{selectediot_device.xsamples.length}}
-                    <br>Subdevices: {{selectediot_device.xsubdevices.length}}
-                    <br>Brotherdevices(1): {{selectediot_device.xmasterdevice.xsubdevices.length}}
-                    <br>Masterdevice index: {{selectediot_device.xmasterdevice.index}}
-                    <br>Brotherdevices(2): {{iot_devices[selectediot_device.xmasterdevice.index].xsubdevices.length}}
-                </p>
-                <div id="tester" style="width:1800px;height:600px;"></div>
-            </div>
-        </uib-tab>
-        <uib-tab index="1" heading="Subdevices" ng-if="!(parentControllerName=='iot_devicecontroller')">
-            <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_devicegui.html'" ng-controller="iot_devicecontroller" class="col-md-6" style="min-width:1000px"></div>
-        </uib-tab>
-    </uib-tabset>
-
+<div class="modal-footer" ng-if="mode=='select'">
+    <div class="text-right">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
 </div>
