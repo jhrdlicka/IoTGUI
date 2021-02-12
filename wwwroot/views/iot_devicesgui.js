@@ -157,6 +157,11 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
                 }
             });
 
+        // save sub-items
+        var lxsubdevices = $rootScope.iot_devices[pIndex].xsubdevices;
+        var lxtasks = $rootScope.iot_devices[pIndex].xtasks;
+        var lxsamples = $rootScope.iot_devices[pIndex].xsamples;
+
         $http({
             headers: { "Content-Type": "application/json" },
             url: $rootScope.ApiAddress + "api/iot_device/" + lId,
@@ -165,7 +170,13 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
         })
             .then(function success(response) {
                 $rootScope.iot_devices[pIndex] = response.data;
+                //restore subitems
+                $rootScope.iot_devices[pIndex].xsubdevices = lxsubdevices;
+                $rootScope.iot_devices[pIndex].xtasks = lxtasks;
+                $rootScope.iot_devices[pIndex].xsamples = lxsamples;
+
                 $rootScope.model_iot_device.postImport(pIndex);
+
             }, function error(error) {
                     $rootScope.showerror(myscope, 'loadRecord', error);
             });
@@ -584,7 +595,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
         $rootScope.model_iot_device.delete(lItems);
     };
-
+   
     $scope.refreshdetail = function () {
         $scope.selectediot_device = null;
 
@@ -595,6 +606,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
         $scope.selectediot_device = l_selecteddata[0];      
 
+
+        $rootScope.model_iot_device.loadRecord(l_selecteddata[0].index);
         /*
 
         // test of toasts

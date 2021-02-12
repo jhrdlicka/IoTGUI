@@ -199,7 +199,12 @@ app.service('model_iot_sample', function ($rootScope, $http) {
                 }
             });
 
-        $rootScope.iot_samples[pIndex] = null;
+        // save subitems
+        //var lxsubdevices = $rootScope.iot_devices[pIndex].xsubdevices;
+        //var lxtasks = $rootScope.iot_devices[pIndex].xtasks;
+        //var lxsamples = $rootScope.iot_devices[pIndex].xsamples;
+
+        //$rootScope.iot_samples[pIndex] = null;
 
         $http({
             headers: { "Content-Type": "application/json" },
@@ -209,6 +214,11 @@ app.service('model_iot_sample', function ($rootScope, $http) {
         })
             .then(function success(response) {
                 $rootScope.iot_samples[pIndex] = response.data;
+                // restore subitems
+                //$rootScope.iot_devices[pIndex].xsubdevices = lxsubdevices;
+                //$rootScope.iot_devices[pIndex].xtasks = lxtasks;
+                //$rootScope.iot_devices[pIndex].xsamples = lxsamples;
+
                 $rootScope.model_iot_sample.postImport(pIndex);
                 indexDevice($rootScope.iot_samples[pIndex]);
 //                indexCalendarday($rootScope.iot_samples[pIndex]);
