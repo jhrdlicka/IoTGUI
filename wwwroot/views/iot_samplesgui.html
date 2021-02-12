@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="iot_sample in iot_samples |filter: searchText |filter: filterDevices"
+                        <tr ng-repeat="iot_sample in filteredData = (iot_samples |filter: searchText |filter: filterDevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)" "
                             ng-dblclick="edit()"
                             ng-click="selectRow(listid, $event, iot_sample.index, multilineallowed, iot_sample.id);refreshdetail()"
                             ng-class="{active: isRowSelected(listid, iot_sample.index)}"
@@ -64,11 +64,21 @@
                             </td>
                             <td style="width:1%">
                                 <button class="btn btn-primary btn-xs" ng-click="selectRow(listid, $event, iot_sample.index, multilineallowed, iot_sample.id); edit()">Detail</button>
+                                {{calcTotalItems(filteredData.length)}}
                             </td>
                         </tr>
 
                     </tbody>
                 </table>
+                {{testEmptyTable("table."+listid)}}
+                <div ng-if="true">
+                    <div uib-pagination class="pagination-sm pagination" total-items="totalItems" ng-model="currentPage"
+                         ng-change="pageChanged(currentPage, filteredData)" num-pages="numPages" previous-text="&lsaquo;" boundary-link-numbers="true" next-text="&rsaquo;" items-per-page="itemsPerPage" max-size="maxSize">
+                    </div>
+                    <pre>Page: {{currentPage}} / {{numPages}} ({{totalItems}} items)</pre>
+
+                </div>
+
             </div>
 
         </div>

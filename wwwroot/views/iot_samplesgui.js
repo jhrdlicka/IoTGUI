@@ -281,6 +281,40 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
     */
 
 
+    // pagination defaults
+    $scope.totalItems = 0;
+    $scope.currentPage = 1;
+    $scope.itemsPerPage = $rootScope.itemsPerPage;
+    $scope.maxSize = $rootScope.maxSize; //Number of pager buttons to show
+
+
+    $scope.calcTotalItems = function (pFilteredDataLength) {
+        $scope.totalItems = pFilteredDataLength;
+        return null;
+    }
+
+    $scope.testEmptyTable = function (pTableID) {
+
+        //$scope.currentPage = pCurrentPage;
+        var myTab = document.getElementById(pTableID);
+        if (!myTab) {
+            //$rootScope.log(myscope, 'testEmptyTable', 'testEmptyTable: ' + pTableID, null, null, 'error');
+            return null;
+        }
+
+        var lItems = myTab.rows.length - 1;
+        //$rootScope.log(myscope, 'testEmptyTable', 'testEmptyTable: ' + lItems, null, null, 'info');
+        if (lItems == 0)
+            $scope.totalItems = 0;
+    }
+
+
+    $scope.pageChanged = function (pCurrentPage) {
+        $scope.currentPage = pCurrentPage;
+        //$rootScope.log(myscope, 'pageChanged', 'Page changed to: '+ $scope.currentPage, null, null, 'info');                    
+    };
+
+
     $scope.loadData = function (pForce) {
         $rootScope.resetSelection($scope.listid);
         $rootScope.model_iot_sample.loadData(pForce); 

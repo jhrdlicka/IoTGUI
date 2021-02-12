@@ -39,7 +39,7 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     $locale.NUMBER_FORMATS.DECIMAL_SEP = ",";
 
     // pagination defaults
-    $rootScope.itemsPerPage = 6; 
+    $rootScope.itemsPerPage = 20; 
     $rootScope.maxSize = 5; //Number of pager buttons to show
 
 
