@@ -38,6 +38,11 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     $locale.NUMBER_FORMATS.GROUP_SEP = " ";
     $locale.NUMBER_FORMATS.DECIMAL_SEP = ",";
 
+    // pagination defaults
+    $rootScope.itemsPerPage = 6; 
+    $rootScope.maxSize = 5; //Number of pager buttons to show
+
+
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
 
     $rootScope.dateCheckClick = function (pOldValue) {
@@ -119,6 +124,7 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/ker_reftabs", { templateUrl: "views/ker_reftabsgui.html", controller: "ker_reftabcontroller" })
         .when("/ker_references", { templateUrl: "views/ker_referencesgui.html", controller: "ker_referencecontroller" })
         .when("/iot_devices", { mode:"list", templateUrl: "views/iot_devicesgui.html", controller: "iot_devicecontroller" })
+        .when("/iot_samples", { mode: "list", templateUrl: "views/iot_samplesgui.html", controller: "iot_samplecontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

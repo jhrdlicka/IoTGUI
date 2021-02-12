@@ -40,11 +40,11 @@
                             <th>ID</th>
                             <th>Code</th>
                             <th>Name</th>
-                            <th>Descpription</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="iot_device in iot_devices |filter: searchText |filter: filterMasterdevices"
+                        <tr ng-repeat="iot_device in filteredData = (iot_devices |filter: searchText |filter: filterMasterdevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)"
                             ng-dblclick="edit()"
                             ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id);refreshdetail()"
                             ng-class="{active: isRowSelected(listid, iot_device.index)}"
@@ -60,11 +60,19 @@
                             </td>
                             <td style="width:1%">
                                 <button class="btn btn-primary btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); edit()">Edit</button>
+                                {{calcTotalItems(filteredData.length)}}
                             </td>
                         </tr>
-
                     </tbody>
                 </table>
+                {{testEmptyTable("table."+listid)}}
+                <div ng-if="true">
+                    <div uib-pagination class="pagination-sm pagination" total-items="totalItems" ng-model="currentPage"
+                         ng-change="pageChanged(currentPage, filteredData)" num-pages="numPages" previous-text="&lsaquo;" boundary-link-numbers="true" next-text="&rsaquo;" items-per-page="itemsPerPage" max-size="maxSize">
+                    </div>
+                    <pre>Page: {{currentPage}} / {{numPages}} ({{totalItems}} items)</pre>
+
+                </div>
             </div>
 
         </div>
@@ -88,7 +96,10 @@
                 </div>
             </uib-tab>
             <uib-tab index="1" heading="Subdevices" ng-if="!(parentControllerName=='iot_devicecontroller')">
-                <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_devicegui.html'" ng-controller="iot_devicecontroller" class="col-md-6" style="min-width:1000px"></div>
+                <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_devicesgui.html'" ng-controller="iot_devicecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+            <uib-tab index="2" heading="Samples" ng-if="!(parentControllerName=='iot_devicecontroller')">
+                <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_samplesgui.html'" ng-controller="iot_samplecontroller" class="col-md-6" style="min-width:1000px"></div>
             </uib-tab>
         </uib-tabset>
 
