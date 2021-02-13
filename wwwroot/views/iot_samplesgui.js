@@ -103,6 +103,8 @@ app.service('model_iot_sample', function ($rootScope, $http) {
         var lItem = $rootScope.iot_samples[pIndex];
         lItem.index = pIndex;
         // add another calculations
+        lItem.timestamp = lItem.timestamp + "Z";
+        lItem.timestamptime = new Date(lItem.timestamp);  
     };
 
     $rootScope.model_iot_sample.loadData = function (pForce) {
@@ -225,6 +227,23 @@ app.service('model_iot_sample', function ($rootScope, $http) {
             }, function error(error) {
                 $rootScope.showerror(myscope, 'loadRecord', error);
             });
+    };
+
+    $rootScope.model_iot_sample.delete = function (pItems) {
+
+        angular.forEach(pItems, function (item, index) {
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_sample/" + item.id,
+                withCredentials: true,
+                method: 'DELETE'
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'delete', error);
+                });
+        });
     };
 
 });

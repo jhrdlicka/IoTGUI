@@ -80,8 +80,8 @@
 
         <uib-tabset active="active" class="col-md-6" ng-if="mode=='list'">
             <uib-tab index="0" heading="Samples - graph">
-                <div class="col-md-6" ng-if="selectediot_device">
-                    <hr />
+                <div class="col-md-6" >
+                    <div ng-if="selectediot_device">
                     <h3>Selected Device</h3>
                     <p>
                         <b>{{selectediot_device.id}}</b> {{selectediot_device.code}} {{selectediot_device.name}}
@@ -92,7 +92,8 @@
                         <br>Masterdevice index: {{selectediot_device.xmasterdevice.index}}
                         <br>Brotherdevices(2): {{iot_devices[selectediot_device.xmasterdevice.index].xsubdevices.length}}
                     </p>
-                    <div id="tester" style="width:1800px;height:600px;"></div>
+                    </div>
+                    <div id="iot_devices_graph.{{listid}}" style="width:1800px;height:600px;"></div>
                 </div>
             </uib-tab>
             <uib-tab index="1" heading="Subdevices" ng-if="!(parentControllerName=='iot_devicecontroller')">

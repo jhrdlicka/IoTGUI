@@ -32,6 +32,7 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     // shared parameters
     $rootScope.dateFormat = 'dd.MM.yyyy';
     $rootScope.timeFormat = 'HH:mm';
+    $rootScope.precisetimeFormat = 'HH:mm:ss.sss';
     $rootScope.datetimeFormat = 'dd.MM.yyyy HH:mm';
     $rootScope.dateOptions = { startingDay: 1 };
 

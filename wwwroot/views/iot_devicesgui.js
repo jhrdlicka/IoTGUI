@@ -597,6 +597,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     };
    
     $scope.refreshdetail = function () {
+/*
         $scope.selectediot_device = null;
 
         l_selecteddata = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
@@ -605,9 +606,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
         }
 
         $scope.selectediot_device = l_selecteddata[0];      
+*/
 
-
-        $rootScope.model_iot_device.loadRecord(l_selecteddata[0].index);
         /*
 
         // test of toasts
@@ -622,6 +622,63 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
             return console.error(err.toString());
         });
         */
+
+        // draw graph
+
+
+        lGraph = document.getElementById('iot_devices_graph.' + $scope.listid);
+        if (lGraph) {
+
+            var lLayout = {
+                title: 'Samples',
+                xaxis: {
+                    //                        title: 'Date',
+                    //                        showgrid: false,
+                    //                        zeroline: false
+                },
+                yaxis: {
+                    title: "value",
+                    showticksuffix: "last"
+                    //                        showline: false
+                }
+            };
+
+            var lItems = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_devices);
+
+            var lTraces = [];
+            var lAxeX = [];
+            var lAxeY = [];
+            var lTrace = {};
+
+            angular.forEach(lItems, function (item, index) {
+
+                if (item.xsamples) {
+                    lAxeX = item.xsamples.map(a => a.timestamptime);
+                    lAxeY = item.xsamples.map(a => a.value);
+                } else {
+                    lAxeX = [];
+                    lAxeY = [];
+                }
+                lTrace = {
+                    type: "scatter",
+                    mode: "lines",
+                    x: lAxeX,
+                    y: lAxeY,
+//                    line: { color: '#17BECF' },
+                    name: item.code
+                };
+
+                lTraces.push(lTrace);
+
+            });
+
+            Plotly.newPlot(lGraph, lTraces, lLayout);
+        }
+
+
+
+
+
     };
 
     $scope.ok = function () {
