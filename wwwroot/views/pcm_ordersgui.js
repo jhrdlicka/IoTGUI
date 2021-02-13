@@ -461,8 +461,8 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
         $scope.displayocustomers = "ALL";
     $scope.displayocustomersoptions = [
         { Value: "ALL", Text: "All" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
-        { Value: "SELECTED", Text: "Connected to seleted customers" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected customers" },
+        { Value: "SELECTED", Text: "Connected to selected customers" },
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 
@@ -688,8 +688,8 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
         $scope.displayocustomers = "ALL";
     $scope.displayocustomersoptions = [
         { Value: "ALL", Text: "All" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
-        { Value: "SELECTED", Text: "Connected to seleted customers" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected customers" },
+        { Value: "SELECTED", Text: "Connected to selected customers" },
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 

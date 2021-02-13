@@ -524,7 +524,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
                 return true;
         };
 
-        // so the gcalevent is not found in seleted calevents
+        // so the gcalevent is not found in selected calevents
 
 
         if ($scope.displaycalevents == 'SELECTED') {
@@ -1258,23 +1258,23 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
     $scope.displaycustomersoptions = [
         { Value: "ALL", Text: "All" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted customers" },
-        { Value: "SELECTED", Text: "Connected to seleted customers" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected customers" },
+        { Value: "SELECTED", Text: "Connected to selected customers" },
         { Value: "NULL", Text: "Not connected to customers" }
     ];
 
     $scope.displayordersoptions = [
         { Value: "ALL", Text: "All" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted orders" },
-        { Value: "SELECTED", Text: "Connected to seleted orders" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected orders" },
+        { Value: "SELECTED", Text: "Connected to selected orders" },
         { Value: "NULL", Text: "Not connected to orders" }
     ];
 
     $scope.displaycaleventsoptions = [
         { Value: "ALL", Text: "All" },
         { Value: "CONNECTED", Text: "Connected to any event" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted events" },
-        { Value: "SELECTED", Text: "Connected to seleted events" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected events" },
+        { Value: "SELECTED", Text: "Connected to selected events" },
         { Value: "NULL", Text: "Not connected any event" }
     ];
 

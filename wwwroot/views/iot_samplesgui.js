@@ -2,7 +2,7 @@
  * iot_sample list
  */
 
-app.service('model_iot_sample', function ($rootScope, $http) {
+app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
     $rootScope.model_iot_sample = { packageName: 'model_iot_sample' };
     var myscope = $rootScope.model_iot_sample;
 
@@ -615,8 +615,8 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
         $scope.displaydevices = "ALL";
     $scope.displaydevicesoptions = [
         { Value: "ALL", Text: "All" },
-        { Value: "SELECTED+", Text: "Not conntected or connected to seleted devices" },
-        { Value: "SELECTED", Text: "Connected to seleted devices" },
+        { Value: "SELECTED+", Text: "Not conntected or connected to selected devices" },
+        { Value: "SELECTED", Text: "Connected to selected devices" },
         { Value: "NULL", Text: "Not connected to devices" }
     ];
 
@@ -678,7 +678,7 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
 */
 
     $scope.objectData = container;
-    $rootScope.dataCopy = angular.copy($scope.objectData);
+    $scope.dataCopy = angular.copy($scope.objectData);
 
     /*
      // initialize datapickers for dates
@@ -707,7 +707,7 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
         // misto v listcontroleru - detail
         // a podle vysledku zavrit detail, nebo se vratit k editovani
             
-        angular.forEach($rootScope.dataCopy, function (value, key) {
+        angular.forEach($scope.dataCopy, function (value, key) {
             $scope.objectData[key] = value;
         });
 
@@ -716,7 +716,7 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
 
     $scope.cancel = function () {        
         angular.forEach($scope.objectData, function (value, key) {
-            $rootScope.dataCopy[key] = value;
+            $scope.dataCopy[key] = value;
         });
 
         $uibModalInstance.dismiss('cancel');

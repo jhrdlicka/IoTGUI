@@ -115,7 +115,6 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         // Home
         .when("/", { templateUrl: "views/main.html", controller: "mainController" })
         // Pages
-        .when("/sensors", { templateUrl: "views/sensorsgui.html", controller: "sensorController" })
         .when("/fetch", { templateUrl: "views/fetch-data.html", controller: "fetchDataController" })
         .when("/pcm_customers", { templateUrl: "views/pcm_customersgui.html", controller: "pcm_customercontroller" })
         .when("/pcm_calevents", { templateUrl: "views/pcm_caleventsgui.html", controller: "pcm_caleventcontroller" })

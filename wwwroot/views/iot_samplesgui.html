@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="iot_sample in filteredData = (iot_samples |filter: searchText |filter: filterDevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)" "
+                        <tr ng-repeat="iot_sample in filteredData = (iot_samples |filter: searchText |filter: filterDevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)"
                             ng-dblclick=""
                             ng-click="selectRow(listid, $event, iot_sample.index, multilineallowed, iot_sample.id);refreshdetail()"
                             ng-class="{active: isRowSelected(listid, iot_sample.index)}"

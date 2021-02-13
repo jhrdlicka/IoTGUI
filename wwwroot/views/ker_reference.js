@@ -2,8 +2,8 @@
  * handling of seletion in lists
  */
 app.service('ker_reference', function ($rootScope, $filter, $http, $q, multiline, guialert) {
-    //    $scope.controllerName = null;
-    var myscope = { packageName: 'ker_reference' };
+    $rootScope.ker_reference = { packageName: 'ker_reference' };
+    var myscope = $rootScope.ker_reference;
     
     var promises = [];
 

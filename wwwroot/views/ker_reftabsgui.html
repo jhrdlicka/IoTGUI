@@ -1,67 +1,92 @@
-﻿<div class="container col-md-12">
+﻿<div class="modal-header" ng-if="mode=='select'">
+    <h2 class="modal-title">
+        Select Reference table(s)
+    </h2>
+</div>
 
-    <div class="col-md-6" style="min-width:800px">
+<div class="modal-body">
 
-        <h1 id="tableLabel">
-            Reference Tables
+    <div class="container col-md-12">
 
-            <span class="pull-right">
-                <button class="btn btn-sm btn-primary" ng-click="new()" title="New reference table">new</button>
-                <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected tables">delete</button>
-                <button class="btn btn-sm btn-default" ng-click="loadData()">refresh</button>
-            </span>
-        </h1>
-        <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
-            <div class="input-group-addon input-sm">Search:</div>
-            <input class="input-sm col-md-12" ng-model="searchText">
+        <div class="col-md-6" style="min-width:800px">
+
+            <h1 id="tableLabel" ng-if="mode=='list'">
+                Reference Tables
+
+                <span class="pull-right">
+                    <button class="btn btn-sm btn-primary" ng-click="new()" title="New reference table">new</button>
+                    <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected tables">delete</button>
+                    <button class="btn btn-sm btn-default" ng-click="loadData(true)">refresh</button>
+                </span>
+            </h1>
+            <div class="input-group input-group-sm col-md-12" style="min-width:1000px">
+                <div class="input-group-addon input-sm">Search:</div>
+                <input class="input-sm col-md-12" ng-model="searchText">
+            </div>
+
+            <div>
+                <p ng-if="!ker_reftabs"><em>Loading...</em></p>
+
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="ker_reftabs" id="table.{{listid}}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Id</th>
+                            <th>RetabNM</th>
+                            <th>Description</th>
+                            <th>Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="ker_reftab in filteredData = (ker_reftabs |filter: searchText )| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)"
+                            ng-dblclick="edit()"
+                            ng-click="selectRow(listid, $event, ker_reftab.index, multilineallowed, ker_reftab.id)"
+                            ng-class="{active: isRowSelected(listid, ker_reftab.index)}"
+                            id="tr.{{listid}}:{{ker_reftab.index}}"
+                            objectid="{{ker_reftab.id}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(listid, ker_reftab.index)"></td>
+                            <td>{{ ker_reftab.id }}</td>
+                            <td>{{ ker_reftab.reftabnm }}</td>
+                            <td>{{ ker_reftab.description }}</td>
+                            <td>{{ ker_reftab.sreferences.length}}</td>
+                            <td style="width:1%">
+                                <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); delete()">Delete</button>
+                            </td>
+                            <td style="width:1%">
+                                <button class="btn btn-primary btn-xs" ng-click="selectRow(listid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); edit()">Edit</button>
+                                {{calcTotalItems(filteredData.length)}}
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                {{testEmptyTable("table."+listid)}}
+                <div ng-if="true">
+                    <div uib-pagination class="pagination-sm pagination" total-items="totalItems" ng-model="currentPage"
+                         ng-change="pageChanged(currentPage, filteredData)" num-pages="numPages" previous-text="&lsaquo;" boundary-link-numbers="true" next-text="&rsaquo;" items-per-page="itemsPerPage" max-size="maxSize">
+                    </div>
+                    <pre>Page: {{currentPage}} / {{numPages}} ({{totalItems}} items)</pre>
+
+                </div>
+
+            </div>
+
         </div>
-
-        <div>
-            <p ng-if="!ker_reftabs"><em>Loading...</em></p>
-
-            <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="ker_reftabs" id="table.{{reftablistid}}">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Id</th>
-                        <th>RetabNM</th>
-                        <th>Description</th>
-                        <th>Items</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="ker_reftab in ker_reftabs |filter: searchText "
-                        ng-dblclick="edit()"
-                        ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id)"
-                        ng-class="{active: isRowSelected(reftablistid, ker_reftab.index)}"
-                        id="tr.{{reftablistid}}:{{ker_reftab.index}}"
-                        objectid="{{ker_reftab.id}}">
-                        <td><input type="checkbox" ng-checked="isRowSelected(reftablistid, ker_reftab.index)"></td>
-                        <td>{{ ker_reftab.id }}</td>
-                        <td>{{ ker_reftab.reftabnm }}</td>
-                        <td>{{ ker_reftab.description }}</td>
-                        <td>{{ ker_reftab.references.length}}</td>
-                        <td style="width:1%">
-                            <button class="btn btn-danger btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); delete()">Delete</button>
-                        </td>
-                        <td style="width:1%">
-                            <button class="btn btn-primary btn-xs" ng-click="selectRow(reftablistid, $event, ker_reftab.index, multilineallowed, ker_reftab.id); edit()">Edit</button>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-
-        </div>
+        <uib-tabset active="active" class="col-md-6" ng-if="mode=='list'">
+            <uib-tab index="0" heading="Reference">
+                <div ng-include="'views/ker_referencesgui.html'" ng-controller="ker_referencecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+        </uib-tabset>
 
     </div>
 
-    <uib-tabset active="active" class="col-md-6" ng-if="true">
-        <uib-tab index="0" heading="Reference">
-            <div ng-include="'views/ker_referencesgui.html'" ng-controller="ker_referencecontroller" class="col-md-6" style="min-width:1000px"></div>
-        </uib-tab>
-    </uib-tabset>
 
 </div>
 
+<div class="modal-footer" ng-if="mode=='select'">
+    <div class="text-right">
+        <button class="btn btn-primary" ng-click="ok()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
 
