@@ -380,7 +380,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     }, true);
 
     $scope.filterMasterdevices= function (item) {
-        var dispfield = document.getElementById('displaymasterdevices.' + $scope.parentControllerName);
+        var dispfield = document.getElementById('displaymasterdevices.' + $scope.listid);
         if (!dispfield)
             return true;
 

@@ -337,7 +337,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     }
 
     $scope.filterCaleventsByOrders = function (item) {
-        var dispordfield = document.getElementById('displayorders.' + $scope.parentControllerName);
+        var dispordfield = document.getElementById('displayorders.' + $scope.listid);
         if (!dispordfield)
             return true;
         $scope.displayorders = dispordfield.value;
@@ -397,7 +397,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
 
 
     $scope.filterCalevents = function (item) {
-        var dispcustfield = document.getElementById('displaycustomers.' + $scope.parentControllerName);
+        var dispcustfield = document.getElementById('displaycustomers.' + $scope.listid);
         if (!dispcustfield) {
 //            console.log("no calevent filter", item.id);
             return true;
@@ -494,7 +494,7 @@ app.controller('pcm_caleventcontroller', function ($scope, $http, $uibModal, $co
     };
 
     $scope.filterGcalvents = function (item) {
-        var dispcalfield = document.getElementById('displaycalevents.' + $scope.parentControllerName);
+        var dispcalfield = document.getElementById('displaycalevents.' + $scope.listid);
         $scope.displaycalevents = dispcalfield.value;
 //        console.log('type', $scope.displaycalevents);
 

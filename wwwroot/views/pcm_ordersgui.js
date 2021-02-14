@@ -173,7 +173,7 @@ app.controller('pcm_ordercontroller', function ($scope, $http, $uibModal, $rootS
     };
 
     $scope.filterOrders = function (item) {
-        var dispcustfield = document.getElementById('displayocustomers.' + $scope.parentControllerName);
+        var dispcustfield = document.getElementById('displayocustomers.' + $scope.listid);
         if (!dispcustfield)
             return true;
 
@@ -540,7 +540,7 @@ app.controller('pcm_orderselectcontroller', function ($scope, $uibModalInstance,
 
 
     $scope.filterOrders = function (item) {
-        var dispcustfield = document.getElementById('displayocustomers.' + $scope.parentControllerName);
+        var dispcustfield = document.getElementById('displayocustomers.' + $scope.listid);
         if (!dispcustfield)
             return true;
 

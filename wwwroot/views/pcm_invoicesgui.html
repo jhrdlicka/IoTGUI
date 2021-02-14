@@ -18,13 +18,13 @@
         </div>
         <div class="input-group input-group-sm  col-md-12">
             <div class="input-group-addon input-sm">Filter by clients:</div>
-            <select class="form-control input-sm" id="displayicustomers.{{parentControllerName}}" ng-model="displayicustomers">
+            <select class="form-control input-sm" id="displayicustomers.{{listid}}" ng-model="displayicustomers">
                 <option ng-repeat="displayicustomersoption in displayicustomersoptions" value="{{displayicustomersoption.Value}}" ng-selected="displayicustomersoption.Value == displayicustomers">{{displayicustomersoption.Text}}</option>
             </select>
         </div>
         <div class="input-group input-group-sm" ng_if="!hideItem_FilterOrders">
             <div class="input-group-addon input-sm">Filter by orders:</div>
-            <select class="form-control input-sm" id="displayiorders.{{parentControllerName}}" ng-model="displayiorders">
+            <select class="form-control input-sm" id="displayiorders.{{listid}}" ng-model="displayiorders">
                 <option ng-repeat="displayiordersoption in displayiordersoptions" value="{{displayiordersoption.Value}}" ng-selected="displayiordersoption.Value == displayiorders">{{displayiordersoption.Text}}</option>
             </select>
         </div>

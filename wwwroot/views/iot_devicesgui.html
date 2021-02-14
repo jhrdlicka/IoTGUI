@@ -26,7 +26,7 @@
             </div>
             <div class="input-group input-group-sm  col-md-12">
                 <div class="input-group-addon input-sm">Filter by masters:</div>
-                <select class="form-control input-sm" id="displaymasterdevices.{{parentControllerName}}" ng-model="displaymasterdevices">
+                <select class="form-control input-sm" id="displaymasterdevices.{{listid}}" ng-model="displaymasterdevices">
                     <option ng-repeat="displaymasterdevicesoption in displaymasterdevicesoptions" value="{{displaymasterdevicesoption.Value}}" ng-selected="displaymasterdevicesoption.Value == displaymasterdevices">{{displaymasterdevicesoption.Text}}</option>
                 </select>
             </div>

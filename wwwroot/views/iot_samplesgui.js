@@ -360,7 +360,7 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
     }, true);
 
     $scope.filterDevices= function (item) {
-        var dispfield = document.getElementById('displaydevices.' + $scope.parentControllerName);
+        var dispfield = document.getElementById('displaydevices.' + $scope.listid);
         if (!dispfield)
             return true;
 

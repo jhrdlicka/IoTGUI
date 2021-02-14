@@ -25,7 +25,7 @@
             </div>
             <div class="input-group input-group-sm  col-md-12">
                 <div class="input-group-addon input-sm">Filter by reference table:</div>
-                <select class="form-control input-sm" id="displayreftabs.{{parentControllerName}}" ng-model="displayreftabs">
+                <select class="form-control input-sm" id="displayreftabs.{{listid}}" ng-model="displayreftabs">
                     <option ng-repeat="displayreftabsoption in displayreftabsoptions" value="{{displayreftabsoption.Value}}" ng-selected="displayreftabsoption.Value == displayreftabs">{{displayreftabsoption.Text}}</option>
                 </select>
             </div>

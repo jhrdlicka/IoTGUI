@@ -8,6 +8,9 @@ app.service('ker_reference', function ($rootScope, $filter, $http, $q, multiline
     $rootScope.kerReftabGetList = function (pReftabNM) {
         var lReftabs = $filter('filter')($rootScope.ker_reftabs, { 'reftabnm': pReftabNM });
 
+        if (!lReftabs) 
+            return null;
+        
         var lList = [];
         lList.push({ Value: null, Text: "--" + lReftabs[0].name + "--" });
         angular.forEach(lReftabs[0].xreferences, function (item, lIndex) {
@@ -30,7 +33,10 @@ app.service('ker_reference', function ($rootScope, $filter, $http, $q, multiline
         if ((lReference.length == 1) && (lReftab.length==1))
             return lReference[0].name;
         else {
-            console.error("Reference item not found", pReftabNM + "/" + pNameNM);
+            $rootScope.showerror(myscope, "kerReftabGetNameByNM", {
+                status: 500,
+                statusText: "Reference item not found" + pReftabNM + "/" + pNameNM
+                });
             return "???";
         }
     };
@@ -43,13 +49,20 @@ app.service('ker_reference', function ($rootScope, $filter, $http, $q, multiline
         var lReftab = $filter('filter')($rootScope.ker_reftabs, { 'reftabnm': pReftabNM });
         var lReference = $filter('filter')(lReftab[0].xreferences, { 'namenm': pNameNM });
         if ((!lReftab) || (!lReference)) {
-            return "???";
+            $rootScope.showerror(myscope, "kerReftabGetByNM", {
+                status: 500,
+                statusText: "Reference item not found" + pReftabNM + "/" + pNameNM
+            });
+            return null;
         }
 
         if ((lReference.length == 1) && (lReftab.length == 1))
             return lReference[0].name;
         else {
-            console.error("Reference item not found", pReftabNM + "/" + pNameNM);
+            $rootScope.showerror(myscope, "kerReftabGetByNM", {
+                status: 500,
+                statusText: "Reference item not found" + pReftabNM + "/" + pNameNM
+            });
             return null;
         }
     };

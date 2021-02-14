@@ -440,7 +440,7 @@ app.controller('ker_referencecontroller', function ($scope, $http, $uibModal, $r
 
 
     $scope.filterReftabs = function (item) {
-        var dispreftabfield = document.getElementById('displayreftabs.' + $scope.parentControllerName);
+        var dispreftabfield = document.getElementById('displayreftabs.' + $scope.listid);
         if (!dispreftabfield)
             return true;
 

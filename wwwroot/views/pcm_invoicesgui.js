@@ -316,7 +316,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
 
 
     $scope.filterOrders = function (item) {
-        var dispordfield = document.getElementById('displayiorders.' + $scope.parentControllerName);
+        var dispordfield = document.getElementById('displayiorders.' + $scope.listid);
         if (!dispordfield)
             return true;
 
@@ -372,7 +372,7 @@ app.controller('pcm_invoicecontroller', function ($scope, $http, $uibModal, $roo
     };
 
     $scope.filterCustomers = function (item) {
-        var dispcustfield = document.getElementById('displayicustomers.' + $scope.parentControllerName);
+        var dispcustfield = document.getElementById('displayicustomers.' + $scope.listid);
         if (!dispcustfield)
             return true;
 
@@ -1024,7 +1024,7 @@ app.controller('pcm_invoiceselectcontroller', function ($scope, $uibModalInstanc
 
 
     $scope.filterOrders = function (item) {
-        var dispordfield = document.getElementById('displayiorders.' + $scope.parentControllerName);
+        var dispordfield = document.getElementById('displayiorders.' + $scope.listid);
         if (!dispordfield)
             return true;
 
