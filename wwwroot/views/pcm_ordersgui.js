@@ -490,11 +490,7 @@ app.controller('pcm_ordereditcontroller', function ($scope, $uibModalInstance, c
         $scope.parentControllerName = $scope.parent.controllerName;
 
 
-    $rootScope.kerReftabGetList('CURRENCY')
-        .then(function (result) {
-            $scope.currencylist = result[0];
-            console.log("currencylist", $scope.currencylist);
-        });
+    $scope.currencylist = $rootScope.kerReftabGetList('CURRENCY');
 
 
     $scope.objectData = container;

@@ -735,26 +735,13 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     else
         $scope.parentControllerName = $scope.parent.controllerName;
 
-    $rootScope.kerReftabGetList('DEVICECATEGORY')
-        .then(function (result) {
-            $scope.devicecategorylist = result[0];
-            $rootScope.log(myscope, 'init', "Reftab loadded", $scope.devicecategorylist, null, "info");                                
-        });
+    $scope.devicecategorylist = $rootScope.kerReftabGetList('DEVICECATEGORY');
 
-    $rootScope.kerReftabGetList('DEVICETYPE')
-        .then(function (result) {
-            $scope.devicetypelist = result[0];
-        });
+    $scope.devicetypelist = $rootScope.kerReftabGetList('DEVICETYPE');
 
-    $rootScope.kerReftabGetList('UNIT')
-        .then(function (result) {
-            $scope.unitlist = result[0];
-        });
+    $scope.unitlist = $rootScope.kerReftabGetList('UNIT');
 
-    $rootScope.kerReftabGetList('LOCATION')
-        .then(function (result) {
-            $scope.locationlist = result[0];
-        });
+    $scope.locationlist = $rootScope.kerReftabGetList('LOCATION');
 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);

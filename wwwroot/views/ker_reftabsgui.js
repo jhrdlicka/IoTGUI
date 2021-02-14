@@ -125,11 +125,13 @@ app.service('model_ker_reftab', function ($rootScope, $http, serverUpdateHub) {
                     $rootScope.log(myscope, 'loadData', "model_iot_device.has already been loaded", null, null, "info");
                     indexDevices();
                 }
-                else
+                else{
                     $rootScope.$on('model_iot_device.loaded', function () {
                         $rootScope.log(myscope, 'loadData', "model_iot_device.loaded", null, null, "success");
                         indexDevices();
                     });
+                    $rootScope.model_iot_device.loadData(false);
+                }
 
                 */
                 /*
@@ -137,12 +139,14 @@ app.service('model_ker_reftab', function ($rootScope, $http, serverUpdateHub) {
                     $rootScope.log(myscope, 'loadData', "model_iot_calendarday.has already been loaded", null, null, "info");
                     indexCalendardays();
                 }
-                else
+                else{
                     $rootScope.$on('model_iot_calendarday.loaded', function () {
                         $rootScope.log(myscope, 'loadData', "model_iot_calendarday.loaded", null, null, "success");
                         indexCalendardays();
                     });
-                    */
+                    $rootScope.model_iot_calendarday.loadData(false);
+                }
+                */
 
                 $rootScope.model_ker_reftab.loaded = true;
                 $rootScope.model_ker_reftab.loading = false;
@@ -548,25 +552,11 @@ app.controller('ker_reftabeditcontroller', function ($scope, $uibModalInstance, 
         $scope.parentControllerName = $scope.parent.controllerName;
 
     /*
-    $rootScope.kerReftabGetList('DEVICECATEGORY')
-     .then(function (result) {
-         $scope.devicecategorylist = result[0];
-         $rootScope.log(myscope, 'init', "Reftab loadded", $scope.devicecategorylist, null, "info");
-     });
+    $scope.devicecategorylist = $rootScope.kerReftabGetList('DEVICECATEGORY');
 
-    $rootScope.kerReftabGetList('DEVICETYPE')
-     .then(function (result) {
-         $scope.devicetypelist = result[0];
-     });
+    $scope.devicetypelist = $rootScope.kerReftabGetList('DEVICETYPE');
 
-    $rootScope.kerReftabGetList('UNIT')
-     .then(function (result) {
-         $scope.unitlist = result[0];
-     });
-
-    $rootScope.kerReftabGetList('LOCATION')
-     .then(function (result) {
-         $scope.locationlist = result[0];
+    $scope.unitlist = $rootScope.kerReftabGetList('UNIT');
      });
 
     */

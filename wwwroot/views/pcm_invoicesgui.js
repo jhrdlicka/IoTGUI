@@ -818,11 +818,7 @@ app.controller('pcm_invoiceeditcontroller', function ($scope, $uibModalInstance,
     else
         $scope.parentControllerName = $scope.parent.controllerName;
 
-    $rootScope.kerReftabGetList('CURRENCY')
-        .then(function (result) {
-            $scope.currencylist = result[0];
-            console.log("currencylist", $scope.currencylist);
-        });
+    $scope.currencylist = $rootScope.kerReftabGetList('CURRENCY');
 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);
