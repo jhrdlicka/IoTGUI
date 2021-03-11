@@ -1,6 +1,6 @@
 ﻿<div class="modal-header" ng-if="mode=='select'">
     <h2 class="modal-title">
-        Select Sample(s)
+        Select Tasks(s)
     </h2>
 </div>
 
@@ -11,10 +11,10 @@
         <div class="col-md-6" style="min-width:800px">
 
             <h1 id="tableLabel" ng-if="mode=='list'">
-                Samples
+                Tasks
 
                 <span class="pull-right">
-                    <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected samples">delete</button>
+                    <button class="btn btn-sm btn-danger" ng-click="delete()" title="Delete selected tasks">delete</button>
                     <button class="btn btn-sm btn-default" ng-click="loadData(true)">refresh</button>
                 </span>
             </h1>
@@ -30,37 +30,46 @@
             </div>
 
             <div>
-                <p ng-if="!iot_samples"><em>Loading...</em></p>
-                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="iot_samples" id="table.{{listid}}">
+                <p ng-if="!iot_tasks"><em>Loading...</em></p>
+                <table class="table table-responsive ng-scope ng-table" aria-labelledby="tableLabel" ng-if="iot_tasks" id="table.{{listid}}">
                     <thead>
                         <tr>
                             <th></th>
                             <th>ID</th>
                             <th>Device Code</th>
                             <th>Device</th>
-                            <th>Date</th>
+                            <th>Scheduled Date</th>
                             <th>Time</th>
-                            <th>Value</th>
-                            <th>Unit</th>
+                            <th>Accepted Date</th>
+                            <th>Time</th>
+                            <th>Completed Date</th>
+                            <th>Time</th>
+                            <th>Command</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="iot_sample in filteredData = (iot_samples |filter: searchText |filter: filterDevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)"
+                        <tr ng-repeat="iot_task in filteredData = (iot_tasks |filter: searchText |filter: filterDevices)| limitTo:itemsPerPage:itemsPerPage*(currentPage-1)"
                             ng-dblclick=""
-                            ng-click="selectRow(listid, $event, iot_sample.index, multilineallowed, iot_sample.id);refreshdetail()"
-                            ng-class="{active: isRowSelected(listid, iot_sample.index)}"
-                            id="tr.{{listid}}:{{iot_sample.index}}"
-                            objectid="{{iot_sample.id}}">
-                            <td><input type="checkbox" ng-checked="isRowSelected(listid, iot_sample.index)"></td>
-                            <td>{{ iot_sample.id }}</td>
-                            <td>{{ iot_sample.xdevice.code }}</td>
-                            <td>{{ iot_sample.xdevice.name }}</td>
-                            <td>{{ iot_sample.timestamptime | date: dateFormat}}</td>
-                            <td>{{ iot_sample.timestamptime | date: precisetimeFormat}}</td>
-                            <td>{{ iot_sample.value}}</td>
-                            <td>{{kerReftabGetNameByNM('UNIT', iot_sample.xdevice.unitnm)}}</td>
+                            ng-click="selectRow(listid, $event, iot_task.index, multilineallowed, iot_task.id);refreshdetail()"
+                            ng-class="{active: isRowSelected(listid, iot_task.index)}"
+                            id="tr.{{listid}}:{{iot_task.index}}"
+                            objectid="{{iot_task.id}}">
+                            <td><input type="checkbox" ng-checked="isRowSelected(listid, iot_task.index)"></td>
+                            <td>{{ iot_task.id }}</td>
+                            <td>{{ iot_task.xdevice.code }}</td>
+                            <td>{{ iot_task.xdevice.name }}</td>
+                            <td>{{ iot_task.xdevice.name }}</td>
+                            <td>{{ iot_task.scheduledtime | date: dateFormat}}</td>
+                            <td>{{ iot_task.scheduledtime | date: precisetimeFormat}}</td>
+                            <td>{{ iot_task.acceptedtime | date: dateFormat}}</td>
+                            <td>{{ iot_task.acceptedtime | date: precisetimeFormat}}</td>
+                            <td>{{ iot_task.completedtime | date: dateFormat}}</td>
+                            <td>{{ iot_task.completedtime | date: precisetimeFormat}}</td>
+                            <td>{{ iot_task.command}}</td>
+                            <td>{{kerReftabGetNameByNM('TASKSTATUS', iot_task.taskstatusnm)}}</td>
                             <td style="width:1%">
-                                <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, iot_sample.index, multilineallowed, iot_sample.id); delete()">Delete</button>
+                                <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, iot_task.index, multilineallowed, iot_task.id); delete()">Delete</button>
                                 {{calcTotalItems(filteredData.length)}}
                             </td>
                         </tr>
@@ -82,17 +91,14 @@
 
 
         <uib-tabset active="active" class="col-md-6" ng-if="mode=='list'">
-            <uib-tab index="0" heading="Samples - graph">
-                <div class="col-md-6" ng-if="selectediot_sample">
+            <uib-tab index="0" heading="Task">
+                <div class="col-md-6" ng-if="selectediot_task">
                     <hr />
-                    <h3>Selected Device</h3>
+                    <h3>Selected Task</h3>
                     <p>
-                        <b>{{selectediot_sample.id}}</b> {{selectediot_sample.code}} {{selectediot_sample.name}}
-                        <br>Index: {{selectediot_sample.index}}
-                        <br>Samples: {{selectediot_sample.xsamples.length}}
-                        <br>Device index: {{selectediot_sample.xdevice.index}}
+                        <b>{{selectediot_task.id}}</b> {{selectediot_task.taskstatusnm}}
+                        <br>Command: {{selectediot_task.command}}
                     </p>
-                    <div id="tester" style="width:1800px;height:600px;"></div>
                 </div>
             </uib-tab>
         </uib-tabset>

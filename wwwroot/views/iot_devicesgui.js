@@ -2,7 +2,7 @@
  * iot_device list
  */
 
-app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, serverUpdateHub) {
+app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, model_iot_task, serverUpdateHub) {
     $rootScope.model_iot_device = { packageName: 'model_iot_device' };
     var myscope = $rootScope.model_iot_device;
 
@@ -139,6 +139,7 @@ app.service('model_iot_device', function ($rootScope, $http, model_iot_sample, s
 
                 // load sub-entities
                 $rootScope.model_iot_sample.loadData();
+                $rootScope.model_iot_task.loadData();
 
             }, function error(error) {
                     $rootScope.showerror(myscope, 'loadData', error);
@@ -597,6 +598,7 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
     };
    
     $scope.refreshdetail = function () {
+
 /*
         $scope.selectediot_device = null;
 
@@ -799,3 +801,105 @@ app.controller('iot_deviceeditcontroller', function ($scope, $uibModalInstance, 
     */
 
 });
+
+app.controller('iot_deviceparkingspotcontroller', function ($scope, $uibModal, $rootScope, guialert, ker_reference, model_iot_device, model_iot_task, $route, $filter, $cookies, $window) {
+    $scope.controllerName = 'iot_deviceparkingspotcontroller';
+    $scope.packageName = $scope.controllerName;
+    var myscope = $scope;
+    $scope.id = $scope.$id; // to identify inherited values
+
+    $scope.setparent = function (pLink) {
+        if (!pLink.$parent)  // if there is no parent then set parent to null
+            $scope.parent = null;
+        else if (!pLink.$parent.controllerName) // if parent does not have a controllerName, then continue in the hierarchy
+            $scope.setparent(pLink.$parent);
+        else {
+            $scope.parent = pLink.$parent;
+            if (!pLink.$parent.id || pLink.$parent.id != pLink.$parent.$id) {  // if controllerName is derived 
+                $scope.setparent(pLink.$parent);
+            }
+            if ($scope.parent && ($scope.parent.$$watchers.length == 0)) {   // if controller is empty
+                $scope.setparent(pLink.$parent);
+            }
+        }
+    }
+
+    $scope.setparent($scope);
+    if (!$scope.parent)
+        $scope.parentControllerName = "";
+    else
+        $scope.parentControllerName = $scope.parent.controllerName;
+
+
+    $scope.loadData = function (pForce) {
+        $rootScope.model_iot_device.loadData(pForce);
+        findDevice();
+    };
+
+    function findDevice() {
+        if (!$rootScope.iot_devices) {
+            $scope.LIGHTSPARKINGVOLTAGEindex = null;
+            return;
+        }
+            
+        var lDevice = $rootScope.iot_devices.find(dev => dev.code == "LIGHTSPARKINGVOLTAGE");
+        if (!lDevice)
+            $scope.LIGHTSPARKINGVOLTAGEindex = null;
+        else
+            $scope.LIGHTSPARKINGVOLTAGEindex = lDevice.index;
+
+        var lRelayDevice = $rootScope.iot_devices.find(dev => dev.code == "LIGHTSPARKING");
+        if (!lRelayDevice)
+            $scope.LIGHTSPARKINGindex = null;
+        else
+            $scope.LIGHTSPARKINGindex = lRelayDevice.index;
+
+    }
+
+    $rootScope.$watchCollection("iot_devices", function () {
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");
+        findDevice();
+    }, true);
+
+    $scope.loadData(false);
+    $rootScope.kerReftabInit();
+
+    $scope.unitlist = $rootScope.kerReftabGetList('UNIT');
+
+    $scope.locationlist = $rootScope.kerReftabGetList('LOCATION');
+
+
+    $scope.on = function () {
+        var lRelayDevice = $rootScope.iot_devices.find(dev => dev.code == "LIGHTSPARKING");
+
+        lTask = {
+            deviceid: lRelayDevice.id, 
+            command: 'SWITCH ON'
+        }
+        lTask.taskstatusnm = 'SCHEDULED';
+        lTask.scheduledtime = new Date();  
+        $rootScope.model_iot_task.save(lTask);
+    };
+
+    $scope.off = function () {
+        var lRelayDevice = $rootScope.iot_devices.find(dev => dev.code == "LIGHTSPARKING");
+
+        lTask = {
+            deviceid: lRelayDevice.id, 
+            command: 'SWITCH OFF'
+        }
+        lTask.taskstatusnm = 'SCHEDULED';
+        lTask.scheduledtime = new Date();  
+        $rootScope.model_iot_task.save(lTask);
+    };
+
+    $scope.cancel = function () {
+        angular.forEach($scope.objectData, function (value, key) {
+            $scope.dataCopy[key] = value;
+        });
+
+        $uibModalInstance.dismiss('cancel');
+    };
+
+});
+

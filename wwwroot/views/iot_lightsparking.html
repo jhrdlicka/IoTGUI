@@ -1,0 +1,20 @@
+﻿<div class="container col-md-12">
+    <div class="col-md-6" style="min-width:800px">
+        <div>
+            <h1>
+                Parking spot
+                <button class="btn btn-sm btn-success" ng-click="on()">ON</button>
+                <button class="btn btn-sm btn-danger" ng-click="off()">OFF</button>
+            </h1>
+        </div>
+
+        <div>
+            Last commmand: {{iot_devices[LIGHTSPARKINGindex].xlasttask.command}} <br>
+            Last task status: {{iot_devices[LIGHTSPARKINGindex].xlasttask.taskstatusnm}} <br>
+            Voltage: {{iot_devices[LIGHTSPARKINGVOLTAGEindex].xlastsample.value}} V
+        </div>
+
+    </div>
+
+</div>
+

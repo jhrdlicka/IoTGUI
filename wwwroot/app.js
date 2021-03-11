@@ -125,6 +125,8 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
         .when("/ker_references", { templateUrl: "views/ker_referencesgui.html", controller: "ker_referencecontroller" })
         .when("/iot_devices", { mode:"list", templateUrl: "views/iot_devicesgui.html", controller: "iot_devicecontroller" })
         .when("/iot_samples", { mode: "list", templateUrl: "views/iot_samplesgui.html", controller: "iot_samplecontroller" })
+        .when("/iot_tasks", { mode: "list", templateUrl: "views/iot_tasksgui.html", controller: "iot_taskcontroller" })
+        .when("/lights", { templateUrl: "views/iot_lightsparking.html", controller: "iot_deviceparkingspotcontroller" })
         // else 404
         .otherwise("/404", { templateUrl: "views/shared/404.html", controller: "commonController" });
 

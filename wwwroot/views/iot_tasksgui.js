@@ -1,13 +1,13 @@
 /**
- * iot_sample list
+ * iot_task list
  */
 
-app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
-    $rootScope.model_iot_sample = { packageName: 'model_iot_sample' };
-    var myscope = $rootScope.model_iot_sample;
+app.service('model_iot_task', function ($rootScope, $http, serverUpdateHub) {
+    $rootScope.model_iot_task = { packageName: 'model_iot_task' };
+    var myscope = $rootScope.model_iot_task;
 
-    $rootScope.model_iot_sample.loaded = false;
-    $rootScope.model_iot_sample.loading = false;
+    $rootScope.model_iot_task.loaded = false;
+    $rootScope.model_iot_task.loading = false;
 
     function indexDevice(pItem) {
         if (!pItem.deviceid) {
@@ -26,21 +26,21 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
             $rootScope.showerror(myscope, 'indexDevice', null);
         }
 
-        if (!pItem.xdevice.xsamples)
-            pItem.xdevice.xsamples = [];
-        pItem.xdevice.xsamples.push(pItem);
-        if ((!pItem.xdevice.xlastsample) ||
-            pItem.xdevice.xlastsample.timestamp < pItem.timestamp)
-            pItem.xdevice.xlastsample = pItem;
+        if (!pItem.xdevice.xtasks)
+            pItem.xdevice.xtasks = [];
+        pItem.xdevice.xtasks.push(pItem);
+        if ((!pItem.xdevice.xlasttask) ||
+            pItem.xdevice.xlasttask.scheduled < pItem.scheduled)
+            pItem.xdevice.xlasttask = pItem;
     };
 
     function indexDevices() {
-        angular.forEach($rootScope.iot_samples, function (lItem, lIndex) {
+        angular.forEach($rootScope.iot_tasks, function (lItem, lIndex) {
             indexDevice(lItem);
         });
     };
 
-    $rootScope.model_iot_sample.serverUpdateHubMsgResolve = function (pMessage) {
+    $rootScope.model_iot_task.serverUpdateHubMsgResolve = function (pMessage) {
         $rootScope.log(myscope, 'loadData', "received SignalR message: ", pMessage, null, null);
         //            $rootScope.showtoast("info", pMessage, "received SignalR message: ");
         var lMsg = JSON.parse(pMessage);
@@ -54,24 +54,24 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
             else if (lMsg.operationtxt == "update")
                 $rootScope.log(myscope, 'SignalR', "An item updated", null, pMessage, "info");
 
-            lItem = $rootScope.iot_samples.find(i => i.id == lMsg.id);
+            lItem = $rootScope.iot_tasks.find(i => i.id == lMsg.id);
             if (lItem === undefined) {
                 if (lMsg.operationtxt == "update") {
                     $rootScope.showerror(myscope, 'loadData', {
                         status: 500, statusText: 'UpdatedRecordNotFound: ' + lMsg.id
                     });
                 }
-                lIndex = $rootScope.iot_samples.push({ id: lMsg.id }) - 1;
-                $rootScope.iot_samples[lIndex].index = lIndex;
+                lIndex = $rootScope.iot_tasks.push({ id: lMsg.id }) - 1;
+                $rootScope.iot_tasks[lIndex].index = lIndex;
             }
             else
                 lIndex = lItem.index;
-            $rootScope.model_iot_sample.loadRecord(lIndex);
+            $rootScope.model_iot_task.loadRecord(lIndex);
         };
 
         if (lMsg.operationtxt == "delete") {
             $rootScope.log(myscope, 'SignalR', "An item deleted", null, pMessage, "info");
-            lItem = $rootScope.iot_samples.find(i => i.id == lMsg.id);
+            lItem = $rootScope.iot_tasks.find(i => i.id == lMsg.id);
             if (lItem === undefined) {
                 $rootScope.showerror(myscope, 'loadData', {
                     status: 500, statusText: 'DeletedRecordNotFound: ' + lMsg.id
@@ -82,7 +82,7 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
             /*
             if (
                 (lItem.xsubdevices && lItem.xsubdevices.length > 0) ||
-                (lItem.xsamples && lItem.xsamples.length > 0) ||
+                (lItem.xtasks && lItem.xtasks.length > 0) ||
                 (lItem.xtasks && lItem.xtasks.length > 0)
             ) {
                 $rootScope.showerror(myscope, 'loadData', {
@@ -92,63 +92,66 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
             }
             */
 
-            $rootScope.iot_samples.splice(lItem.index, 1);
-            for (lIndex = lItem.index; lIndex < $rootScope.iot_samples.length; lIndex++)
-                $rootScope.iot_samples[lIndex].index = lIndex;
-            if ($rootScope.iot_samples.length > 0)
-                $rootScope.model_iot_sample.loadRecord(0);   // reload any record to refresh the view
+            $rootScope.iot_tasks.splice(lItem.index, 1);
+            for (lIndex = lItem.index; lIndex < $rootScope.iot_tasks.length; lIndex++)
+                $rootScope.iot_tasks[lIndex].index = lIndex;
+            if ($rootScope.iot_tasks.length > 0)
+                $rootScope.model_iot_task.loadRecord(0);   // reload any record to refresh the view
             else
-                $rootScope.iot_samples = null;
+                $rootScope.iot_tasks = null;
         };
     }
 
-    $rootScope.model_iot_sample.postImport = function (pIndex) {
-        var lItem = $rootScope.iot_samples[pIndex];
+    $rootScope.model_iot_task.postImport = function (pIndex) {
+        var lItem = $rootScope.iot_tasks[pIndex];
         lItem.index = pIndex;
         // add another calculations
-        lItem.timestamp = lItem.timestamp + "Z";
-        lItem.timestamptime = new Date(lItem.timestamp);  
+        lItem.scheduled = lItem.scheduled + "Z";
+        lItem.scheduledtime = new Date(lItem.scheduled);  
+
+        lItem.accepted = lItem.accepted + "Z";
+        lItem.acceptedtime = new Date(lItem.accepted);  
+
+        lItem.completed = lItem.completed + "Z";
+        lItem.completedtime = new Date(lItem.completed);  
     };
 
-    $rootScope.model_iot_sample.loadData = function (pForce) {
-        if ($rootScope.model_iot_sample.loaded) {
+    $rootScope.model_iot_task.loadData = function (pForce) {
+        if ($rootScope.model_iot_task.loaded) {
             if (!pForce)  // avoid double-loading
                 return;
             else {
                 // delete all relations to the entity from the model - data are fe-fetched from the database;             
                 angular.forEach($rootScope.iot_devices, function (lItem, lIndex) {
-                    lItem.xsamples = [];
-                });
-                angular.forEach($rootScope.iot_calendardays, function (lItem, lIndex) {
-                    lItem.xsamples = [];
+                    lItem.xtasks = [];
                 });
             }
         };
-        if ($rootScope.model_iot_sample.loading) {
+        if ($rootScope.model_iot_task.loading) {
             return;
         };
 
-        $rootScope.model_iot_sample.loading = true;
+        $rootScope.model_iot_task.loading = true;
 
-        $rootScope.iot_samples = null;
+        $rootScope.iot_tasks = null;
 
         // initialize SignalR incremental updates
         $rootScope.serverUpdateHub.init();
-        $rootScope.serverUpdateHub.connection.on("iot_sample", function (pMessage) { $rootScope.model_iot_sample.serverUpdateHubMsgResolve(pMessage) });
+        $rootScope.serverUpdateHub.connection.on("iot_task", function (pMessage) { $rootScope.model_iot_task.serverUpdateHubMsgResolve(pMessage) });
 
 
-        $rootScope.log(myscope, 'loadData', "start loading samples", null, null, "info");
+        $rootScope.log(myscope, 'loadData', "start loading tasks", null, null, "info");
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/iot_sample",
+            url: $rootScope.ApiAddress + "api/iot_task",
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                $rootScope.iot_samples = response.data;
-                $rootScope.log(myscope, 'loadData', "start indexing samples", null, null, "info");
-                angular.forEach($rootScope.iot_samples, function (item, lIndex) {
-                    $rootScope.model_iot_sample.postImport(lIndex);
+                $rootScope.iot_tasks = response.data;
+                $rootScope.log(myscope, 'loadData', "start indexing tasks", null, null, "info");
+                angular.forEach($rootScope.iot_tasks, function (item, lIndex) {
+                    $rootScope.model_iot_task.postImport(lIndex);
                 });
 
                 // load master table(s) and create relations
@@ -178,70 +181,134 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
                 }
                 */
 
-                $rootScope.model_iot_sample.loaded = true;
-                $rootScope.model_iot_sample.loading = false;
-                $rootScope.$broadcast('model_iot_sample.loaded');
-                $rootScope.log(myscope, 'loadData', "samples loaded and indexed", null, null, "success");
+                $rootScope.model_iot_task.loaded = true;
+                $rootScope.model_iot_task.loading = false;
+                $rootScope.$broadcast('model_iot_task.loaded');
+                $rootScope.log(myscope, 'loadData', "tasks loaded and indexed", null, null, "success");
 
             }, function error(error) {
                 $rootScope.showerror(myscope, 'loadData', error);
-                $rootScope.model_iot_sample.loading = false;
+                $rootScope.model_iot_task.loading = false;
             });
     };
 
-    $rootScope.model_iot_sample.loadRecord = function (pIndex) {
-        var lItem = $rootScope.iot_samples[pIndex];
+    $rootScope.model_iot_task.loadRecord = function (pIndex) {
+        var lItem = $rootScope.iot_tasks[pIndex];
         var lId = lItem.id;
         if (lItem.xdevice)
-            // remove the record from list of samples
-            angular.forEach(lItem.xdevice.xsamples, function (sample, sampleindex) {
-                if (sample.id == lId) {
-                    lItem.xdevice.xsamples.splice(sampleindex, 1); // remove sample from array
+            // remove the record from list of tasks
+            angular.forEach(lItem.xdevice.xtasks, function (task, taskindex) {
+                if (task.id == lId) {
+                    lItem.xdevice.xtasks.splice(taskindex, 1); // remove task from array
                 }
             });
 
-        if (lItem.xcalnedarday)
-            // remove the record from list of samples
-            angular.forEach(lItem.xcalendarday.xsamples, function (sample, sampleindex) {
-                if (sample.id == lId) {
-                    lItem.xcalendarday.xsamples.splice(sampleindex, 1); // remove sample from array
-                }
-            });
 
         // save subitems
         //var lxsubdevices = $rootScope.iot_devices[pIndex].xsubdevices;
         //var lxtasks = $rootScope.iot_devices[pIndex].xtasks;
-        //var lxsamples = $rootScope.iot_devices[pIndex].xsamples;
+        //var lxtasks = $rootScope.iot_devices[pIndex].xtasks;
 
-        //$rootScope.iot_samples[pIndex] = null;
+        //$rootScope.iot_tasks[pIndex] = null;
 
         $http({
             headers: { "Content-Type": "application/json" },
-            url: $rootScope.ApiAddress + "api/iot_sample/" + lId,
+            url: $rootScope.ApiAddress + "api/iot_task/" + lId,
             withCredentials: true,
             method: 'GET'
         })
             .then(function success(response) {
-                $rootScope.iot_samples[pIndex] = response.data;
+                $rootScope.iot_tasks[pIndex] = response.data;
                 // restore subitems
                 //$rootScope.iot_devices[pIndex].xsubdevices = lxsubdevices;
                 //$rootScope.iot_devices[pIndex].xtasks = lxtasks;
-                //$rootScope.iot_devices[pIndex].xsamples = lxsamples;
+                //$rootScope.iot_devices[pIndex].xtasks = lxtasks;
 
-                $rootScope.model_iot_sample.postImport(pIndex);
-                indexDevice($rootScope.iot_samples[pIndex]);
-//                indexCalendarday($rootScope.iot_samples[pIndex]);
+                $rootScope.model_iot_task.postImport(pIndex);
+                indexDevice($rootScope.iot_tasks[pIndex]);
+//                indexCalendarday($rootScope.iot_tasks[pIndex]);
             }, function error(error) {
                 $rootScope.showerror(myscope, 'loadRecord', error);
             });
     };
 
-    $rootScope.model_iot_sample.delete = function (pItems) {
+
+    $rootScope.model_iot_task.save = function (container) {
+
+        var l_container = angular.copy(container);
+
+        l_container.type = parseInt(l_container.type);
+
+        if (!l_container.deviceid)
+            if (l_container.xdevice)
+                l_container.deviceid = l_container.device.id;
+
+        // delete fields not fitting to main object entity
+        if (l_container.xdevice)
+            delete l_container['xdevice'];
+
+        if (l_container.acceptedtime)
+            l_container.accepted = l_container.acceptedtime.toJSON();
+        else
+            l_container.accepted = null;
+
+        if (l_container.completedtime)
+            l_container.completed = l_container.completedtime.toJSON();
+        else
+            l_container.completed = null;
+        if (l_container.scheduledtime)
+            l_container.scheduled = l_container.scheduledtime.toJSON();
+        else
+            l_container.scheduled = null;
+
+
+        if (l_container.id) {
+            //UPDATE
+
+            // update main entity
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_task/" + l_container.id,
+                withCredentials: true,
+                method: 'PUT',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'save.update', error);
+                });
+
+
+        }
+        else {
+            delete l_container['id'];
+
+            //INSERT
+            $http({
+                headers: { "Content-Type": "application/json" },
+                url: $rootScope.ApiAddress + "api/iot_task",
+                withCredentials: true,
+                method: 'POST',
+                datatype: "json",
+                data: JSON.stringify(l_container)
+            })
+                .then(function success(response) {
+                    //
+                }, function error(error) {
+                    $rootScope.showerror(myscope, 'save.insert', error);
+                });
+        }
+    }
+
+
+    $rootScope.model_iot_task.delete = function (pItems) {
 
         angular.forEach(pItems, function (item, index) {
             $http({
                 headers: { "Content-Type": "application/json" },
-                url: $rootScope.ApiAddress + "api/iot_sample/" + item.id,
+                url: $rootScope.ApiAddress + "api/iot_task/" + item.id,
                 withCredentials: true,
                 method: 'DELETE'
             })
@@ -256,8 +323,8 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
 });
 
 
-app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference, model_iot_sample, $route) {
-    $scope.entity = 'iot_sample';
+app.controller('iot_taskcontroller', function ($scope, $http, $uibModal, $rootScope, $q, multiline, guialert, ker_reference, model_iot_task, $route) {
+    $scope.entity = 'iot_task';
     $scope.controllerName = $scope.entity +'controller';
     $scope.packageName = $scope.controllerName;
     var myscope = $scope;
@@ -353,13 +420,13 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
 
     $scope.loadData = function (pForce) {
         $rootScope.resetSelection($scope.listid);
-        $rootScope.model_iot_sample.loadData(pForce); 
+        $rootScope.model_iot_task.loadData(pForce); 
     };
 
 
     $rootScope.$watchCollection($scope.entity+"s", function () {
         $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
-        $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_samples);
+        $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_tasks);
     }, true);
 
     $scope.filterDevices= function (item) {
@@ -421,16 +488,16 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
     };
 
     function i_connecttodevice(pDevices) {
-        l_samples = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_samples);
+        l_tasks = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_tasks);
 
-        if (!confirm("Connect " + l_samples.length + " samples to device " + pDevices[0].code + "?"))
+        if (!confirm("Connect " + l_tasks.length + " tasks to device " + pDevices[0].code + "?"))
             return;
 
-        angular.forEach(l_samples, function (item, index) {
+        angular.forEach(l_tasks, function (item, index) {
             if (item.deviceid) {
                 if (item.deviceid == pDevices[0].id)
                     return;
-                if (!confirm("Sample " + item.id + " is already connected to device " + sample.xdevice.code + ". Reconnect to " + pDevices[0].code + "?"))
+                if (!confirm("Task " + item.id + " is already connected to device " + task.xdevice.code + ". Reconnect to " + pDevices[0].code + "?"))
                     return;
             }
 
@@ -439,7 +506,7 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
             invoice.order = {
                 id: pOrders[0].id, customerid: pOrders[0].customer.id , customer: { id: pOrders[0].customer.id , name: pOrders[0].customer.name }};
                 */
-            $rootScope.model_iot_sample.save(item);
+            $rootScope.model_iot_task.save(item);
         });
 
     }
@@ -521,7 +588,7 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
                     $scope.i_new(l_devices[0]);
                 }, function (error) {
                     if (error == "cancel") {
-                        //   $rootScope.showalert("error", "New sample", "No device selected", "OK");
+                        //   $rootScope.showalert("error", "New task", "No device selected", "OK");
                     }
                     else 
                         $rootScope.showerror($scope, 'new', error);
@@ -535,7 +602,7 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
     }
 
     $scope.edit = function () {
-        lData = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_samples);
+        lData = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_tasks);
         if (lData.length != 1) {
             $rootScope.showalert("error", "Edit", "Select exactly one record!", "OK")
             return;
@@ -560,34 +627,34 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
 
         modalInstance.result.then(function (container) {
         /* ok */
-            $rootScope.model_iot_sample.save(container)
+            $rootScope.model_iot_task.save(container)
         }, function () { /* cancel */ });
     };
 
     $scope.delete = function () {
-        lItems = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_samples);
+        lItems = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_tasks);
         if (lItems.length == 0) {
-            $rootScope.showalert("error", "Delete Sample(s)", "No records selected!")
+            $rootScope.showalert("error", "Delete Task(s)", "No records selected!")
             return;
         }
 
-        if (!$rootScope.showalert("confirm", "Delete Sample(s)", "Delete " + lItems.length + " records?"))
+        if (!$rootScope.showalert("confirm", "Delete Task(s)", "Delete " + lItems.length + " records?"))
             return;
 
 //        $rootScope.resetSelection($scope.listid);
 
-        $rootScope.model_iot_sample.delete(lItems);
+        $rootScope.model_iot_task.delete(lItems);
     };
 
     $scope.refreshdetail = function () {
-        $scope.selectediot_sample = null;
+        $scope.selectediot_task = null;
 
-        l_selecteddata = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_samples);
+        l_selecteddata = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_tasks);
         if (l_selecteddata.length != 1) {
             return;
         }
 
-        $scope.selectediot_sample = l_selecteddata[0];      
+        $scope.selectediot_task = l_selecteddata[0];      
 
         /*
 
@@ -606,7 +673,7 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
     };
 
     $scope.ok = function () {
-        var lContainer = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_samples);
+        var lContainer = $rootScope.getSelectedRows($scope.listid, $rootScope.iot_tasks);
         $rootScope.modalInstance[$scope.instance].close(lContainer);
     };
 
@@ -627,13 +694,13 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
         { Value: "NULL", Text: "Not connected to devices" }
     ];
 
-    $scope.selectediot_sample = null;
+    $scope.selectediot_task = null;
     $scope.loadData(false);
     $rootScope.kerReftabInit();
 });
 
-app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, $rootScope, ker_reference) {
-    $scope.entity = 'iot_sample';
+app.controller('iot_taskeditcontroller', function ($scope, $uibModalInstance, container, $uibModal, $rootScope, ker_reference) {
+    $scope.entity = 'iot_task';
     $scope.controllerName = $scope.entity+'editcontroller';
     $scope.packageName = $scope.controllerName;
     var myscope = $scope;
@@ -660,8 +727,8 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
     else
         $scope.parentControllerName = $scope.parent.controllerName;
 
+    $scope.taskstatuslist = $rootScope.kerReftabGetList('TASKSTATUS');
     /*
-    $scope.devicecategorylist = $rootScope.kerReftabGetList('DEVICECATEGORY');
 
     $scope.devicetypelist = $rootScope.kerReftabGetList('DEVICETYPE');
 
@@ -671,11 +738,10 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
     $scope.objectData = container;
     $scope.dataCopy = angular.copy($scope.objectData);
 
-    /*
      // initialize datapickers for dates
     $scope.popupaccepted = { opened: false }; // initialize datapicker for fromdate
-    $scope.popupdue = { opened: false }; // initialize datapicker for fromdate
-*/
+    $scope.popupcompleted = { opened: false }; // initialize datapicker for fromdate
+    $scope.popupscheduled = { opened: false }; // initialize datapicker for fromdate
 
     $scope.ok = function () {
         
@@ -694,7 +760,7 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
 
         // !!!
         // vyzkouset tady zavolat
-        //$rootScope.model_iot_sample.save(container)
+        //$rootScope.model_iot_task.save(container)
         // misto v listcontroleru - detail
         // a podle vysledku zavrit detail, nebo se vratit k editovani
             
@@ -713,14 +779,15 @@ app.controller('iot_sampleeditcontroller', function ($scope, $uibModalInstance, 
         $uibModalInstance.dismiss('cancel');
     };
 
-    /*
     // open datapickers for dates
     $scope.openaccepted = function () { // open datapicker for fromdate
         $scope.popupaccepted.opened = true;
     };
-    $scope.opendue = function () { // open datapicker for fromdate
-        $scope.popupdue.opened = true;
+    $scope.openscheduled = function () { // open datapicker for fromdate
+        $scope.popupscheduled.opened = true;
     };
-    */
+    $scope.opencompleted = function () { // open datapicker for fromdate
+        $scope.popupcompleted.opened = true;
+    };
 
 });

@@ -41,6 +41,7 @@
                             <th>Code</th>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Last sample</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,6 +56,11 @@
                             <td>{{ iot_device.code }}</td>
                             <td>{{ iot_device.name }}</td>
                             <td>{{ iot_device.description }}</td>
+                            <td>{{ iot_device.xlastsample.timestamptime | date: datetimeFormat}}</td>
+                            <td>{{ iot_device.xlastsample.value}}</td>
+                            <td>{{ kerReftabGetNameByNM('UNIT', iot_device.unitnm)}}</td>
+
+
                             <td style="width:1%">
                                 <button class="btn btn-danger btn-xs" ng-click="selectRow(listid, $event, iot_device.index, multilineallowed, iot_device.id); delete()">Delete</button>
                             </td>
@@ -80,18 +86,18 @@
 
         <uib-tabset active="active" class="col-md-6" ng-if="mode=='list'">
             <uib-tab index="0" heading="Samples - graph">
-                <div class="col-md-6" >
+                <div class="col-md-6">
                     <div ng-if="selectediot_device">
-                    <h3>Selected Device</h3>
-                    <p>
-                        <b>{{selectediot_device.id}}</b> {{selectediot_device.code}} {{selectediot_device.name}}
-                        <br>Index: {{selectediot_device.index}}
-                        <br>Samples: {{selectediot_device.xsamples.length}}
-                        <br>Subdevices: {{selectediot_device.xsubdevices.length}}
-                        <br>Brotherdevices(1): {{selectediot_device.xmasterdevice.xsubdevices.length}}
-                        <br>Masterdevice index: {{selectediot_device.xmasterdevice.index}}
-                        <br>Brotherdevices(2): {{iot_devices[selectediot_device.xmasterdevice.index].xsubdevices.length}}
-                    </p>
+                        <h3>Selected Device</h3>
+                        <p>
+                            <b>{{selectediot_device.id}}</b> {{selectediot_device.code}} {{selectediot_device.name}}
+                            <br>Index: {{selectediot_device.index}}
+                            <br>Samples: {{selectediot_device.xsamples.length}}
+                            <br>Subdevices: {{selectediot_device.xsubdevices.length}}
+                            <br>Brotherdevices(1): {{selectediot_device.xmasterdevice.xsubdevices.length}}
+                            <br>Masterdevice index: {{selectediot_device.xmasterdevice.index}}
+                            <br>Brotherdevices(2): {{iot_devices[selectediot_device.xmasterdevice.index].xsubdevices.length}}
+                        </p>
                     </div>
                     <div id="iot_devices_graph.{{listid}}" style="width:1800px;height:600px;"></div>
                 </div>
@@ -101,6 +107,9 @@
             </uib-tab>
             <uib-tab index="2" heading="Samples" ng-if="!(parentControllerName=='iot_devicecontroller')">
                 <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_samplesgui.html'" ng-controller="iot_samplecontroller" class="col-md-6" style="min-width:1000px"></div>
+            </uib-tab>
+            <uib-tab index="3" heading="Tasks" ng-if="!(parentControllerName=='iot_devicecontroller')">
+                <div ng-if="!(parentControllerName=='iot_devicecontroller')" ng-include="'views/iot_tasksgui.html'" ng-controller="iot_taskcontroller" class="col-md-6" style="min-width:1000px"></div>
             </uib-tab>
         </uib-tabset>
 
