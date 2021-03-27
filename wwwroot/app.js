@@ -132,6 +132,15 @@ app.config(['$routeProvider', function ($routeProvider, $rootScope) {
 
 }]);
 
+app.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.withCredentials = true;
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    $httpProvider.defaults.headers.common = {};
+    $httpProvider.defaults.headers.post = {};
+    $httpProvider.defaults.headers.put = {};
+    $httpProvider.defaults.headers.patch = {};
+}])
 
 /**
  * Common (404 error)
@@ -145,17 +154,20 @@ app.service('serverUpdateHub', function ($rootScope){
     var myscope = $rootScope.serverUpdateHub;
 
     $rootScope.serverUpdateHub.init = function () {
-        $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl($rootScope.ApiAddress + "ServerUpdateHub").build();
+        $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl($rootScope.ApiAddress + "ServerUpdateHub").configureLogging(signalR.LogLevel.Information).build();
+//        $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl("http://www.hrdlicky.eu/ServerUpdateHub").configureLogging(signalR.LogLevel.Information).build();
 
         async function start() {
-            try {
+//            try {
                 $rootScope.log(myscope, 'init', "SignalR Connecting...", null, null, "info");     
                 await $rootScope.serverUpdateHub.connection.start();
                 $rootScope.log(myscope, 'init', "SignalR Connected...", null, null, "success");     
+                /*
             } catch (err) {
                 $rootScope.showerror(myscope, 'serverUpdateHub.init (1)', err);
                 setTimeout(start, 5000);
             }
+            */
         };
 
         $rootScope.serverUpdateHub.connection.onclose(start);
