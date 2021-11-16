@@ -6,6 +6,8 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
     $rootScope.run = { packageName: 'run' };
     var myscope = $rootScope.run;
 
+    $rootScope.serverUpdateHubInit = false;
+
     // register multiline lists and initiate multiline structures
     $rootScope.lastlistid = 0;
     $rootScope.selectedRowsIndexes = [];
@@ -149,25 +151,28 @@ app.controller('commonController', function ($scope, $http, $filter) {
 });
 
 
-app.service('serverUpdateHub', function ($rootScope){
+app.service('serverUpdateHub', function ($rootScope) {
     $rootScope.serverUpdateHub = { packageName: 'serverUpdateHub' };
     var myscope = $rootScope.serverUpdateHub;
 
     $rootScope.serverUpdateHub.init = function () {
+        if ($rootScope.serverUpdateHubInit)
+            return;
+
+        $rootScope.serverUpdateHubInit = true;
+
         $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl($rootScope.ApiAddress + "ServerUpdateHub").configureLogging(signalR.LogLevel.Information).build();
 //        $rootScope.serverUpdateHub.connection = new signalR.HubConnectionBuilder().withUrl("http://www.hrdlicky.eu/ServerUpdateHub").configureLogging(signalR.LogLevel.Information).build();
 
         async function start() {
-//            try {
-                $rootScope.log(myscope, 'init', "SignalR Connecting...", null, null, "info");     
+            try {
+                $rootScope.log(myscope, 'init', "SignalR Connecting (2)...", null, null, "info");     
                 await $rootScope.serverUpdateHub.connection.start();
                 $rootScope.log(myscope, 'init', "SignalR Connected...", null, null, "success");     
-                /*
             } catch (err) {
                 $rootScope.showerror(myscope, 'serverUpdateHub.init (1)', err);
                 setTimeout(start, 5000);
             }
-            */
         };
 
         $rootScope.serverUpdateHub.connection.onclose(start);
@@ -177,7 +182,7 @@ app.service('serverUpdateHub', function ($rootScope){
         });
 
         start().then(function () {
-            $rootScope.log(myscope, 'init', "SignalR Connection Established", null, null, "success");     
+//            $rootScope.log(myscope, 'init', "SignalR Connection Established", null, null, "success");     
         }).catch(function (error) {
             $rootScope.showerror(myscope, 'serverUpdateHub.init', error);
             return console.error(error.toString());

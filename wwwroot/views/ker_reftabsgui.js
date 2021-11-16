@@ -401,7 +401,8 @@ app.controller('ker_reftabcontroller', function ($scope, $uibModal, $rootScope, 
 
 
     $rootScope.$watchCollection($scope.entity + "s", function () {
-        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");
+//        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, null);
         $rootScope.checkSelectedRows($scope.listid, $rootScope.ker_reftabs);
     }, true);
 

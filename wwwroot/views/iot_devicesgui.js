@@ -375,7 +375,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
 
 
     $rootScope.$watchCollection("iot_devices", function () {
-        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+//        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, null);           
         $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_devices);
         $scope.pageChanged($scope.currentPage);
     }, true);
@@ -655,8 +656,8 @@ app.controller('iot_devicecontroller', function ($scope, $http, $uibModal, $root
             angular.forEach(lItems, function (item, index) {
 
                 if (item.xsamples) {
-                    lAxeX = item.xsamples.map(a => a.timestamptime);
-                    lAxeY = item.xsamples.map(a => a.value);
+                    lAxeX = item.xsamples.sort(function compare(a, b) { return a.timestamptime - b.timestamptime}).map(a => a.timestamptime);
+                    lAxeY = item.xsamples.sort(function compare(a, b) { return a.timestamptime - b.timestamptime }).map(a => a.value);
                 } else {
                     lAxeX = [];
                     lAxeY = [];

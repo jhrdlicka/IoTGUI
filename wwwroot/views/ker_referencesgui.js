@@ -434,7 +434,8 @@ app.controller('ker_referencecontroller', function ($scope, $http, $uibModal, $r
 
 
     $rootScope.$watchCollection($scope.entity + "s", function () {
-        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");
+//        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, null);
         $rootScope.checkSelectedRows($scope.listid, $rootScope.ker_references);
     }, true);
 

@@ -358,7 +358,8 @@ app.controller('iot_samplecontroller', function ($scope, $http, $uibModal, $root
 
 
     $rootScope.$watchCollection($scope.entity+"s", function () {
-        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+//        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, null);           
         $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_samples);
     }, true);
 

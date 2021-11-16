@@ -425,7 +425,8 @@ app.controller('iot_taskcontroller', function ($scope, $http, $uibModal, $rootSc
 
 
     $rootScope.$watchCollection($scope.entity+"s", function () {
-        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+//        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, "info");           
+        $rootScope.log(myscope, "$watchCollection", "*** data changed ***", null, null, null);           
         $rootScope.checkSelectedRows($scope.listid, $rootScope.iot_tasks);
     }, true);
 
