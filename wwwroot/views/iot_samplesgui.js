@@ -30,7 +30,7 @@ app.service('model_iot_sample', function ($rootScope, $http, serverUpdateHub) {
             pItem.xdevice.xsamples = [];
         pItem.xdevice.xsamples.push(pItem);
         if ((!pItem.xdevice.xlastsample) ||
-            pItem.xdevice.xlastsample.timestamp < pItem.timestamp)
+            (pItem.xdevice.xlastsample.timestamp < pItem.timestamp))
             pItem.xdevice.xlastsample = pItem;
     };
 

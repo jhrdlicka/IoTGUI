@@ -47,6 +47,8 @@ app.run(function ($rootScope, $cookies, $http, $window, $locale) {
 
 
     $rootScope.isAuthorized = $cookies.get(".AspNetCore.Cookies");
+    // security hack!!!
+   // $rootScope.isAuthorized = true;
 
     $rootScope.dateCheckClick = function (pOldValue) {
         var lToday = new Date();

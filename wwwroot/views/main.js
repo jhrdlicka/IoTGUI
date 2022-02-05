@@ -20,6 +20,8 @@ app.controller('mainController', function ($scope, $http, $filter, $uibModal, $c
 //        $cookies.put(".AspNetCore.Cookies", token);
         $rootScope.isAuthorized = true;
     }
+//    else // dirty hack!!!
+//        $rootScope.isAuthorized = true;
 
     $scope.googleLogin = function () {
         const url = $rootScope.ApiAddress + "account/google-login?redirectUrl=" + encodeURIComponent(window.location.href);
